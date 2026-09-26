@@ -12,3 +12,5 @@ This repository contains a reusable Android Compose camera permission gate.
 Integration: add `implementation(project(":permission"))`, import `com.apexfission.android.permission.HandleCameraPermission`, and supply `onBack`, `onNotNow`, and granted content. For custom UI, handle all four enum values and invoke `requestPermission` or `openAppSettings` on an explicit user action. Do not request permission during composition.
 
 Keep the public API documented with KDoc when changing it. Preserve the distinction between Android's rationale signal and the stored request-history heuristic. Use `./gradlew :permission:testDebugUnitTest :permission:assembleDebug :app:assembleDebug` to verify changes. No artifact publication is configured in this repository; do not claim a Maven coordinate is available.
+
+For images, see `permission/src/screenshotTest/` and `.github/workflows/render-permission-screens.yml`. Run `:permission:updateDebugScreenshotTest` to render PNGs; the workflow uploads them as an artifact. Static previews do not exercise system permission dialogs.

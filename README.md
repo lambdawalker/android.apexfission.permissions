@@ -51,3 +51,7 @@ The request history is stored in app preferences and cleared after a grant. Andr
 Run `./gradlew :permission:testDebugUnitTest :permission:assembleDebug :app:assembleDebug` with Android SDK and JDK installed. The unit tests cover state classification; device testing is needed for system dialog, settings, and lifecycle behavior.
 
 This code was extracted from [`android.card_detection_lite/permissionsCompose`](https://github.com/lambdawalker/android.card_detection_lite/tree/main/permissionsCompose). The new import package is `com.apexfission.android.permission`. See [AGENTS.md](AGENTS.md) for an integration map and [LICENSE](LICENSE) for licensing.
+
+## Render screenshots
+
+The `permission` module has host-side Compose Preview screenshot tests for the request screen, settings recovery, and a dark theme. Run `./gradlew :permission:updateDebugScreenshotTest` to create PNGs in `permission/src/screenshotTestDebug/reference/`, or use the **Render permission screens** GitHub Actions workflow and download its `permission-screen-images` artifact. These previews render the composable itself without an emulator. They do not capture Android's system permission dialog or test permission transitions; those require a device or emulator.
