@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "android.permissions"
 include(":app")
-include(":permissions")
+include(":permission")
