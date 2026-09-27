@@ -5,6 +5,7 @@ This repository is a Compose library for Android runtime permission explanations
 - Module `:permission`, package `com.apexfission.android.permission`.
 - `PermissionState.kt`: generic status, controller, per-permission request history and pure flow decisions.
 - `PermissionCheck.kt`: code-only `Context.runIfPermissionsGranted` vararg/list checks and `otherwise` missing branch.
+- `PermissionRequester.kt`: Activity-owned result launcher, pending request with infix `onDenied` terminal, and callback coordinator.
 - `PermissionHandler.kt`: `HandlePermissions` gate, which shows protected content only when all statuses are granted; camera-only compatibility wrapper.
 - `PermissionScreen.kt`: `PermissionDescription`, optional per-item composable hero, wrapping icon selector, horizontal pager, and selected-page action.
 - `CameraPermissionState.kt` and `PermissionViewModel.kt`: camera compatibility types and Accompanist adapter.
@@ -16,3 +17,5 @@ The host owns the list order and must declare every requested runtime permission
 Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :app:assembleDebug`. The GitHub render workflow uploads PNGs; previews do not test system dialogs. No Maven coordinate is published.
 
 The code-only checker never launches a system prompt. Its action runs synchronously when all permissions are granted; after an Activity Result grant callback, callers must recheck before using protected work. Avoid an unconditional retry from a denied result, which would repeatedly reopen the prompt.
+
+`PermissionRequester` must be created as an Activity property before STARTED. Its `requestPermissions(...) { onGranted } onDenied { missing -> ... }` chain launches at `onDenied`, rechecks after the platform callback, rejects concurrent requests, and stores callbacks only in memory. Keep both completion paths tested, including a synchronous result.

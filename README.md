@@ -57,6 +57,33 @@ For a single permission, the same API skips the overview page. `HandleCameraPerm
 
 The launcher handles ordinary Android runtime permissions. Special app access (exact alarms, overlay, all-files access) and runtime permissions with platform-specific sequencing (such as background location) need their own host flow. Do not assume the batch is atomic or that Android will present exactly one system dialog.
 
+## Code-only request with callbacks
+
+For a flow with no library screen, create a `PermissionRequester` as an Activity property so the Android result launcher is registered before the Activity starts. The infix `onDenied` call is **terminal**: it attaches the handler and starts the request. The library checks current grants first, then rechecks after Android returns. One request may be outstanding at a time.
+
+```kotlin
+class ScannerActivity : ComponentActivity() {
+    private val permissionRequester = PermissionRequester(this)
+
+    private fun startScanner() = with(permissionRequester) {
+        requestPermissions(
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+        ) {
+            openScanner() // all granted now, or granted after the prompt
+        } onDenied { missing ->
+            showDeniedState(missing)
+        }
+    }
+
+    // Call startScanner() from a user action such as a button tap.
+    private fun openScanner() { /* use the protected feature */ }
+    private fun showDeniedState(missing: List<String>) { /* host UI or settings route */ }
+}
+```
+
+`requestPermissions(...) { ... }` only builds the pending call. The prompt starts when `onDenied` is attached, so even an immediate result has both callbacks ready. If all permissions are already granted, `openScanner()` runs synchronously at that terminal call. The callbacks are held in memory; after Activity recreation or process death, recheck and retry the user action rather than assuming an old callback will continue. The requester supports ordinary runtime permissions, not special app access or permissions that need staged platform flows.
+
 ## Code-only permission check
 
 Use `runIfPermissionsGranted` when the host wants to handle its own request flow without a library screen. It accepts either varargs or a `List<String>` and returns the missing permission names to `otherwise`:
