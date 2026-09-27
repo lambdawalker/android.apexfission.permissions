@@ -63,16 +63,20 @@ import kotlinx.coroutines.launch
  * @property requestLabel Optional primary button label before a request.
  * @property features Optional supporting benefits shown beneath the body.
  * @property hero Optional host-supplied hero composable.
+ * @property description Optional composable replacing the title, body, and features beneath
+ * the icon selector. Keep [icon] and [label] as metadata for the selector and accessibility.
  */
 class PermissionDescription(
     val permission: String,
-    val label: String,
+    val label: String = permission.substringAfterLast('.').replace('_', ' ').lowercase()
+        .replaceFirstChar { it.titlecase() },
     val icon: ImageVector = Icons.Default.Lock,
     val title: String? = null,
     val body: String? = null,
     val requestLabel: String? = null,
     val features: List<PermissionFeature> = emptyList(),
     val hero: (@Composable () -> Unit)? = null,
+    val description: (@Composable () -> Unit)? = null,
 )
 
 /** A supporting benefit shown below a permission's explanation. */

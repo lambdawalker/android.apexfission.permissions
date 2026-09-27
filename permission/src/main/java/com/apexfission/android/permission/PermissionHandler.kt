@@ -10,8 +10,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
- * Protects [content] until every listed Android runtime permission is granted. Each permission
- * has its own carousel page and request action; no request starts during composition.
+ * Protects [content] until every listed Android runtime permission is granted. One button
+ * requests the permissions together; the carousel provides an overview and individual detail.
  *
  * The host must declare every permission in its manifest. This gate intentionally does not handle
  * special app access (such as exact alarms) or install-time permissions, which Android requests
@@ -21,11 +21,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * @param onBack Back navigation from the explanation UI.
  * @param onNotNow Exit or defer the feature without requesting access.
  * @param permissionContent Optional host UI replacing the built-in primer; receives controllers
- * in the same order as [permissions].
+ * in the same order as [permissions]. Use [HandlePermissionsIndividually] when that custom UI
+ * needs individual request controllers.
  * @param content Composable displayed only when all listed permissions are granted.
  */
 @Composable
 fun HandlePermissions(
+    permissions: List<PermissionDescription>,
+    onBack: () -> Unit,
+    onNotNow: () -> Unit,
+    modifier: Modifier = Modifier,
+    permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
+    overview: PermissionOverview = PermissionOverview(),
+    content: @Composable () -> Unit,
+) {
+    if (permissionContent == null) {
+        HandlePermissionBundle(permissions, onBack, onNotNow, modifier, overview, content = content)
+        return
+    }
+    HandlePermissionsIndividually(
+        permissions, onBack, onNotNow, modifier, permissionContent, content,
+    )
+}
+
+/** Legacy per-permission request flow, retained for callers that need individual actions. */
+@Composable
+fun HandlePermissionsIndividually(
     permissions: List<PermissionDescription>,
     onBack: () -> Unit,
     onNotNow: () -> Unit,

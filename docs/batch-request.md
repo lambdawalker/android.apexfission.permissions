@@ -1,27 +1,33 @@
-# One-button permission bundle experiment
+# Batch permission screen
 
-This is an additive alternative to the per-page `HandlePermissions` flow. `HandlePermissionBundle` shows each `PermissionDescription` in a swipeable carousel but keeps one primary button outside it. The button requests all permissions through Accompanist's multiple-permission request API; Android may present several dialogs, grant some permissions, or show no dialog for permissions it will no longer prompt for.
+`HandlePermissions` now uses the batch screen. It shows a feature overview for multiple permissions and uses one primary action to request the entire runtime permission set. `HandlePermissionBundle` exposes the same behavior plus an optional `onPermissionsResult` callback. `HandlePermissionsIndividually` retains the older per-page launcher.
 
 ```kotlin
-HandlePermissionBundle(
+HandlePermissions(
     permissions = listOf(
-        PermissionDescription(Manifest.permission.CAMERA, "Camera", Icons.Default.PhotoCamera),
+        PermissionDescription(
+            permission = Manifest.permission.CAMERA,
+            label = "Camera",
+            icon = Icons.Default.PhotoCamera,
+            hero = { CameraHero() },
+        ) {
+            DefaultDescription("Camera", Icons.Default.PhotoCamera,
+                title = "Scan a document", body = "We use the camera when you start a scan.")
+        },
         PermissionDescription(Manifest.permission.RECORD_AUDIO, "Microphone", Icons.Default.Mic),
+    ),
+    overview = PermissionOverview(
+        title = "Create a narrated scan",
+        body = "Review the camera and microphone access used by this feature.",
+        hero = { FeatureHero() },
     ),
     onBack = onLeave,
     onNotNow = onLeave,
-    onPermissionsResult = { grants: Map<String, Boolean> ->
-        // Each result is independent. Re-check status when entering protected content.
-    },
-) {
-    ProtectedFeature() // all requested permissions currently granted
-}
+) { ProtectedFeature() }
 ```
 
-The host app declares every runtime permission in its manifest. `PermissionDescription` can supply distinct title, body, icon, features, and a custom Compose `hero` for each page. The button says **Request permissions**, then **Request remaining permissions** when any requestable permission remains after a denial. If all missing permissions can no longer prompt, it opens the app's settings page. A grant indicator marks granted pages. Back and Not Now remain separate navigation actions.
+A `PermissionDescription` trailing composable customizes the **description area below the icon strip**. `hero` controls the top illustration independently, keeping the icon strip under it on every page. A custom overview may likewise provide a `description` lambda. Specify `icon` and `label` on each permission to customize the icon strip; the library cannot inspect values passed inside a composable. Defaults are provided for all presentation fields.
 
-For a standalone presentation with host-managed permission state, use `PermissionBundleScreen(permissions, statuses, onRequest, onOpenSettings, ...)`. This is also a way to experiment with custom permission flows without relying on the built-in launcher.
+The icon row scrolls horizontally when needed and scrolls to the current permission as the carousel changes. All icons are equal on the overview; the active permission icon grows and changes color on its page. The button stays outside the carousel. It requests the entire list once, says **Request remaining permissions** after a denial, and offers **Open App Settings** if no outstanding permission can prompt. Back and Not Now remain separate navigation actions.
 
-The sample app installs two launcher entries: the existing per-page demo and **Permission bundle demo**. Both use camera and microphone, so reset those permissions in Android Settings when comparing first-request behavior.
-
-The batch request is limited to Android runtime permissions. It is not atomic and does not guarantee one Android system dialog. Special app access requires separate platform flows, and some runtime permissions (for example background location) have additional ordering rules. The carousel preview screenshots render only the Compose UI; test system prompts on a device or emulator.
+The app manifest must declare every permission. Android decides how many dialogs to present; grants can be partial. Recheck status before using a protected feature. Some runtime permissions need staged platform flows, and special app access is outside the runtime permission launcher. Screenshot previews render the UI, while actual system prompts require a device or emulator.

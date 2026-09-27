@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 
-/** The separate one-button bundle concept, independent of the per-page flow. */
+/** The default one-button carousel: overview, individual page, and denial recovery. */
 class PermissionBundleScreenshotTest {
     private val permissions = listOf(
         PermissionDescription(
@@ -27,7 +27,7 @@ class PermissionBundleScreenshotTest {
     )
 
     @PreviewTest
-    @Preview(name = "Bundle first page", widthDp = 393, heightDp = 852, showBackground = true)
+    @Preview(name = "Bundle overview", widthDp = 393, heightDp = 852, showBackground = true)
     @Composable
     fun firstPage() {
         MaterialTheme {
@@ -35,12 +35,16 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = PermissionOverview(
+                    title = "Create a narrated scan",
+                    body = "Review camera and microphone access before starting.",
+                ),
             )
         }
     }
 
     @PreviewTest
-    @Preview(name = "Bundle second page", widthDp = 393, heightDp = 852, showBackground = true)
+    @Preview(name = "Bundle camera page", widthDp = 393, heightDp = 852, showBackground = true)
     @Composable
     fun secondPage() {
         MaterialTheme {
@@ -62,7 +66,23 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.Granted, PermissionStatus.PermanentlyDenied),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
-                initialPage = 1,
+                initialPage = 2,
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Bundle scrollable icons", widthDp = 320, heightDp = 720, showBackground = true)
+    @Composable
+    fun scrollableIcons() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = (1..8).map { index ->
+                    PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic)
+                },
+                statuses = List(8) { PermissionStatus.NotRequested },
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                initialPage = 8,
             )
         }
     }
