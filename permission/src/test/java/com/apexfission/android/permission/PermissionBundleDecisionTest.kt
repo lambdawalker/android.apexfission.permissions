@@ -4,6 +4,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PermissionBundleDecisionTest {
+    @Test fun `automatic overview follows visible permission count`() {
+        assertEquals(false, shouldShowOverview(1, PermissionOverviewMode.Automatic))
+        assertEquals(true, shouldShowOverview(2, PermissionOverviewMode.Automatic))
+    }
+
+    @Test fun `overview can be shown for one permission or hidden for several`() {
+        assertEquals(true, shouldShowOverview(1, PermissionOverviewMode.Show))
+        assertEquals(false, shouldShowOverview(2, PermissionOverviewMode.Hide))
+        assertEquals(false, shouldShowOverview(1, PermissionOverviewMode.Hide))
+    }
+
     @Test fun `all mode keeps granted pages in their original order`() {
         assertEquals(
             listOf(0, 1, 2),
