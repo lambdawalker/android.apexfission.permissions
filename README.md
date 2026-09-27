@@ -145,7 +145,7 @@ This is a `Context` extension, so the **check** works in any class holding a val
 
 ## Screenshots and checks
 
-Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :app:assembleDebug`. [GitHub Actions](.github/workflows/render-permission-screens.yml) renders Compose previews and uploads the PNGs. The previews do not exercise Android system permission prompts; validate grant and denial paths on a device or emulator.
+Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :permission:generatePomFileForMavenPublication :app:assembleDebug`. [GitHub Actions](.github/workflows/render-permission-screens.yml) renders Compose previews, checks the publication POM, and uploads the PNGs. The previews do not exercise Android system permission prompts; validate grant and denial paths on a device or emulator.
 
 ## Publish to Maven Central
 
