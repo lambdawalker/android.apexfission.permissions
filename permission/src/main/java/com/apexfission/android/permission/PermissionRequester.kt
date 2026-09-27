@@ -2,6 +2,7 @@ package com.apexfission.android.permission
 
 import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 
@@ -16,7 +17,7 @@ import androidx.core.content.ContextCompat
  * Special app access and platform-specific staged permissions need separate host flows.
  */
 class PermissionRequester(activity: ComponentActivity) {
-    private val launcher = activity.registerForActivityResult(
+    private val launcher: ActivityResultLauncher<Array<String>> = activity.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { coordinator.onResult() }
 
