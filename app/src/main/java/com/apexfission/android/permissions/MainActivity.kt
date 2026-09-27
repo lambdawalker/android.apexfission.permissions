@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.apexfission.android.permission.DefaultPermissionPage
 import com.apexfission.android.permission.HandlePermissions
 import com.apexfission.android.permission.PermissionDescription
+import com.apexfission.android.permission.PermissionDisplayMode
 import com.apexfission.android.permission.PermissionOverview
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
 
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         onBack = { finish() },
                         onNotNow = { finish() },
+                        displayMode = PermissionDisplayMode.All,
                         overview = PermissionOverview(
                             page = {
                                 DefaultPermissionPage(

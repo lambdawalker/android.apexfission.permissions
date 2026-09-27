@@ -3,6 +3,7 @@ package com.apexfission.android.permission
 import android.Manifest
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -103,6 +104,44 @@ class PermissionBundleScreenshotTest {
                     PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic)
                 },
                 statuses = List(8) { PermissionStatus.NotRequested },
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "All with granted badge", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun allWithGrantedBadge() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = permissions,
+                statuses = listOf(PermissionStatus.Granted, PermissionStatus.NotRequested),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                initialPage = 1,
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Missing only overview", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun missingOnlyOverview() {
+        val all = permissions + PermissionDescription(
+            permission = Manifest.permission.ACCESS_FINE_LOCATION,
+            label = "Location",
+            icon = Icons.Default.LocationOn,
+        )
+        val statuses = listOf(
+            PermissionStatus.Granted,
+            PermissionStatus.NotRequested,
+            PermissionStatus.RationaleRequired,
+        )
+        val visible = visiblePermissionIndices(statuses, PermissionDisplayMode.MissingOnly)
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = visible.map(all::get),
+                statuses = visible.map(statuses::get),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
             )
         }

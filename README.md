@@ -40,6 +40,7 @@ HandlePermissions(
         FeatureOverviewPage() // full carousel page
     }),
     modifier = Modifier.padding(innerPadding),
+    displayMode = PermissionDisplayMode.All, // default; or MissingOnly
     onBack = { finish() },
     onNotNow = { finish() },
 ) {
@@ -50,6 +51,8 @@ HandlePermissions(
 With multiple permissions, the carousel starts on a general feature overview and then shows one page per permission. `PermissionDescription { ... }` and `PermissionOverview(page = { ... })` each own a full carousel page: hero and explanation can be composed together. `DefaultPermissionPage` supplies both default hero and text in a single call. If `page` is omitted, the library uses localized default copy and imagery; older `hero` and `description` properties remain supported. Set `icon` and `label` on `PermissionDescription` so the persistent selector and accessibility have stable metadata.
 
 The icon strip stays above the primary button while pages swipe. It scrolls to center the selected permission; on the overview, the whole icon set is centered, with extra icons clipped equally at either side of the screen. The button requests the permissions as one batch regardless of the carousel page.
+
+`displayMode = PermissionDisplayMode.All` (the default) keeps granted permissions in the carousel and marks their icons with a green check badge; selecting one still highlights its icon. `PermissionDisplayMode.MissingOnly` removes granted permissions from both the carousel and icon strip. The overview appears only while more than one **visible** permission remains. After a grant changes the visible set, the carousel starts on the overview or the sole remaining permission. Both modes still gate protected content on every original permission and use the same batch request. The setting applies to the built-in UI; custom `permissionContent` receives all controllers.
 
 `content` appears only while every permission is granted. On a partial grant, the screen remains and the button requests remaining permissions; if none can prompt, it opens app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.
 
