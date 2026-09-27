@@ -7,9 +7,9 @@ import org.junit.Test
 class PermissionAutoAdvanceTest {
     @Test fun `reading time grows with word count and slower pace`() {
         val copy = List(20) { "word" }.joinToString(" ")
-        assertEquals(10_571L, estimateReadingDelayMillis(copy, ReadingPace.Slow))
-        assertEquals(8_000L, estimateReadingDelayMillis(copy, ReadingPace.Normal))
-        assertEquals(6_615L, estimateReadingDelayMillis(copy, ReadingPace.Fast))
+        assertEquals(12_000L, estimateReadingDelayMillis(copy, ReadingPace.Slow))
+        assertEquals(8_666L, estimateReadingDelayMillis(copy, ReadingPace.Normal))
+        assertEquals(7_217L, estimateReadingDelayMillis(copy, ReadingPace.Fast))
     }
 
     @Test fun `empty and whitespace copy gets minimum time`() {

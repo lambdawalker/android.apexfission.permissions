@@ -6,6 +6,8 @@ import android.net.Uri
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -32,9 +34,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -72,8 +77,8 @@ import com.google.accompanist.permissions.shouldShowRationale
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /** Content for the optional first carousel page. */
 class PermissionOverview(
@@ -200,7 +205,8 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
  * or off; the default follows the visible permission count. [initialPage] is zero for the
  * overview when it is present, otherwise zero for the first permission.
  * [autoAdvance] advances through pages using their explicit delays until the user interacts.
- * It stops at the last page and stays off after a touch, swipe, or icon selection.
+ * A progress bar shows the remaining reading time; the adjacent control pauses or resumes it.
+ * It stops at the last page and stays off after a touch, swipe, or icon selection until resumed.
  */
 @Composable
 fun PermissionBundleScreen(
@@ -217,6 +223,8 @@ fun PermissionBundleScreen(
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     autoAdvance: Boolean = false,
     onUserInteraction: () -> Unit = {},
+    initialAutoAdvanceStopped: Boolean = false,
+    onAutoAdvanceResume: () -> Unit = {},
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
@@ -228,8 +236,9 @@ fun PermissionBundleScreen(
     val scope = rememberCoroutineScope()
     val action = bundleAction(statuses)
     val current = pager.currentPage.coerceIn(0 until pageCount)
-    val stopped = rememberSaveable { mutableStateOf(false) }
+    val stopped = rememberSaveable { mutableStateOf(initialAutoAdvanceStopped) }
     val currentOnUserInteraction = rememberUpdatedState(onUserInteraction)
+    val currentOnAutoAdvanceResume = rememberUpdatedState(onAutoAdvanceResume)
     val stopAutoAdvance = {
         if (!stopped.value) {
             stopped.value = true
@@ -253,27 +262,24 @@ fun PermissionBundleScreen(
     val settled = pager.settledPage
     val pageDelayMillis = if (hasOverview && settled == 0) overview.autoAdvanceDelayMillis
         else permissions[settled.coerceIn(0, pageCount - 1) - if (hasOverview) 1 else 0].autoAdvanceDelayMillis
+    val nextPage = nextAutoAdvancePage(settled, pageCount)
+    val progress = remember(settled, pageDelayMillis, pageCount) {
+        Animatable(if (nextPage == null) 1f else 0f)
+    }
     LaunchedEffect(autoAdvance, stopped.value, resumed.value, touchExplorationEnabled,
-        settled, pageCount, pageDelayMillis) {
+        settled, pageCount, pageDelayMillis, progress) {
         if (!autoAdvance || stopped.value || !resumed.value || touchExplorationEnabled) return@LaunchedEffect
-        val next = nextAutoAdvancePage(settled, pageCount) ?: return@LaunchedEffect
-        delay(pageDelayMillis)
+        val next = nextPage ?: return@LaunchedEffect
+        val remainingMillis = ((1f - progress.value) * pageDelayMillis)
+            .roundToInt().coerceAtLeast(1)
+        progress.animateTo(1f, tween(durationMillis = remainingMillis))
         if (!stopped.value && resumed.value && !pager.isScrollInProgress) {
             pager.animateScrollToPage(next)
         }
     }
 
     Surface(
-        modifier = modifier.fillMaxSize()
-            .onPreviewKeyEvent { stopAutoAdvance(); false }
-            .pointerInput(Unit) {
-            awaitPointerEventScope {
-                while (true) {
-                    val event = awaitPointerEvent(PointerEventPass.Initial)
-                    if (event.changes.any { it.pressed && !it.previousPressed }) stopAutoAdvance()
-                }
-            }
-        },
+        modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
         Column(
@@ -291,12 +297,50 @@ fun PermissionBundleScreen(
                 }
                 Text(stringResource(R.string.permission_progress, current + 1, pageCount),
                     style = MaterialTheme.typography.labelMedium)
-                Spacer(Modifier.size(44.dp))
+                if (autoAdvance && nextPage != null && !touchExplorationEnabled) {
+                    val paused = stopped.value
+                    IconButton(onClick = {
+                        if (stopped.value) {
+                            stopped.value = false
+                            currentOnAutoAdvanceResume.value()
+                        } else {
+                            stopAutoAdvance()
+                        }
+                    }, modifier = Modifier.size(44.dp)) {
+                        Icon(
+                            if (paused) Icons.Default.PlayArrow else Icons.Default.Pause,
+                            contentDescription = stringResource(
+                                if (paused) R.string.permission_auto_advance_resume
+                                else R.string.permission_auto_advance_pause
+                            ),
+                        )
+                    }
+                } else {
+                    Spacer(Modifier.size(44.dp))
+                }
+            }
+            if (autoAdvance && pageCount > 1) {
+                val progressDescription = stringResource(R.string.permission_auto_advance_progress)
+                LinearProgressIndicator(
+                    progress = { progress.value },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                        .semantics { contentDescription = progressDescription },
+                )
+                Spacer(Modifier.height(12.dp))
             }
             HorizontalPager(
                 state = pager,
                 key = { if (hasOverview && it == 0) "overview" else permissions[it - if (hasOverview) 1 else 0].permission },
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp)
+                    .onPreviewKeyEvent { stopAutoAdvance(); false }
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent(PointerEventPass.Initial)
+                                if (event.changes.any { it.pressed && !it.previousPressed }) stopAutoAdvance()
+                            }
+                        }
+                    },
             ) { page ->
                 val index = page - if (hasOverview) 1 else 0
                 val item = permissions.getOrNull(index)
@@ -542,8 +586,10 @@ fun HandlePermissionBundle(
                 },
                 overview = overview,
                 overviewMode = overviewMode,
-                autoAdvance = autoAdvance && !autoAdvanceStopped.value,
+                autoAdvance = autoAdvance,
                 onUserInteraction = { autoAdvanceStopped.value = true },
+                initialAutoAdvanceStopped = autoAdvanceStopped.value,
+                onAutoAdvanceResume = { autoAdvanceStopped.value = false },
                 modifier = modifier,
             )
         }

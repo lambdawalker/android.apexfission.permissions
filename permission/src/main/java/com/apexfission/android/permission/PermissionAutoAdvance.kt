@@ -2,9 +2,9 @@ package com.apexfission.android.permission
 
 /** Approximate reading pace for an explicitly supplied page text. */
 enum class ReadingPace(val wordsPerMinute: Int) {
-    Slow(140),
-    Normal(200),
-    Fast(260),
+    Slow(120),
+    Normal(180),
+    Fast(230),
 }
 
 /**

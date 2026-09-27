@@ -8,6 +8,9 @@
     <string name="permission_bundle_granted">Already granted</string>
     <string name="permission_back">Back</string>
     <string name="permission_progress">%1$d of %2$d</string>
+    <string name="permission_auto_advance_progress">Page reading progress</string>
+    <string name="permission_auto_advance_pause">Pause automatic pages</string>
+    <string name="permission_auto_advance_resume">Resume automatic pages</string>
     <string name="permission_generic_title">Allow %1$s access</string>
     <string name="permission_generic_body">This feature needs access to %1$s. You can manage this permission in your device settings.</string>
     <string name="permission_generic_allow">Allow %1$s</string>
