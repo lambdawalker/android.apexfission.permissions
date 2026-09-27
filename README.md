@@ -99,7 +99,7 @@ The icon strip stays above the primary button while pages swipe. It scrolls to c
 
 ### Optional timed carousel
 
-Set `autoAdvance = true` on `HandlePermissions` (or `HandlePermissionBundle`) to advance from the overview through the permission pages. A progress bar at the top shows the time remaining on the current page. The adjacent button pauses and resumes automatic pages; touching, swiping, scrolling, or selecting a permission icon pauses them until the reader resumes. Progress stops at the final page. The timer pauses when the host is not resumed and is disabled while Android touch exploration is enabled. The default is `false`.
+Set `autoAdvance = true` on `HandlePermissions` (or `HandlePermissionBundle`) to advance from the overview through the permission pages. A full-width progress bar above the header shows the time elapsed on the current page. When the final page's time ends, the carousel returns to the first page and repeats. The header button pauses and resumes automatic pages; touching, swiping, scrolling, or selecting a permission icon pauses them until the reader resumes. A single-page screen does not advance. The timer pauses when the host is not resumed and is disabled while Android touch exploration is enabled. The default is `false`.
 
 The library does not inspect arbitrary composable text. Set each page's `autoAdvanceDelayMillis` explicitly, using the public helper when the copy is known:
 

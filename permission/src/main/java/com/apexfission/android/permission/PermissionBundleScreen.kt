@@ -205,7 +205,8 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
  * overview when it is present, otherwise zero for the first permission.
  * [autoAdvance] advances through pages using their explicit delays until the user interacts.
  * A progress bar shows the remaining reading time; the adjacent control pauses or resumes it.
- * It stops at the last page and stays off after a touch, swipe, or icon selection until resumed.
+ * After the last page it returns to the first. A touch, swipe, or icon selection pauses it
+ * until resumed.
  */
 @Composable
 fun PermissionBundleScreen(
@@ -272,7 +273,7 @@ fun PermissionBundleScreen(
         val remainingMillis = remainingAutoAdvanceMillis(progress.value, pageDelayMillis)
         progress.animateTo(1f, tween(durationMillis = remainingMillis))
         if (!stopped.value && resumed.value && !pager.isScrollInProgress) {
-            pager.animateScrollToPage(next)
+            if (next == 0) pager.scrollToPage(0) else pager.animateScrollToPage(next)
         }
     }
 
@@ -284,6 +285,14 @@ fun PermissionBundleScreen(
             modifier = Modifier.fillMaxSize().systemBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            if (autoAdvance && pageCount > 1) {
+                val progressDescription = stringResource(R.string.permission_auto_advance_progress)
+                LinearProgressIndicator(
+                    progress = { progress.value },
+                    modifier = Modifier.fillMaxWidth()
+                        .semantics { contentDescription = progressDescription },
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
                     .padding(top = 12.dp, bottom = 16.dp),
@@ -316,15 +325,6 @@ fun PermissionBundleScreen(
                 } else {
                     Spacer(Modifier.size(44.dp))
                 }
-            }
-            if (autoAdvance && pageCount > 1) {
-                val progressDescription = stringResource(R.string.permission_auto_advance_progress)
-                LinearProgressIndicator(
-                    progress = { progress.value },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-                        .semantics { contentDescription = progressDescription },
-                )
-                Spacer(Modifier.height(12.dp))
             }
             HorizontalPager(
                 state = pager,

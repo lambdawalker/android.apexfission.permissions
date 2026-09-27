@@ -22,10 +22,11 @@ class PermissionAutoAdvanceTest {
         assertEquals(60_000L, estimateReadingDelayMillis(List(500) { "word" }.joinToString(" ")))
     }
 
-    @Test fun `autoplay advances once and stops at the final page`() {
+    @Test fun `autoplay loops from the final page back to the first`() {
         assertEquals(1, nextAutoAdvancePage(0, 3))
         assertEquals(2, nextAutoAdvancePage(1, 3))
-        assertNull(nextAutoAdvancePage(2, 3))
+        assertEquals(0, nextAutoAdvancePage(2, 3))
+        assertEquals(0, nextAutoAdvancePage(1, 2))
         assertNull(nextAutoAdvancePage(0, 1))
     }
 
