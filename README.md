@@ -102,7 +102,7 @@ private fun startFeature() {
         Manifest.permission.RECORD_AUDIO,
     ) {
         doSomething()
-    }.otherwise { missing ->
+    } otherwise { missing ->
         permissionLauncher.launch(missing.toTypedArray())
     }
 }

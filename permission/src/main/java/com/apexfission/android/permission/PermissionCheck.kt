@@ -12,7 +12,7 @@ class PermissionCheckResult internal constructor(
     val missing: List<String>,
 ) {
     /** Runs [onMissing] only when at least one permission was missing at check time. */
-    fun otherwise(onMissing: (List<String>) -> Unit): PermissionCheckResult = apply {
+    infix fun otherwise(onMissing: (List<String>) -> Unit): PermissionCheckResult = apply {
         if (missing.isNotEmpty()) onMissing(missing)
     }
 }

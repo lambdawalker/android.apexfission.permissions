@@ -4,7 +4,7 @@ This repository is a Compose library for Android runtime permission explanations
 
 - Module `:permission`, package `com.apexfission.android.permission`.
 - `PermissionState.kt`: generic status, controller, per-permission request history and pure flow decisions.
-- `PermissionCheck.kt`: code-only `Context.runIfPermissionsGranted` vararg/list checks and `otherwise` missing branch.
+- `PermissionCheck.kt`: code-only `Context.runIfPermissionsGranted` vararg/list checks and infix `otherwise` missing branch.
 - `PermissionRequester.kt`: Activity-owned result launcher, pending request with infix `onDenied` terminal, and callback coordinator.
 - `PermissionHandler.kt`: `HandlePermissions` gate, which shows protected content only when all statuses are granted; camera-only compatibility wrapper.
 - `PermissionScreen.kt`: `PermissionDescription`, optional per-item composable hero, wrapping icon selector, horizontal pager, and selected-page action.

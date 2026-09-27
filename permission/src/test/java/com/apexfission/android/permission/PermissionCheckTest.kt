@@ -10,7 +10,7 @@ class PermissionCheckTest {
         var missingCalls = 0
         val result = evaluatePermissionCheck(listOf("camera", "audio", "camera"), { true }) {
             actions++
-        }.otherwise { missingCalls++ }
+        } otherwise { missingCalls++ }
 
         assertEquals(emptyList<String>(), result.missing)
         assertEquals(1, actions)
@@ -23,7 +23,7 @@ class PermissionCheckTest {
         val result = evaluatePermissionCheck(
             listOf("camera", "audio", "audio", "gps"),
             isGranted = { it == "camera" },
-        ) { actions++ }.otherwise { requested = it }
+        ) { actions++ } otherwise { requested = it }
 
         assertEquals(listOf("audio", "gps"), result.missing)
         assertEquals(result.missing, requested)
