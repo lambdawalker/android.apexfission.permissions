@@ -99,7 +99,7 @@ The icon strip stays above the primary button while pages swipe. It scrolls to c
 
 ### Optional timed carousel
 
-Set `autoAdvance = true` on `HandlePermissions` (or `HandlePermissionBundle`) to advance from the overview through the permission pages. It stops at the final page, or permanently for that screen visit when the user touches, swipes, scrolls, or selects an icon. It does not run while the host is paused or Android touch exploration is enabled. The default is `false`.
+Set `autoAdvance = true` on `HandlePermissions` (or `HandlePermissionBundle`) to advance from the overview through the permission pages. A progress bar at the top shows the time remaining on the current page. The adjacent button pauses and resumes automatic pages; touching, swiping, scrolling, or selecting a permission icon pauses them until the reader resumes. Progress stops at the final page. The timer pauses when the host is not resumed and is disabled while Android touch exploration is enabled. The default is `false`.
 
 The library does not inspect arbitrary composable text. Set each page's `autoAdvanceDelayMillis` explicitly, using the public helper when the copy is known:
 
@@ -117,7 +117,7 @@ PermissionDescription(
 }
 ```
 
-`PermissionOverview` also accepts `autoAdvanceDelayMillis`. Unspecified delays are six seconds. `ReadingPace.Slow`, `Normal`, and `Fast` estimate from whitespace-separated words, add two seconds of orientation time, and clamp to 4–60 seconds. For text without word separators or image-heavy pages, choose the delay directly. The [demo Activity](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) uses the same title and body values for UI and timing.
+`PermissionOverview` also accepts `autoAdvanceDelayMillis`. Unspecified delays are six seconds. `ReadingPace.Slow` (120 words/minute), `Normal` (180), and `Fast` (230) estimate from whitespace-separated words, add two seconds of orientation time, and clamp to 4–60 seconds. For text without word separators or image-heavy pages, choose the delay directly. The [demo Activity](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) uses the same title and body values for UI and timing.
 
 `displayMode = PermissionDisplayMode.All` (the default) keeps granted permissions in the carousel and marks their icons with a green check badge; selecting one still highlights its icon. `PermissionDisplayMode.MissingOnly` removes granted permissions from both the carousel and icon strip. In `Automatic` overview mode, the overview appears only while more than one **visible** permission remains. After a grant changes the visible set, the carousel starts on the overview if present, otherwise the first remaining permission. Both modes still gate protected content on every original permission and use the same batch request. The setting applies to the built-in UI; custom `permissionContent` receives all controllers.
 
