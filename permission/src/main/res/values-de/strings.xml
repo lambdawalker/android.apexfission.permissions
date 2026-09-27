@@ -1,4 +1,13 @@
 <resources>
+    <string name="permission_back">Zurück</string>
+    <string name="permission_progress">%1$d von %2$d</string>
+    <string name="permission_generic_title">Zugriff auf %1$s erlauben</string>
+    <string name="permission_generic_body">Diese Funktion benötigt Zugriff auf %1$s. Sie können diese Berechtigung in den Geräteeinstellungen verwalten.</string>
+    <string name="permission_generic_allow">%1$s erlauben</string>
+    <string name="permission_open_settings">App-Einstellungen öffnen</string>
+    <string name="permission_next">Nächste Berechtigung</string>
+    <string name="permission_done">Weiter</string>
+    <string name="camera_permission_label">Kamera</string>
     <string name="camera_permission_title">Kamerazugriff Erforderlich</string>
     <string name="camera_permission_body">Für ein nahtloses Erlebnis benötigen wir Zugriff auf Ihre Kamera. Dies ermöglicht es uns, Dokumente zu scannen, Ihre Identität zu überprüfen und mehr.</string>
     <string name="permission_feature_title_identity">Identitätsprüfung</string>

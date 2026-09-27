@@ -1,29 +1,31 @@
 package com.apexfission.android.permission
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.Column
-
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,268 +34,235 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 /**
- * A data model for representing a feature or benefit that is enabled by a permission.
- * This is used to populate the list of reasons why a user should grant the permission.
+ * Copy and visuals for one runtime permission. The [permission] value is the Android permission
+ * string and must be declared by the app. All other properties are presentation only.
  *
- * @property icon The [ImageVector] to display next to the feature text.
- * @property title A short, bolded title for the feature (e.g., "Identity Verification").
- * @property subtitle A concise description of the feature's benefit.
+ * [hero] is drawn in a 210 dp tall box and can provide any Compose content. When omitted, the
+ * library draws a generic illustration using [icon]. Title, body, and action text also have
+ * localized generic defaults based on [label].
+ *
+ * @property permission Android runtime permission string, e.g. `android.permission.CAMERA`.
+ * @property label Human-friendly name, e.g. `Camera`.
+ * @property icon Small icon displayed in the selection list and default hero.
+ * @property title Optional title for this permission page.
+ * @property body Optional explanatory text for this permission page.
+ * @property requestLabel Optional primary button label before a request.
+ * @property features Optional supporting benefits shown beneath the body.
+ * @property hero Optional host-supplied hero composable.
  */
-data class PermissionFeature(
-    val icon: ImageVector,
-    val title: String,
-    val subtitle: String
+class PermissionDescription(
+    val permission: String,
+    val label: String,
+    val icon: ImageVector = Icons.Default.Lock,
+    val title: String? = null,
+    val body: String? = null,
+    val requestLabel: String? = null,
+    val features: List<PermissionFeature> = emptyList(),
+    val hero: (@Composable () -> Unit)? = null,
 )
 
+/** A supporting benefit shown below a permission's explanation. */
+data class PermissionFeature(val icon: ImageVector, val title: String, val subtitle: String)
+
 /**
- * A reusable, full-screen UI Composable for explaining why a permission is necessary and
- * prompting the user to grant it.
+ * A generic permission primer. For multiple permissions, icons wrap into rows and select a page
+ * of the horizontal carousel. The current page determines the action button. This composable
+ * only renders UI and delegates request/settings actions to the host.
  *
- * This screen is designed to be user-friendly and informative, increasing the likelihood
- * of permission acceptance by clearly communicating the value exchange.
- *
- * @param onBack A lambda function to be invoked when the user presses the top-left back arrow.
- *               This should typically navigate the user away from the feature that requires
- *               the permission.
- * @param onAllow A lambda function to be invoked when the user presses the primary action button
- *                (e.g., "Allow Camera Access"). This callback is expected to trigger the
- *                actual system permission request dialog.
- * @param onNotNow A lambda function for the secondary action, allowing the user to dismiss
- *                 the screen temporarily without making a permanent decision.
- * @param modifier A [Modifier] to be applied to the root `Surface` of the screen.
- * @param title The main headline of the screen, explaining what permission is needed.
- * @param body A more detailed paragraph explaining *why* the permission is essential for the
- *             app's functionality.
- * @param features A list of [PermissionFeature]s to be displayed as bullet points, highlighting
- *                 the concrete benefits the user will gain by granting the permission.
- * @param primaryActionText Text displayed by the primary permission or recovery action.
+ * @param permissions Nonempty list with unique Android permission strings.
+ * @param statuses Current statuses in the same order as [permissions].
+ * @param onRequest Request the permission at the given index after the user taps the button.
+ * @param onOpenSettings Open app settings for the permission at the given index.
+ * @param onComplete Called if all permissions are already granted in a standalone screen.
+ * @param initialPage Page shown when this screen first enters composition.
  */
 @Composable
 fun PermissionScreen(
+    permissions: List<PermissionDescription>,
+    statuses: List<PermissionStatus>,
     onBack: () -> Unit,
-    onAllow: () -> Unit,
     onNotNow: () -> Unit,
+    onRequest: (Int) -> Unit,
+    onOpenSettings: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    title: String = stringResource(R.string.camera_permission_title),
-    body: String = stringResource(R.string.camera_permission_body),
-    features: List<PermissionFeature> = listOf(
-        PermissionFeature(
-            icon = Icons.Default.VerifiedUser,
-            title = stringResource(R.string.permission_feature_title_identity),
-            subtitle = stringResource(R.string.permission_feature_subtitle_identity)
-        )
-    ),
-    primaryActionText: String = stringResource(R.string.camera_permission_allow),
+    onComplete: () -> Unit = {},
+    initialPage: Int = 0,
 ) {
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    require(permissions.isNotEmpty()) { "At least one permission is required" }
+    require(permissions.size == statuses.size) { "Each permission needs one status" }
+    require(permissions.map { it.permission }.distinct().size == permissions.size) {
+        "Permissions must be unique"
+    }
+    require(initialPage in permissions.indices) { "initialPage is out of range" }
+    val pager = rememberPagerState(initialPage = initialPage, pageCount = { permissions.size })
+    val scope = rememberCoroutineScope()
+    val current = pager.currentPage.coerceIn(permissions.indices)
+    val permission = permissions[current]
+    val status = statuses[current]
+    val next = nextOutstandingPermission(statuses, current)
+    val action = primaryAction(status)
+
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .systemBarsPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            HeaderSection(onBack)
-            Spacer(modifier = Modifier.height(10.dp))
-            CameraIllustration()
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Main text content explaining the permission.
-            Text(text = title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = body,
-                style = MaterialTheme.typography.bodyMedium,
-                lineHeight = 22.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Spacer(modifier = Modifier.Companion.weight(0.5f))
-
-            // List of features enabled by the permission.
-            features.forEach { feature ->
-                FeatureItem(icon = feature.icon, title = feature.title, subtitle = feature.subtitle)
-                Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                IconButton(onClick = onBack, modifier = Modifier.size(44.dp)) {
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.permission_back))
+                }
+                Text(
+                    text = stringResource(R.string.permission_progress, current + 1, permissions.size),
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                Spacer(Modifier.size(44.dp))
             }
-            Spacer(modifier = Modifier.Companion.weight(1f))
-
-            // Action buttons for the user.
-            Button(onClick = onAllow, modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp), shape = RoundedCornerShape(12.dp)) {
-                Text(primaryActionText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            }
-            TextButton(onClick = onNotNow, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.camera_permission_not_now), fontWeight = FontWeight.SemiBold)
-            }
-
-            Text(
-                text = stringResource(R.string.camera_permission_attribution),
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(vertical = 16.dp),
-                letterSpacing = 2.sp
-            )
-        }
-    }
-}
-
-/**
- * @Composable private
- * The header component of the permission screen. Includes a back button and a visual progress indicator.
- * @param onBack The callback to execute when the back button is clicked.
- */
-@Composable
-private fun HeaderSection(onBack: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .size(40.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), CircleShape)
-        ) {
-            Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
-        }
-        Box(
-            modifier = Modifier
-                .width(100.dp)
-                .height(4.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Box(modifier = Modifier
-                .fillMaxWidth(0.33f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.primary))
-        }
-        Spacer(modifier = Modifier.size(40.dp)) // Spacer for symmetrical alignment.
-    }
-}
-
-/**
- * @Composable private
- * A decorative visual element that abstractly represents the camera scanning an ID card.
- */
-@Composable
-private fun CameraIllustration() {
-    Box(
-        modifier = Modifier
-            .height(210.dp)
-            .width(260.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(Brush.linearGradient(colors = listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), Color.Transparent))),
-        contentAlignment = Alignment.Center
-    ) {
-        // Mock ID Card element
-        Box(
-            modifier = Modifier
-                .size(width = 180.dp, height = 110.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(12.dp)
-        ) {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier
-                        .size(32.dp)
-                        .background(MaterialTheme.colorScheme.onSurface.copy(0.1f), RoundedCornerShape(4.dp)))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
+            if (permissions.size > 1) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    permissions.forEachIndexed { index, item ->
+                        val selected = index == current
+                        val size by animateDpAsState(if (selected) 56.dp else 44.dp, label = "permission icon size")
                         Box(
                             modifier = Modifier
-                                .size(width = 80.dp, height = 6.dp)
-                                .background(MaterialTheme.colorScheme.onSurface.copy(0.1f), CircleShape)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(width = 50.dp, height = 6.dp)
-                                .background(MaterialTheme.colorScheme.onSurface.copy(0.1f), CircleShape)
-                        )
+                                .padding(horizontal = 4.dp)
+                                .size(56.dp)
+                                .semantics { contentDescription = item.label }
+                                .clickable { scope.launch { pager.animateScrollToPage(index) } },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Box(
+                                modifier = Modifier.size(size).background(
+                                    if (selected) MaterialTheme.colorScheme.primaryContainer
+                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                    CircleShape,
+                                ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    if (statuses[index] == PermissionStatus.Granted) Icons.Default.Check else item.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(if (selected) 27.dp else 22.dp),
+                                    tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
                     }
                 }
-                Spacer(modifier = Modifier.Companion.weight(1f))
-                Box(modifier = Modifier
-                    .size(width = 60.dp, height = 6.dp)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(0.1f), CircleShape))
             }
-            Box(modifier = Modifier.Companion
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(MaterialTheme.colorScheme.primary))
-        }
-        // Mock Camera Badge element
-        Box(
-            modifier = Modifier.Companion
-                .align(Alignment.TopEnd)
-                .offset(x = 8.dp, y = (-8).dp)
-                .size(56.dp)
-                .background(MaterialTheme.colorScheme.primary, CircleShape)
-                .padding(4.dp), contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(28.dp))
+            HorizontalPager(
+                state = pager,
+                key = { permissions[it].permission },
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            ) { page ->
+                val item = permissions[page]
+                Column(
+                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(210.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (item.hero == null) DefaultPermissionHero(item.icon) else item.hero.invoke()
+                    }
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        text = item.title ?: stringResource(R.string.permission_generic_title, item.label),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = item.body ?: stringResource(R.string.permission_generic_body, item.label),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
+                    if (item.features.isNotEmpty()) {
+                        Spacer(Modifier.height(32.dp))
+                        item.features.forEach { feature ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(feature.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                Spacer(Modifier.width(12.dp))
+                                Column {
+                                    Text(feature.title, fontWeight = FontWeight.SemiBold)
+                                    Text(feature.subtitle, style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Button(
+                onClick = {
+                    when (action) {
+                        PermissionPrimaryAction.Request -> onRequest(current)
+                        PermissionPrimaryAction.Settings -> onOpenSettings(current)
+                        PermissionPrimaryAction.Next -> if (next == null) onComplete()
+                            else scope.launch { pager.animateScrollToPage(next) }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+            ) {
+                Text(
+                    when (action) {
+                        PermissionPrimaryAction.Request -> permission.requestLabel
+                            ?: stringResource(R.string.permission_generic_allow, permission.label)
+                        PermissionPrimaryAction.Settings -> stringResource(R.string.permission_open_settings)
+                        PermissionPrimaryAction.Next -> if (next == null) stringResource(R.string.permission_done)
+                            else stringResource(R.string.permission_next)
+                    },
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            TextButton(onClick = onNotNow, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.camera_permission_not_now))
+            }
         }
     }
 }
 
-/**
- * @Composable private
- * Displays a single row for a [PermissionFeature], containing its icon, title, and subtitle.
- */
 @Composable
-private fun FeatureItem(icon: ImageVector, title: String, subtitle: String) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+private fun DefaultPermissionHero(icon: ImageVector) {
+    Box(
+        modifier = Modifier.size(width = 260.dp, height = 200.dp)
+            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f), RoundedCornerShape(28.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
         Box(
-            modifier = Modifier
-                .size(32.dp)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.size(112.dp)
+                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+            contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = null, modifier = Modifier.size(56.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer)
         }
-        Spacer(modifier = Modifier.width(12.dp))
-        Column {
-            Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-            Text(subtitle, fontSize = 12.sp)
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF101622)
-@Composable
-private fun SmallDevicePreview() {
-    MaterialTheme {
-        PermissionScreen(
-            title = "Camera Access Required",
-            body = "To create your secure signing profile and log your first contract, we need to scan your government-issued ID. This ensures that only you can sign and verify your documents.",
-            features = listOf(
-                PermissionFeature(Icons.Default.VerifiedUser, "Identity Verification", "Securely confirm your identity to prevent fraud."),
-                PermissionFeature(Icons.Default.Lock, "Encrypted Storage", "Your data is encrypted and stored locally on your device.")
-            ),
-            onBack = {}, onAllow = {}, onNotNow = {}
-        )
     }
 }

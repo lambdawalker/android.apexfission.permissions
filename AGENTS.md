@@ -1,16 +1,15 @@
 # Agent guide
 
-This repository contains a reusable Android Compose camera permission gate.
+This repository is a Compose library for Android runtime permission explanations and requests.
 
-- Gradle module: `:permission`; Kotlin package: `com.apexfission.android.permission`.
-- `CameraPermissionState.kt`: public `CameraPermissionStatus`, `CameraPermissionController`, `rememberCameraPermissionController`; state resolution and request history.
-- `PermissionHandler.kt`: `HandleCameraPermission` gate. The default UI uses `PermissionScreen` and only invokes request on a button tap.
-- `PermissionScreen.kt`: optional Material 3 primer UI and `PermissionFeature` model.
-- `PermissionViewModel.kt`: Accompanist camera permission adapter. Public methods expose `PermissionState`.
-- `app`: minimal consumer example; declare `android.permission.CAMERA` in the consuming app's manifest.
+- Module `:permission`, package `com.apexfission.android.permission`.
+- `PermissionState.kt`: generic status, controller, per-permission request history and pure flow decisions.
+- `PermissionHandler.kt`: `HandlePermissions` gate, which shows protected content only when all statuses are granted; camera-only compatibility wrapper.
+- `PermissionScreen.kt`: `PermissionDescription`, optional per-item composable hero, wrapping icon selector, horizontal pager, and selected-page action.
+- `CameraPermissionState.kt` and `PermissionViewModel.kt`: camera compatibility types and Accompanist adapter.
+- `app`: two-permission sample; app manifest declares CAMERA and RECORD_AUDIO.
+- `permission/src/test/`: state/flow unit tests. `permission/src/screenshotTest/`: static visual fixtures.
 
-Integration: add `implementation(project(":permission"))`, import `com.apexfission.android.permission.HandleCameraPermission`, and supply `onBack`, `onNotNow`, and granted content. For custom UI, handle all four enum values and invoke `requestPermission` or `openAppSettings` on an explicit user action. Do not request permission during composition.
+The host owns the list order and must declare every requested runtime permission in its manifest. Do not trigger permission requests from composition. One selected page maps to one explicit request. Keep generic defaults localized, and document new public API with KDoc. Special app access has a distinct Android flow; the pure `PermissionScreen` can present host-managed state/actions, while `HandlePermissions` is for runtime permissions.
 
-Keep the public API documented with KDoc when changing it. Preserve the distinction between Android's rationale signal and the stored request-history heuristic. Use `./gradlew :permission:testDebugUnitTest :permission:assembleDebug :app:assembleDebug` to verify changes. No artifact publication is configured in this repository; do not claim a Maven coordinate is available.
-
-For images, see `permission/src/screenshotTest/` and `.github/workflows/render-permission-screens.yml`. Run `:permission:updateDebugScreenshotTest` to render PNGs; the workflow uploads them as an artifact. Static previews do not exercise system permission dialogs.
+Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :app:assembleDebug`. The GitHub render workflow executes these checks and uploads PNGs. Screenshot previews do not test the Android system dialog. No Maven coordinate is published by this repository.

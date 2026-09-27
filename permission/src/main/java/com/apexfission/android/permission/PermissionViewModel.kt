@@ -18,6 +18,16 @@ import com.google.accompanist.permissions.rememberPermissionState
 @OptIn(ExperimentalPermissionsApi::class)
 class PermissionViewModel : ViewModel() {
 
+    /** Remembers an arbitrary Android runtime [permission] and observes request results. */
+    @Composable
+    fun rememberRuntimePermissionState(
+        permission: String,
+        onPermissionResult: (Boolean) -> Unit = {},
+    ): PermissionState = rememberPermissionState(
+        permission = permission,
+        onPermissionResult = onPermissionResult,
+    )
+
     /**
      * A Composable function that creates and remembers the state for the camera permission.
      *
@@ -32,10 +42,7 @@ class PermissionViewModel : ViewModel() {
     fun rememberCameraPermissionState(
         onPermissionResult: (Boolean) -> Unit = {},
     ): PermissionState {
-        return rememberPermissionState(
-            permission = Manifest.permission.CAMERA,
-            onPermissionResult = onPermissionResult,
-        )
+        return rememberRuntimePermissionState(Manifest.permission.CAMERA, onPermissionResult)
     }
 
     /**

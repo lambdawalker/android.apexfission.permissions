@@ -1,34 +1,66 @@
 package com.apexfission.android.permission
 
+import android.Manifest
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 /**
- * A "gatekeeper" Composable that manages the camera permission lifecycle for a specific feature.
+ * Protects [content] until every listed Android runtime permission is granted. Each permission
+ * has its own carousel page and request action; no request starts during composition.
  *
- * This function acts as a conditional wrapper. It checks for camera permission and decides
- * whether to display the main `content` that requires the permission, or to display the
- * `PermissionScreen` to request it from the user. Permission requests only begin after an
- * explicit host or user action.
+ * The host must declare every permission in its manifest. This gate intentionally does not handle
+ * special app access (such as exact alarms) or install-time permissions, which Android requests
+ * through different mechanisms.
  *
- * @param modifier A [Modifier] that is passed down to the `PermissionScreen` if it is displayed.
- *                 This allows for standard layout modifications from the caller.
- * @param onBack A lambda function to be invoked if the user chooses to navigate back from the
- *               `PermissionScreen`.
- * @param onNotNow A lambda function to be invoked if the user chooses the "Not Now" option on
- *                 the `PermissionScreen`.
- * @param permissionViewModel An instance of [PermissionViewModel] used to interact with the
- *                            permissions system. Defaults to the current owner-scoped ViewModel.
- * @param permissionContent Optional host UI for non-granted states. It receives the observable
- *                          status plus explicit request and settings actions.
- * @param content The protected Composable content that should only be displayed *after* the
- *                camera permission has been successfully granted. This is provided as a
- *                lambda, e.g., `{ MyCameraFeature() }`.
+ * @param permissions Nonempty list of unique permission strings with optional per-page copy/hero.
+ * @param onBack Back navigation from the explanation UI.
+ * @param onNotNow Exit or defer the feature without requesting access.
+ * @param permissionContent Optional host UI replacing the built-in primer; receives controllers
+ * in the same order as [permissions].
+ * @param content Composable displayed only when all listed permissions are granted.
  */
-@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun HandlePermissions(
+    permissions: List<PermissionDescription>,
+    onBack: () -> Unit,
+    onNotNow: () -> Unit,
+    modifier: Modifier = Modifier,
+    permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    require(permissions.isNotEmpty()) { "At least one permission is required" }
+    require(permissions.map { it.permission }.distinct().size == permissions.size) {
+        "Permissions must be unique"
+    }
+    val controllers = permissions.map { description ->
+        key(description.permission) { rememberPermissionController(description.permission) }
+    }
+    if (allPermissionsGranted(controllers.map { it.status })) {
+        content()
+    } else if (permissionContent != null) {
+        permissionContent(controllers)
+    } else {
+        PermissionScreen(
+            permissions = permissions,
+            statuses = controllers.map { it.status },
+            onBack = onBack,
+            onNotNow = onNotNow,
+            onRequest = { controllers[it].requestPermission() },
+            onOpenSettings = { controllers[it].openAppSettings() },
+            modifier = modifier,
+        )
+    }
+}
+
+/**
+ * Camera-only compatibility gate. New integrations should use [HandlePermissions].
+ * [permissionContent] can still provide custom camera UI with explicit request/settings actions.
+ */
 @Composable
 fun HandleCameraPermission(
     modifier: Modifier = Modifier,
@@ -36,30 +68,36 @@ fun HandleCameraPermission(
     onNotNow: () -> Unit,
     permissionViewModel: PermissionViewModel = viewModel(),
     permissionContent: (@Composable (CameraPermissionController) -> Unit)? = null,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val cameraPermission = rememberCameraPermissionController(permissionViewModel)
-
-    if (cameraPermission.status == CameraPermissionStatus.Granted) {
-        content()
-    } else if (permissionContent != null) {
-        permissionContent(cameraPermission)
-    } else {
-        val permanentlyDenied = cameraPermission.status == CameraPermissionStatus.PermanentlyDenied
-        PermissionScreen(
+    val controller = rememberCameraPermissionController(permissionViewModel)
+    when {
+        controller.status == CameraPermissionStatus.Granted -> content()
+        permissionContent != null -> permissionContent(controller)
+        else -> PermissionScreen(
+            permissions = listOf(
+                PermissionDescription(
+                    permission = Manifest.permission.CAMERA,
+                    label = stringResource(R.string.camera_permission_label),
+                    icon = Icons.Default.PhotoCamera,
+                    title = stringResource(R.string.camera_permission_title),
+                    body = stringResource(R.string.camera_permission_body),
+                    requestLabel = stringResource(R.string.camera_permission_allow),
+                )
+            ),
+            statuses = listOf(
+                when (controller.status) {
+                    CameraPermissionStatus.Granted -> PermissionStatus.Granted
+                    CameraPermissionStatus.NotRequested -> PermissionStatus.NotRequested
+                    CameraPermissionStatus.RationaleRequired -> PermissionStatus.RationaleRequired
+                    CameraPermissionStatus.PermanentlyDenied -> PermissionStatus.PermanentlyDenied
+                }
+            ),
             onBack = onBack,
-            onAllow = if (permanentlyDenied) {
-                cameraPermission::openAppSettings
-            } else {
-                cameraPermission::requestPermission
-            },
             onNotNow = onNotNow,
+            onRequest = { controller.requestPermission() },
+            onOpenSettings = { controller.openAppSettings() },
             modifier = modifier,
-            primaryActionText = if (permanentlyDenied) {
-                stringResource(R.string.camera_permission_open_settings)
-            } else {
-                stringResource(R.string.camera_permission_allow)
-            },
         )
     }
 }
