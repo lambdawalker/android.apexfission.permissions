@@ -239,7 +239,7 @@ private fun PermissionIconStrip(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
 ) {
-    val scroll = rememberScrollState()
+    val scroll = rememberScrollState(initial = selectedIndex.coerceAtLeast(0) * 64)
     LaunchedEffect(selectedIndex) {
         scroll.animateScrollTo(if (selectedIndex < 0) 0 else selectedIndex * 64)
     }
