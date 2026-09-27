@@ -4,7 +4,7 @@
 
 - `PermissionHandler.kt`: Compose gate and compatibility wrappers.
 - `PermissionBundleScreen.kt`: overview, batch carousel, icon strip, display modes, request action.
-- `PermissionAutoAdvance.kt`: reading pace estimator and one-way page progression.
+- `PermissionAutoAdvance.kt`: reading pace estimator and looping page progression.
 - `PermissionScreen.kt`: description metadata and individual primer.
 - `PermissionState.kt`: status inference and controller actions. `PermanentlyDenied` is a best-effort inference from history and Android rationale.
 - `PermissionCheck.kt`: synchronous Context check and infix `otherwise`.
