@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/render-permission-screens.yml'
       - 'permission/**'
+      - 'app/**'
       - 'gradle/**'
       - 'gradle.properties'
       - 'settings.gradle.kts'
