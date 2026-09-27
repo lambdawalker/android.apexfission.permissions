@@ -78,7 +78,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 /** Content for the optional first carousel page. */
 class PermissionOverview(
@@ -270,8 +269,7 @@ fun PermissionBundleScreen(
         settled, pageCount, pageDelayMillis, progress) {
         if (!autoAdvance || stopped.value || !resumed.value || touchExplorationEnabled) return@LaunchedEffect
         val next = nextPage ?: return@LaunchedEffect
-        val remainingMillis = ((1f - progress.value) * pageDelayMillis)
-            .roundToInt().coerceAtLeast(1)
+        val remainingMillis = remainingAutoAdvanceMillis(progress.value, pageDelayMillis)
         progress.animateTo(1f, tween(durationMillis = remainingMillis))
         if (!stopped.value && resumed.value && !pager.isScrollInProgress) {
             pager.animateScrollToPage(next)

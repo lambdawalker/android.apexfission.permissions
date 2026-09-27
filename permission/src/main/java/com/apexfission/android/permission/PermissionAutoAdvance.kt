@@ -1,5 +1,7 @@
 package com.apexfission.android.permission
 
+import kotlin.math.roundToInt
+
 /** Approximate reading pace for an explicitly supplied page text. */
 enum class ReadingPace(val wordsPerMinute: Int) {
     Slow(120),
@@ -21,3 +23,6 @@ fun estimateReadingDelayMillis(text: String, pace: ReadingPace = ReadingPace.Slo
 
 internal fun nextAutoAdvancePage(currentPage: Int, pageCount: Int): Int? =
     (currentPage + 1).takeIf { it < pageCount }
+
+internal fun remainingAutoAdvanceMillis(progress: Float, totalMillis: Long): Int =
+    ((1f - progress.coerceIn(0f, 1f)) * totalMillis).roundToInt().coerceAtLeast(1)

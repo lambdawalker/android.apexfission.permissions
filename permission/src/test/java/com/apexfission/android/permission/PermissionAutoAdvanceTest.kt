@@ -28,4 +28,10 @@ class PermissionAutoAdvanceTest {
         assertNull(nextAutoAdvancePage(2, 3))
         assertNull(nextAutoAdvancePage(0, 1))
     }
+
+    @Test fun `resuming a paused page waits only for its remaining reading time`() {
+        assertEquals(6_000, remainingAutoAdvanceMillis(0f, 6_000L))
+        assertEquals(3_000, remainingAutoAdvanceMillis(0.5f, 6_000L))
+        assertEquals(1, remainingAutoAdvanceMillis(1f, 6_000L))
+    }
 }
