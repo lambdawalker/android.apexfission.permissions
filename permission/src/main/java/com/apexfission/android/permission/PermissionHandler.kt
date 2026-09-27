@@ -27,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * The custom [permissionContent] path still receives every controller.
  * @param overviewMode Whether the built-in carousel includes a feature overview page. Automatic
  * shows it when more than one permission is visible; Show and Hide override either count.
+ * @param autoAdvance Whether to advance through the carousel using each page's configured delay
+ * until the first user interaction. Disabled by default.
  * @param content Composable displayed only when all listed permissions are granted.
  */
 @Composable
@@ -39,6 +41,7 @@ fun HandlePermissions(
     overview: PermissionOverview = PermissionOverview(),
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
+    autoAdvance: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     if (permissionContent == null) {
@@ -50,6 +53,7 @@ fun HandlePermissions(
             overview = overview,
             displayMode = displayMode,
             overviewMode = overviewMode,
+            autoAdvance = autoAdvance,
             content = content,
         )
         return

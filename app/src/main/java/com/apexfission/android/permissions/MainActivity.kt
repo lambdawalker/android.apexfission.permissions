@@ -37,7 +37,16 @@ import com.apexfission.android.permission.HandlePermissions
 import com.apexfission.android.permission.PermissionDescription
 import com.apexfission.android.permission.PermissionDisplayMode
 import com.apexfission.android.permission.PermissionOverview
+import com.apexfission.android.permission.ReadingPace
+import com.apexfission.android.permission.estimateReadingDelayMillis
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
+
+private const val CAMERA_TITLE = "Scan documents"
+private const val CAMERA_BODY = "Allow camera access to capture a document when you start a scan."
+private const val MICROPHONE_TITLE = "Record narration"
+private const val MICROPHONE_BODY = "Allow microphone access to add narration when you record a scan."
+private const val OVERVIEW_TITLE = "Scan with camera and microphone"
+private const val OVERVIEW_BODY = "Review the access this feature uses, then request both permissions together."
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,29 +61,45 @@ class MainActivity : ComponentActivity() {
                                 permission = Manifest.permission.CAMERA,
                                 label = "Camera",
                                 icon = Icons.Default.PhotoCamera,
+                                autoAdvanceDelayMillis = estimateReadingDelayMillis(
+                                    "$CAMERA_TITLE $CAMERA_BODY", ReadingPace.Slow
+                                ),
                             ) {
                                 DefaultPermissionPage(
                                     label = "Camera", icon = Icons.Default.PhotoCamera,
-                                    title = "Scan documents",
-                                    body = "Allow camera access to capture a document when you start a scan.",
+                                    title = CAMERA_TITLE,
+                                    body = CAMERA_BODY,
                                 )
                             },
                             PermissionDescription(
                                 permission = Manifest.permission.RECORD_AUDIO,
                                 label = "Microphone",
                                 icon = Icons.Default.Mic,
-                            ),
+                                autoAdvanceDelayMillis = estimateReadingDelayMillis(
+                                    "$MICROPHONE_TITLE $MICROPHONE_BODY", ReadingPace.Slow
+                                ),
+                            ) {
+                                DefaultPermissionPage(
+                                    label = "Microphone", icon = Icons.Default.Mic,
+                                    title = MICROPHONE_TITLE,
+                                    body = MICROPHONE_BODY,
+                                )
+                            },
                         ),
                         modifier = Modifier.padding(innerPadding),
                         onBack = { finish() },
                         onNotNow = { finish() },
                         displayMode = PermissionDisplayMode.All,
+                        autoAdvance = true,
                         overview = PermissionOverview(
+                            autoAdvanceDelayMillis = estimateReadingDelayMillis(
+                                "$OVERVIEW_TITLE $OVERVIEW_BODY", ReadingPace.Slow
+                            ),
                             page = {
                                 DefaultPermissionPage(
                                     label = "Permissions", icon = Icons.Default.Lock,
-                                    title = "Scan with camera and microphone",
-                                    body = "Review the access this feature uses, then request both permissions together.",
+                                    title = OVERVIEW_TITLE,
+                                    body = OVERVIEW_BODY,
                                 )
                             },
                         ),

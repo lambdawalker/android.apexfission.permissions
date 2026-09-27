@@ -65,6 +65,8 @@ import kotlinx.coroutines.launch
  * @property hero Optional host-supplied hero composable.
  * @property description Optional composable replacing the title, body, and features beneath
  * the icon selector. Keep [icon] and [label] as metadata for the selector and accessibility.
+ * @property autoAdvanceDelayMillis Time spent on this page before optional carousel autoplay
+ * advances. The host can calculate it with [estimateReadingDelayMillis] from its visible copy.
  * @property page Optional full page composable for the batch carousel. This unifies the hero
  * and explanation; the batch icon strip stays outside the carousel. When omitted, defaults use
  * [hero], [description], and the text properties. The individual screen ignores [page].
@@ -80,8 +82,11 @@ class PermissionDescription(
     val features: List<PermissionFeature> = emptyList(),
     val hero: (@Composable () -> Unit)? = null,
     val description: (@Composable () -> Unit)? = null,
+    val autoAdvanceDelayMillis: Long = 6_000L,
     val page: (@Composable () -> Unit)? = null,
-)
+) {
+    init { require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" } }
+}
 
 /** A supporting benefit shown below a permission's explanation. */
 data class PermissionFeature(val icon: ImageVector, val title: String, val subtitle: String)

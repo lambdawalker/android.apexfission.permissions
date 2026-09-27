@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,19 +40,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.awaitPointerEventScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -62,6 +69,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** Content for the optional first carousel page. */
@@ -70,9 +81,13 @@ class PermissionOverview(
     val body: String? = null,
     val hero: (@Composable () -> Unit)? = null,
     val description: (@Composable () -> Unit)? = null,
+    /** Time spent on this page when autoplay is enabled. */
+    val autoAdvanceDelayMillis: Long = 6_000L,
     /** Full page composable. Replaces [hero], [description], and the default copy. */
     val page: (@Composable () -> Unit)? = null,
-)
+) {
+    init { require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" } }
+}
 
 /** Reusable text body for a custom [PermissionDescription.description] or overview page. */
 @Composable
@@ -184,6 +199,8 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
  * settings if no outstanding permission can prompt. [overviewMode] can force the first page on
  * or off; the default follows the visible permission count. [initialPage] is zero for the
  * overview when it is present, otherwise zero for the first permission.
+ * [autoAdvance] advances through pages using their explicit delays until the user interacts.
+ * It stops at the last page and stays off after a touch, swipe, or icon selection.
  */
 @Composable
 fun PermissionBundleScreen(
@@ -198,6 +215,8 @@ fun PermissionBundleScreen(
     onComplete: () -> Unit = {},
     initialPage: Int = 0,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
+    autoAdvance: Boolean = false,
+    onUserInteraction: () -> Unit = {},
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
@@ -209,8 +228,52 @@ fun PermissionBundleScreen(
     val scope = rememberCoroutineScope()
     val action = bundleAction(statuses)
     val current = pager.currentPage.coerceIn(0 until pageCount)
+    val stopped = rememberSaveable { mutableStateOf(false) }
+    val currentOnUserInteraction = rememberUpdatedState(onUserInteraction)
+    val stopAutoAdvance = {
+        if (!stopped.value) {
+            stopped.value = true
+            currentOnUserInteraction.value()
+        }
+    }
+    val context = LocalContext.current
+    val touchExplorationEnabled = (context.getSystemService(Context.ACCESSIBILITY_SERVICE)
+        as? AccessibilityManager)?.isTouchExplorationEnabled == true
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val resumed = remember(lifecycleOwner) {
+        mutableStateOf(lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
+    }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, _ ->
+            resumed.value = lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    val settled = pager.settledPage
+    val pageDelayMillis = if (hasOverview && settled == 0) overview.autoAdvanceDelayMillis
+        else permissions[settled.coerceIn(0, pageCount - 1) - if (hasOverview) 1 else 0].autoAdvanceDelayMillis
+    LaunchedEffect(autoAdvance, stopped.value, resumed.value, touchExplorationEnabled,
+        settled, pageCount, pageDelayMillis) {
+        if (!autoAdvance || stopped.value || !resumed.value || touchExplorationEnabled) return@LaunchedEffect
+        val next = nextAutoAdvancePage(settled, pageCount) ?: return@LaunchedEffect
+        delay(pageDelayMillis)
+        if (!stopped.value && resumed.value && !pager.isScrollInProgress) {
+            pager.animateScrollToPage(next)
+        }
+    }
 
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+    Surface(
+        modifier = modifier.fillMaxSize().pointerInput(Unit) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    if (event.changes.any { it.pressed && !it.previousPressed }) stopAutoAdvance()
+                }
+            }
+        },
+        color = MaterialTheme.colorScheme.background,
+    ) {
         Column(
             modifier = Modifier.fillMaxSize().systemBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -271,6 +334,7 @@ fun PermissionBundleScreen(
                 }
             }
             PermissionIconStrip(permissions, statuses, if (hasOverview) current - 1 else current) { selected ->
+                stopAutoAdvance()
                 scope.launch { pager.animateScrollToPage(selected + if (hasOverview) 1 else 0) }
             }
             Spacer(Modifier.height(12.dp))
@@ -387,6 +451,8 @@ private fun DefaultBundleHero(icon: ImageVector) {
  * [displayMode] filters only presentation: the underlying batch request and grant gate still
  * use every [permissions] entry. After the visible set changes, the carousel starts at its
  * overview (or sole remaining permission).
+ * [autoAdvance] is opt-in and uses each page's `autoAdvanceDelayMillis`. User interaction
+ * permanently stops it for this screen visit, including after a partial permission result.
  *
  * Special app access and permissions with platform-specific sequencing need host-managed flows.
  */
@@ -401,6 +467,7 @@ fun HandlePermissionBundle(
     onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
+    autoAdvance: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
@@ -417,6 +484,7 @@ fun HandlePermissionBundle(
             names.forEach { put(it, history.getBoolean(it, false)) }
         }
     }
+    val autoAdvanceStopped = rememberSaveable { mutableStateOf(false) }
     val currentResultCallback by rememberUpdatedState(onPermissionsResult)
     val state = rememberMultiplePermissionsState(permissions = names, onPermissionsResult = { results ->
         results.forEach { (name, granted) ->
@@ -470,6 +538,8 @@ fun HandlePermissionBundle(
                 },
                 overview = overview,
                 overviewMode = overviewMode,
+                autoAdvance = autoAdvance && !autoAdvanceStopped.value,
+                onUserInteraction = { autoAdvanceStopped.value = true },
                 modifier = modifier,
             )
         }

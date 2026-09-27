@@ -97,6 +97,28 @@ By default, multiple visible permissions start on a general feature overview and
 
 The icon strip stays above the primary button while pages swipe. It scrolls to center the selected permission; on the overview, the whole icon set is centered, with extra icons clipped equally at either side of the screen. The button requests the permissions as one batch regardless of the carousel page.
 
+### Optional timed carousel
+
+Set `autoAdvance = true` on `HandlePermissions` (or `HandlePermissionBundle`) to advance from the overview through the permission pages. It stops at the final page, or permanently for that screen visit when the user touches, swipes, scrolls, or selects an icon. It does not run while the host is paused or Android touch exploration is enabled. The default is `false`.
+
+The library does not inspect arbitrary composable text. Set each page's `autoAdvanceDelayMillis` explicitly, using the public helper when the copy is known:
+
+```kotlin
+val title = "Scan documents"
+val body = "Allow camera access when you start a scan."
+
+PermissionDescription(
+    permission = Manifest.permission.CAMERA,
+    label = "Camera",
+    icon = Icons.Default.PhotoCamera,
+    autoAdvanceDelayMillis = estimateReadingDelayMillis("$title $body", ReadingPace.Slow),
+) {
+    DefaultPermissionPage("Camera", Icons.Default.PhotoCamera, title = title, body = body)
+}
+```
+
+`PermissionOverview` also accepts `autoAdvanceDelayMillis`. Unspecified delays are six seconds. `ReadingPace.Slow`, `Normal`, and `Fast` estimate from whitespace-separated words, add two seconds of orientation time, and clamp to 4–60 seconds. For text without word separators or image-heavy pages, choose the delay directly. The [demo Activity](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) uses the same title and body values for UI and timing.
+
 `displayMode = PermissionDisplayMode.All` (the default) keeps granted permissions in the carousel and marks their icons with a green check badge; selecting one still highlights its icon. `PermissionDisplayMode.MissingOnly` removes granted permissions from both the carousel and icon strip. In `Automatic` overview mode, the overview appears only while more than one **visible** permission remains. After a grant changes the visible set, the carousel starts on the overview if present, otherwise the first remaining permission. Both modes still gate protected content on every original permission and use the same batch request. The setting applies to the built-in UI; custom `permissionContent` receives all controllers.
 
 `content` appears only while every permission is granted. On a partial grant, the screen remains and the button requests remaining permissions; if none can prompt, it opens app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.

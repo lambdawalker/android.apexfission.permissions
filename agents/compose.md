@@ -67,6 +67,10 @@ The trailing `PermissionDescription { ... }` lambda is the **entire carousel pag
 
 To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview(page = { IntroPage() })`. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`. Changing the mode does not change which permissions the button requests.
 
+## Timed carousel
+
+`HandlePermissions(autoAdvance = true)` moves through the visible pages once and stops at the end or at the first user interaction. The default is `false`. The host supplies `autoAdvanceDelayMillis` on each `PermissionDescription` and, if present, on `PermissionOverview` (six seconds by default). Use `estimateReadingDelayMillis("$title $body", ReadingPace.Slow)` to derive a delay from the same copy shown in a custom page; see the [demo Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt). The library cannot count text inside an arbitrary composable. For image-heavy pages or languages without word separators, set the delay directly. Autoplay pauses when the host is not resumed and is disabled for touch exploration.
+
 `PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both gate protected content on the **full original list** and request missing permissions together. After partial grant the explanation remains; if a permission cannot be prompted again, the action opens app settings.
 
 See the [selected permission](../docs/screenshots/permission-detail.png), [settings recovery](../docs/screenshots/settings-recovery.png), and [overflowing icon strip](../docs/screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [README gallery](../README.md#screenshots). They are static Compose previews, not system permission dialogs.
