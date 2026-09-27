@@ -1,3 +1,4 @@
 <resources>
+    <string name="batch_demo_name">Permission bundle demo</string>
     <string name="app_name">android.permissions</string>
 </resources>

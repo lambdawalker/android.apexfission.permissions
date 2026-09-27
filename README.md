@@ -66,3 +66,7 @@ Android distinguishes runtime, install-time, and special app access permissions.
 Run `./gradlew :permission:testDebugUnitTest :permission:assembleDebug :app:assembleDebug` for code checks. Run `./gradlew :permission:updateDebugScreenshotTest` to generate Compose preview PNGs in `permission/src/screenshotTestDebug/reference/`. The [render workflow](.github/workflows/render-permission-screens.yml) runs these checks on GitHub Actions and uploads screenshots. These are host-side renders; an emulator test is needed for the system permission dialog and real grant/denial behavior.
 
 See [AGENTS.md](AGENTS.md) for the code map and [LICENSE](LICENSE) for licensing. No Maven artifact publication is configured here.
+
+## One-button bundle experiment
+
+For a separate batch-request screen that keeps the permission carousel but uses one primary button, see [the bundle experiment](docs/batch-request.md). It adds `HandlePermissionBundle` and `PermissionBundleScreen`; the per-page `HandlePermissions` flow remains available. The sample app has a separate **Permission bundle demo** launcher entry.

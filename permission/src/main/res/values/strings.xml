@@ -1,4 +1,8 @@
 <resources>
+    <string name="permission_bundle_heading">Review permissions</string>
+    <string name="permission_bundle_request">Request permissions</string>
+    <string name="permission_bundle_retry">Request remaining permissions</string>
+    <string name="permission_bundle_granted">Already granted</string>
     <string name="permission_back">Back</string>
     <string name="permission_progress">%1$d of %2$d</string>
     <string name="permission_generic_title">Allow %1$s access</string>

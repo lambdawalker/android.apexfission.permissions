@@ -1,4 +1,8 @@
 <resources>
+    <string name="permission_bundle_heading">Vérifier les autorisations</string>
+    <string name="permission_bundle_request">Demander les autorisations</string>
+    <string name="permission_bundle_retry">Demander les autorisations restantes</string>
+    <string name="permission_bundle_granted">Déjà accordée</string>
     <string name="permission_back">Retour</string>
     <string name="permission_progress">%1$d sur %2$d</string>
     <string name="permission_generic_title">Autoriser l’accès à %1$s</string>
