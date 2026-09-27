@@ -65,6 +65,9 @@ import kotlinx.coroutines.launch
  * @property hero Optional host-supplied hero composable.
  * @property description Optional composable replacing the title, body, and features beneath
  * the icon selector. Keep [icon] and [label] as metadata for the selector and accessibility.
+ * @property page Optional full page composable for the batch carousel. This unifies the hero
+ * and explanation; the batch icon strip stays outside the carousel. When omitted, defaults use
+ * [hero], [description], and the text properties. The individual screen ignores [page].
  */
 class PermissionDescription(
     val permission: String,
@@ -77,6 +80,7 @@ class PermissionDescription(
     val features: List<PermissionFeature> = emptyList(),
     val hero: (@Composable () -> Unit)? = null,
     val description: (@Composable () -> Unit)? = null,
+    val page: (@Composable () -> Unit)? = null,
 )
 
 /** A supporting benefit shown below a permission's explanation. */

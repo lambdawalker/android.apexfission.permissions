@@ -18,6 +18,11 @@ class PermissionBundleScreenshotTest {
             icon = Icons.Default.PhotoCamera,
             title = "Scan a document",
             body = "We use the camera when you choose to scan a document.",
+            page = {
+                DefaultPermissionPage("Camera", Icons.Default.PhotoCamera,
+                    title = "Scan a document",
+                    body = "We use the camera when you choose to scan a document.")
+            },
         ),
         PermissionDescription(
             permission = Manifest.permission.RECORD_AUDIO,
@@ -35,10 +40,11 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
-                overview = PermissionOverview(
-                    title = "Create a narrated scan",
-                    body = "Review camera and microphone access before starting.",
-                ),
+                overview = PermissionOverview(page = {
+                    DefaultPermissionPage("Permissions", Icons.Default.PhotoCamera,
+                        title = "Create a narrated scan",
+                        body = "Review camera and microphone access before starting.")
+                }),
             )
         }
     }
@@ -83,6 +89,21 @@ class PermissionBundleScreenshotTest {
                 statuses = List(8) { PermissionStatus.NotRequested },
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
                 initialPage = 8,
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Bundle overflow overview", widthDp = 320, heightDp = 720, showBackground = true)
+    @Composable
+    fun overflowOverview() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = (1..8).map { index ->
+                    PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic)
+                },
+                statuses = List(8) { PermissionStatus.NotRequested },
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
             )
         }
     }

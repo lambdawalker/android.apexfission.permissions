@@ -9,25 +9,22 @@ HandlePermissions(
             permission = Manifest.permission.CAMERA,
             label = "Camera",
             icon = Icons.Default.PhotoCamera,
-            hero = { CameraHero() },
         ) {
-            DefaultDescription("Camera", Icons.Default.PhotoCamera,
+            DefaultPermissionPage("Camera", Icons.Default.PhotoCamera,
                 title = "Scan a document", body = "We use the camera when you start a scan.")
         },
         PermissionDescription(Manifest.permission.RECORD_AUDIO, "Microphone", Icons.Default.Mic),
     ),
-    overview = PermissionOverview(
-        title = "Create a narrated scan",
-        body = "Review the camera and microphone access used by this feature.",
-        hero = { FeatureHero() },
-    ),
+    overview = PermissionOverview(page = {
+        FeatureOverviewPage() // complete hero and explanation
+    }),
     onBack = onLeave,
     onNotNow = onLeave,
 ) { ProtectedFeature() }
 ```
 
-A `PermissionDescription` trailing composable customizes the **description area below the icon strip**. `hero` controls the top illustration independently, keeping the icon strip under it on every page. A custom overview may likewise provide a `description` lambda. Specify `icon` and `label` on each permission to customize the icon strip; the library cannot inspect values passed inside a composable. Defaults are provided for all presentation fields.
+A `PermissionDescription` trailing composable is the **entire carousel page**. Compose its hero and explanation together, or call `DefaultPermissionPage`. `PermissionOverview(page = { ... })` works the same way. The legacy separate `hero` and `description` fields remain supported when `page` is absent. Specify `icon` and `label` on each permission to customize the fixed icon strip; the library cannot inspect values inside a composable. Generic defaults cover unspecified visuals and copy.
 
-The icon row scrolls horizontally when needed and scrolls to the current permission as the carousel changes. All icons are equal on the overview; the active permission icon grows and changes color on its page. The button stays outside the carousel. It requests the entire list once, says **Request remaining permissions** after a denial, and offers **Open App Settings** if no outstanding permission can prompt. Back and Not Now remain separate navigation actions.
+The icon strip is outside the pager, immediately above the primary button, so it stays put as pages swipe. It uses the full screen width and scrolls to center the active icon. On the overview all icons have equal style and the whole row is centered, with overflow clipped on both sides. The button requests the entire list once, says **Request remaining permissions** after a denial, and offers **Open App Settings** if no outstanding permission can prompt. Back and Not Now remain separate navigation actions.
 
 The app manifest must declare every permission. Android decides how many dialogs to present; grants can be partial. Recheck status before using a protected feature. Some runtime permissions need staged platform flows, and special app access is outside the runtime permission launcher. Screenshot previews render the UI, while actual system prompts require a device or emulator.

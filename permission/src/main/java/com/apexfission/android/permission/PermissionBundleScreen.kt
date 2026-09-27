@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.pager.HorizontalPager
@@ -66,6 +68,8 @@ class PermissionOverview(
     val body: String? = null,
     val hero: (@Composable () -> Unit)? = null,
     val description: (@Composable () -> Unit)? = null,
+    /** Full page composable. Replaces [hero], [description], and the default copy. */
+    val page: (@Composable () -> Unit)? = null,
 )
 
 /** Reusable text body for a custom [PermissionDescription.description] or overview page. */
@@ -104,6 +108,22 @@ fun DefaultDescription(
     }
 }
 
+/** Default full page, useful inside a single [PermissionDescription.page] lambda. */
+@Composable
+fun DefaultPermissionPage(
+    label: String,
+    icon: ImageVector = Icons.Default.Lock,
+    title: String? = null,
+    body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+) {
+    Box(Modifier.fillMaxWidth().height(210.dp), contentAlignment = Alignment.Center) {
+        DefaultBundleHero(icon)
+    }
+    Spacer(Modifier.height(24.dp))
+    DefaultDescription(label, icon, title, body, features)
+}
+
 internal enum class BundleAction { Request, Settings, Complete }
 
 internal fun bundleAction(statuses: List<PermissionStatus>): BundleAction = when {
@@ -112,11 +132,16 @@ internal fun bundleAction(statuses: List<PermissionStatus>): BundleAction = when
     else -> BundleAction.Settings
 }
 
+/** 64 dp icon slots: center one slot, or center the full row on the overview. */
+internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
+    if (selectedIndex < 0) (count - 1) * 32 else selectedIndex * 64
+
 /**
  * One action requests all runtime permissions. A multi-permission carousel starts with a feature
- * overview, then shows each permission. Each page has a hero, a horizontally scrollable icon
- * selector, and a description. Selecting an icon scrolls to that permission's page; the overview
- * leaves all icons at equal size. Android can show multiple dialogs and return partial grants.
+ * overview, then shows each permission. The carousel owns each full page. A fixed, horizontally
+ * scrolling icon selector sits above the action button and centers the selected icon. On the
+ * overview, the whole icon set is centered with overflow on both sides. Android can show
+ * multiple dialogs and return partial grants.
  *
  * [onRequest] should launch one multiple-permission request. [onOpenSettings] should open app
  * settings if no outstanding permission can prompt. [initialPage] is zero for the overview when
@@ -148,11 +173,12 @@ fun PermissionBundleScreen(
 
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
-            modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxSize().systemBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                    .padding(top = 12.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -166,7 +192,7 @@ fun PermissionBundleScreen(
             HorizontalPager(
                 state = pager,
                 key = { if (hasOverview && it == 0) "overview" else permissions[it - if (hasOverview) 1 else 0].permission },
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
             ) { page ->
                 val index = page - if (hasOverview) 1 else 0
                 val item = permissions.getOrNull(index)
@@ -174,27 +200,29 @@ fun PermissionBundleScreen(
                     modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Box(Modifier.fillMaxWidth().height(210.dp), contentAlignment = Alignment.Center) {
-                        when {
-                            item?.hero != null -> item.hero.invoke()
-                            item == null && overview.hero != null -> overview.hero.invoke()
-                            else -> DefaultBundleHero(item?.icon ?: Icons.Default.Lock)
-                        }
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    PermissionIconStrip(permissions, statuses, index) { selected ->
-                        scope.launch { pager.animateScrollToPage(selected + if (hasOverview) 1 else 0) }
-                    }
-                    Spacer(Modifier.height(24.dp))
                     when {
-                        item?.description != null -> item.description.invoke()
-                        item != null -> DefaultDescription(item.label, item.icon, item.title, item.body, item.features)
-                        overview.description != null -> overview.description.invoke()
-                        else -> DefaultDescription(
+                        item?.page != null -> item.page.invoke()
+                        item == null && overview.page != null -> overview.page.invoke()
+                        else -> {
+                            Box(Modifier.fillMaxWidth().height(210.dp), contentAlignment = Alignment.Center) {
+                                when {
+                                    item?.hero != null -> item.hero.invoke()
+                                    item == null && overview.hero != null -> overview.hero.invoke()
+                                    else -> DefaultBundleHero(item?.icon ?: Icons.Default.Lock)
+                                }
+                            }
+                            Spacer(Modifier.height(24.dp))
+                            when {
+                                item?.description != null -> item.description.invoke()
+                                item != null -> DefaultDescription(item.label, item.icon, item.title, item.body, item.features)
+                                overview.description != null -> overview.description.invoke()
+                                else -> DefaultDescription(
                             label = stringResource(R.string.permission_bundle_label),
                             title = overview.title ?: stringResource(R.string.permission_bundle_overview_title),
                             body = overview.body ?: stringResource(R.string.permission_bundle_overview_body),
                         )
+                            }
+                        }
                     }
                     if (item != null && statuses[index] == PermissionStatus.Granted) {
                         Spacer(Modifier.height(16.dp))
@@ -203,6 +231,10 @@ fun PermissionBundleScreen(
                     }
                 }
             }
+            PermissionIconStrip(permissions, statuses, if (hasOverview) current - 1 else current) { selected ->
+                scope.launch { pager.animateScrollToPage(selected + if (hasOverview) 1 else 0) }
+            }
+            Spacer(Modifier.height(12.dp))
             Button(
                 onClick = {
                     when (action) {
@@ -211,7 +243,7 @@ fun PermissionBundleScreen(
                         BundleAction.Complete -> onComplete()
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).height(56.dp),
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Text(
@@ -226,7 +258,7 @@ fun PermissionBundleScreen(
                     fontWeight = FontWeight.Bold,
                 )
             }
-            TextButton(onClick = onNotNow, modifier = Modifier.fillMaxWidth()) {
+            TextButton(onClick = onNotNow, modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
                 Text(stringResource(R.string.camera_permission_not_now))
             }
         }
@@ -240,17 +272,19 @@ private fun PermissionIconStrip(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
 ) {
-    val offset = with(LocalDensity.current) { (selectedIndex.coerceAtLeast(0) * 64).dp.roundToPx() }
-    val scroll = rememberScrollState(initial = offset)
-    LaunchedEffect(selectedIndex) {
-        scroll.animateScrollTo(offset)
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(scroll),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        permissions.forEachIndexed { index, item ->
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val edgeSpace = ((maxWidth - 64.dp) / 2).coerceAtLeast(0.dp)
+        val offset = with(LocalDensity.current) {
+            iconScrollOffsetDp(permissions.size, selectedIndex).dp.roundToPx()
+        }
+        val scroll = rememberScrollState(initial = offset)
+        LaunchedEffect(offset) { scroll.animateScrollTo(offset) }
+        Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(scroll),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(Modifier.width(edgeSpace))
+            permissions.forEachIndexed { index, item ->
             val selected = index == selectedIndex
             val size by animateDpAsState(if (selected) 56.dp else 44.dp, label = "bundle icon size")
             Box(
@@ -276,6 +310,8 @@ private fun PermissionIconStrip(
                     )
                 }
             }
+            }
+            Spacer(Modifier.width(edgeSpace))
         }
     }
 }
@@ -295,7 +331,7 @@ private fun DefaultBundleHero(icon: ImageVector) {
 /**
  * Requests a nonempty, unique list of manifest-declared Android runtime permissions in one batch
  * after a button tap. [overview] customizes the opening page for multiple permissions. Each
- * [PermissionDescription] accepts a custom `description` composable and a separate `hero` slot.
+ * [PermissionDescription] accepts one full `page` composable; the strip remains fixed below it.
  * [content] is shown only while all permissions are granted. A callback result can be partial;
  * permission status is checked again on recomposition and return from Settings.
  *

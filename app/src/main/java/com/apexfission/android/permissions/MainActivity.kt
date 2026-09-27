@@ -13,14 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.size
-import com.apexfission.android.permission.DefaultDescription
+import com.apexfission.android.permission.DefaultPermissionPage
 import com.apexfission.android.permission.HandlePermissions
 import com.apexfission.android.permission.PermissionDescription
 import com.apexfission.android.permission.PermissionOverview
@@ -39,10 +35,8 @@ class MainActivity : ComponentActivity() {
                                 permission = Manifest.permission.CAMERA,
                                 label = "Camera",
                                 icon = Icons.Default.PhotoCamera,
-                                hero = { Icon(Icons.Default.PhotoCamera, null, Modifier.size(96.dp),
-                                    tint = MaterialTheme.colorScheme.primary) },
                             ) {
-                                DefaultDescription(
+                                DefaultPermissionPage(
                                     label = "Camera", icon = Icons.Default.PhotoCamera,
                                     title = "Scan documents",
                                     body = "Allow camera access to capture a document when you start a scan.",
@@ -58,10 +52,13 @@ class MainActivity : ComponentActivity() {
                         onBack = { finish() },
                         onNotNow = { finish() },
                         overview = PermissionOverview(
-                            title = "Scan with camera and microphone",
-                            body = "Review the access this feature uses, then request both permissions together.",
-                            hero = { Icon(Icons.Default.Lock, null, Modifier.size(96.dp),
-                                tint = MaterialTheme.colorScheme.primary) },
+                            page = {
+                                DefaultPermissionPage(
+                                    label = "Permissions", icon = Icons.Default.Lock,
+                                    title = "Scan with camera and microphone",
+                                    body = "Review the access this feature uses, then request both permissions together.",
+                                )
+                            },
                         ),
                     ) {
                         Greeting(name = "Permissions granted")

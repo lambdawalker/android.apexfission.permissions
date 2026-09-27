@@ -24,9 +24,8 @@ HandlePermissions(
             permission = Manifest.permission.CAMERA,
             label = "Camera",                 // selector and accessibility metadata
             icon = Icons.Default.PhotoCamera, // selector icon
-            hero = { CameraIllustration() },  // optional top slot
         ) {
-            DefaultDescription(
+            DefaultPermissionPage(
                 label = "Camera",
                 icon = Icons.Default.PhotoCamera,
                 title = "Scan documents",
@@ -34,14 +33,12 @@ HandlePermissions(
             )
         },
         PermissionDescription(permission = Manifest.permission.RECORD_AUDIO) {
-            MyAudioExplanation() // entire description area below the icons
+            MyAudioPage() // hero and explanation together
         },
     ),
-    overview = PermissionOverview(
-        title = "Scan with camera and microphone",
-        body = "Review what this feature needs before requesting access.",
-        hero = { FeatureIllustration() },
-    ),
+    overview = PermissionOverview(page = {
+        FeatureOverviewPage() // full carousel page
+    }),
     modifier = Modifier.padding(innerPadding),
     onBack = { finish() },
     onNotNow = { finish() },
@@ -50,7 +47,9 @@ HandlePermissions(
 }
 ```
 
-With multiple permissions, the carousel starts on a general feature overview and then shows one page per permission. The overview can use its own `description = { ... }` composable instead of title and body. Each page's hero is a separate 210 dp slot, followed by a horizontally scrolling icon list, then its description. The overview shows equally styled icons; a permission page highlights its icon. `PermissionDescription` has generic defaults if no visual or copy is supplied. Set its `icon` and `label` separately from the custom description so the selector and accessibility have stable metadata. The primary button requests the permissions as one batch regardless of the carousel page.
+With multiple permissions, the carousel starts on a general feature overview and then shows one page per permission. `PermissionDescription { ... }` and `PermissionOverview(page = { ... })` each own a full carousel page: hero and explanation can be composed together. `DefaultPermissionPage` supplies both default hero and text in a single call. If `page` is omitted, the library uses localized default copy and imagery; older `hero` and `description` properties remain supported. Set `icon` and `label` on `PermissionDescription` so the persistent selector and accessibility have stable metadata.
+
+The icon strip stays above the primary button while pages swipe. It scrolls to center the selected permission; on the overview, the whole icon set is centered, with extra icons clipped equally at either side of the screen. The button requests the permissions as one batch regardless of the carousel page.
 
 `content` appears only while every permission is granted. On a partial grant, the screen remains and the button requests remaining permissions; if none can prompt, it opens app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.
 
