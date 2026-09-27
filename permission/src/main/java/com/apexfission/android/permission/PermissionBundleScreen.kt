@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -239,9 +240,10 @@ private fun PermissionIconStrip(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
 ) {
-    val scroll = rememberScrollState(initial = selectedIndex.coerceAtLeast(0) * 64)
+    val offset = with(LocalDensity.current) { (selectedIndex.coerceAtLeast(0) * 64).dp.roundToPx() }
+    val scroll = rememberScrollState(initial = offset)
     LaunchedEffect(selectedIndex) {
-        scroll.animateScrollTo(if (selectedIndex < 0) 0 else selectedIndex * 64)
+        scroll.animateScrollTo(offset)
     }
     Row(
         modifier = Modifier.fillMaxWidth().horizontalScroll(scroll),
