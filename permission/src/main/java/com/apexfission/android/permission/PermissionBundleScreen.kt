@@ -64,7 +64,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.launch
 
-/** Content for the first carousel page when more than one permission is requested. */
+/** Content for the optional first carousel page. */
 class PermissionOverview(
     val title: String? = null,
     val body: String? = null,
@@ -137,6 +137,25 @@ enum class PermissionDisplayMode {
     MissingOnly,
 }
 
+/** Controls whether the feature overview is a carousel page. */
+enum class PermissionOverviewMode {
+    /** Show the overview when more than one permission is visible. */
+    Automatic,
+
+    /** Show the overview even for a single visible permission. */
+    Show,
+
+    /** Go directly to the first permission, even when several are visible. */
+    Hide,
+}
+
+internal fun shouldShowOverview(visiblePermissionCount: Int, mode: PermissionOverviewMode): Boolean =
+    when (mode) {
+        PermissionOverviewMode.Automatic -> visiblePermissionCount > 1
+        PermissionOverviewMode.Show -> true
+        PermissionOverviewMode.Hide -> false
+    }
+
 internal fun visiblePermissionIndices(
     statuses: List<PermissionStatus>,
     displayMode: PermissionDisplayMode,
@@ -162,8 +181,9 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
  * multiple dialogs and return partial grants.
  *
  * [onRequest] should launch one multiple-permission request. [onOpenSettings] should open app
- * settings if no outstanding permission can prompt. [initialPage] is zero for the overview when
- * there are multiple permissions, otherwise zero for the sole permission.
+ * settings if no outstanding permission can prompt. [overviewMode] can force the first page on
+ * or off; the default follows the visible permission count. [initialPage] is zero for the
+ * overview when it is present, otherwise zero for the first permission.
  */
 @Composable
 fun PermissionBundleScreen(
@@ -177,11 +197,12 @@ fun PermissionBundleScreen(
     overview: PermissionOverview = PermissionOverview(),
     onComplete: () -> Unit = {},
     initialPage: Int = 0,
+    overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
     require(permissions.map { it.permission }.distinct().size == permissions.size) { "Permissions must be unique" }
-    val hasOverview = permissions.size > 1
+    val hasOverview = shouldShowOverview(permissions.size, overviewMode)
     val pageCount = permissions.size + if (hasOverview) 1 else 0
     require(initialPage in 0 until pageCount) { "initialPage is out of range" }
     val pager = rememberPagerState(initialPage = initialPage, pageCount = { pageCount })
@@ -358,7 +379,8 @@ private fun DefaultBundleHero(icon: ImageVector) {
 
 /**
  * Requests a nonempty, unique list of manifest-declared Android runtime permissions in one batch
- * after a button tap. [overview] customizes the opening page for multiple permissions. Each
+ * after a button tap. [overview] customizes the optional opening page. [overviewMode] controls
+ * whether it appears; Automatic preserves the traditional multiple-permission default. Each
  * [PermissionDescription] accepts one full `page` composable; the strip remains fixed below it.
  * [content] is shown only while all permissions are granted. A callback result can be partial;
  * permission status is checked again on recomposition and return from Settings.
@@ -378,6 +400,7 @@ fun HandlePermissionBundle(
     overview: PermissionOverview = PermissionOverview(),
     onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
+    overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     content: @Composable () -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
@@ -426,7 +449,7 @@ fun HandlePermissionBundle(
     } else {
         val visibleIndices = visiblePermissionIndices(statuses, displayMode)
         val visibleNames = visibleIndices.map(names::get)
-        key(visibleNames) {
+        key(visibleNames, overviewMode) {
             PermissionBundleScreen(
                 permissions = visibleIndices.map(permissions::get),
                 statuses = visibleIndices.map(statuses::get),
@@ -446,6 +469,7 @@ fun HandlePermissionBundle(
                     )
                 },
                 overview = overview,
+                overviewMode = overviewMode,
                 modifier = modifier,
             )
         }

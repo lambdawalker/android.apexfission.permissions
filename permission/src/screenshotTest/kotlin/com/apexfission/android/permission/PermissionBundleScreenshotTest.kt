@@ -165,6 +165,35 @@ class PermissionBundleScreenshotTest {
     }
 
     @PreviewTest
+    @Preview(name = "Single permission overview", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun singlePermissionOverview() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = permissions.take(1),
+                statuses = listOf(PermissionStatus.NotRequested),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overviewMode = PermissionOverviewMode.Show,
+                overview = PermissionOverview(title = "Before scanning", body = "Review camera access first."),
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Multiple permissions no overview", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun multiplePermissionsNoOverview() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = permissions,
+                statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overviewMode = PermissionOverviewMode.Hide,
+            )
+        }
+    }
+
+    @PreviewTest
     @Preview(name = "Granted badge dark", widthDp = 393, heightDp = 852,
         uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
     @Composable

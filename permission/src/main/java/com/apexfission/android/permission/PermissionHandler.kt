@@ -25,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * needs individual request controllers.
  * @param displayMode Whether the built-in carousel shows all permissions or only those missing.
  * The custom [permissionContent] path still receives every controller.
+ * @param overviewMode Whether the built-in carousel includes a feature overview page. Automatic
+ * shows it when more than one permission is visible; Show and Hide override either count.
  * @param content Composable displayed only when all listed permissions are granted.
  */
 @Composable
@@ -36,6 +38,7 @@ fun HandlePermissions(
     permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
     overview: PermissionOverview = PermissionOverview(),
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
+    overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     content: @Composable () -> Unit,
 ) {
     if (permissionContent == null) {
@@ -46,6 +49,7 @@ fun HandlePermissions(
             modifier = modifier,
             overview = overview,
             displayMode = displayMode,
+            overviewMode = overviewMode,
             content = content,
         )
         return

@@ -11,7 +11,7 @@
 - `CameraPermissionState.kt` / `PermissionViewModel.kt`: compatibility and Accompanist adapter.
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity.
 
-Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. The full permission list gates content even when `MissingOnly` filters the carousel.
+Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. The full permission list gates content even when `MissingOnly` filters the carousel. `PermissionOverviewMode.Automatic` follows the visible permission count; `Show` and `Hide` explicitly override it.
 
 ## Verification
 

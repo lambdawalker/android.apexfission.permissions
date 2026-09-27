@@ -45,6 +45,7 @@ HandlePermissions(
         )
     }),
     displayMode = PermissionDisplayMode.MissingOnly, // default: All
+    overviewMode = PermissionOverviewMode.Automatic, // Show or Hide
     onBack = { finish() },
     onNotNow = { finish() },
 ) {
@@ -52,7 +53,7 @@ HandlePermissions(
 }
 ```
 
-The trailing `PermissionDescription { ... }` lambda is the **entire carousel page**, hero and text together. `PermissionOverview(page = { ... })` is the opening page when more than one permission is visible. `DefaultPermissionPage` supplies a ready-made page; omitting a page uses generic localized copy and visuals. A single visible permission skips the overview. Keep `label` and `icon` as metadata for the persistent icon strip and accessibility. When `page` is omitted, the separate `hero`, `description`, `title`, and `body` options remain available.
+The trailing `PermissionDescription { ... }` lambda is the **entire carousel page**, hero and text together. `PermissionOverview(page = { ... })` is the opening page when more than one permission is visible. `DefaultPermissionPage` supplies a ready-made page; omitting a page uses generic localized copy and visuals. In Automatic mode, a single visible permission skips the overview. `Show` adds it for one permission; `Hide` removes it for several. Keep `label` and `icon` as metadata for the persistent icon strip and accessibility. When `page` is omitted, the separate `hero`, `description`, `title`, and `body` options remain available.
 
 `PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both gate protected content on the **full original list** and request missing permissions together. After partial grant the explanation remains; if a permission cannot be prompted again, the action opens app settings.
 
