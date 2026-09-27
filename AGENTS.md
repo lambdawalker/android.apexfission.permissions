@@ -19,3 +19,5 @@ Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTe
 The code-only checker never launches a system prompt. Its action runs synchronously when all permissions are granted; after an Activity Result grant callback, callers must recheck before using protected work. Avoid an unconditional retry from a denied result, which would repeatedly reopen the prompt.
 
 `PermissionRequester` must be created as an Activity property before STARTED. Its `requestPermissions(...) { onGranted } onDenied { missing -> ... }` chain launches at `onDenied`, rechecks after the platform callback, rejects concurrent requests, and stores callbacks only in memory. Keep both completion paths tested, including a synchronous result.
+
+`PermissionDisplayMode.All` is the default for the built-in `HandlePermissions`/`HandlePermissionBundle` UI and badges granted icons in green. `MissingOnly` filters the carousel and icon strip, preserving order; request state and content gating still use the complete original permission list. A changed visible set resets the pager. The custom `permissionContent` path continues to receive all controllers.

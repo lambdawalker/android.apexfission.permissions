@@ -41,11 +41,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -125,6 +127,22 @@ fun DefaultPermissionPage(
 }
 
 internal enum class BundleAction { Request, Settings, Complete }
+
+/** Which permissions appear in the built-in explanation carousel and icon strip. */
+enum class PermissionDisplayMode {
+    /** Include granted permissions and mark them with a green check badge. */
+    All,
+
+    /** Omit granted permissions; only missing permissions have carousel pages and icons. */
+    MissingOnly,
+}
+
+internal fun visiblePermissionIndices(
+    statuses: List<PermissionStatus>,
+    displayMode: PermissionDisplayMode,
+): List<Int> = statuses.indices.filter { index ->
+    displayMode == PermissionDisplayMode.All || statuses[index] != PermissionStatus.Granted
+}
 
 internal fun bundleAction(statuses: List<PermissionStatus>): BundleAction = when {
     allPermissionsGranted(statuses) -> BundleAction.Complete
@@ -302,12 +320,22 @@ private fun PermissionIconStrip(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        if (statuses[index] == PermissionStatus.Granted) Icons.Default.Check else item.icon,
+                        item.icon,
                         contentDescription = null,
                         modifier = Modifier.size(if (selected) 27.dp else 22.dp),
                         tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
                             else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                }
+                if (statuses[index] == PermissionStatus.Granted) {
+                    Box(
+                        modifier = Modifier.align(Alignment.BottomEnd).size(20.dp)
+                            .background(MaterialTheme.colorScheme.surface, CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = null,
+                            modifier = Modifier.size(16.dp), tint = Color(0xFF16803A))
+                    }
                 }
             }
             }
@@ -334,6 +362,9 @@ private fun DefaultBundleHero(icon: ImageVector) {
  * [PermissionDescription] accepts one full `page` composable; the strip remains fixed below it.
  * [content] is shown only while all permissions are granted. A callback result can be partial;
  * permission status is checked again on recomposition and return from Settings.
+ * [displayMode] filters only presentation: the underlying batch request and grant gate still
+ * use every [permissions] entry. After the visible set changes, the carousel starts at its
+ * overview (or sole remaining permission).
  *
  * Special app access and permissions with platform-specific sequencing need host-managed flows.
  */
@@ -346,6 +377,7 @@ fun HandlePermissionBundle(
     modifier: Modifier = Modifier,
     overview: PermissionOverview = PermissionOverview(),
     onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
+    displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     content: @Composable () -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
@@ -392,26 +424,30 @@ fun HandlePermissionBundle(
     if (allPermissionsGranted(statuses)) {
         content()
     } else {
-        PermissionBundleScreen(
-            permissions = permissions,
-            statuses = statuses,
-            onBack = onBack,
-            onNotNow = onNotNow,
-            onRequest = {
-                names.zip(statuses).filter { it.second != PermissionStatus.Granted }.forEach { (name, _) ->
-                    requested[name] = true
-                    history.edit().putBoolean(name, true).apply()
-                }
-                state.launchMultiplePermissionRequest()
-            },
-            onOpenSettings = {
-                context.startActivity(
-                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            },
-            overview = overview,
-            modifier = modifier,
-        )
+        val visibleIndices = visiblePermissionIndices(statuses, displayMode)
+        val visibleNames = visibleIndices.map(names::get)
+        key(visibleNames) {
+            PermissionBundleScreen(
+                permissions = visibleIndices.map(permissions::get),
+                statuses = visibleIndices.map(statuses::get),
+                onBack = onBack,
+                onNotNow = onNotNow,
+                onRequest = {
+                    names.zip(statuses).filter { it.second != PermissionStatus.Granted }.forEach { (name, _) ->
+                        requested[name] = true
+                        history.edit().putBoolean(name, true).apply()
+                    }
+                    state.launchMultiplePermissionRequest()
+                },
+                onOpenSettings = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                },
+                overview = overview,
+                modifier = modifier,
+            )
+        }
     }
 }

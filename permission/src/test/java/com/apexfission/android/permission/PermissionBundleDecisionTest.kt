@@ -4,6 +4,35 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PermissionBundleDecisionTest {
+    @Test fun `all mode keeps granted pages in their original order`() {
+        assertEquals(
+            listOf(0, 1, 2),
+            visiblePermissionIndices(
+                listOf(PermissionStatus.Granted, PermissionStatus.NotRequested, PermissionStatus.Granted),
+                PermissionDisplayMode.All,
+            ),
+        )
+    }
+
+    @Test fun `missing mode removes granted pages and preserves remaining order`() {
+        assertEquals(
+            listOf(1, 3),
+            visiblePermissionIndices(
+                listOf(
+                    PermissionStatus.Granted,
+                    PermissionStatus.RationaleRequired,
+                    PermissionStatus.Granted,
+                    PermissionStatus.PermanentlyDenied,
+                ),
+                PermissionDisplayMode.MissingOnly,
+            ),
+        )
+        assertEquals(
+            emptyList<Int>(),
+            visiblePermissionIndices(listOf(PermissionStatus.Granted), PermissionDisplayMode.MissingOnly),
+        )
+    }
+
     @Test fun `icon strip centers the overview and each permission`() {
         assertEquals(224, iconScrollOffsetDp(8, -1))
         assertEquals(0, iconScrollOffsetDp(8, 0))

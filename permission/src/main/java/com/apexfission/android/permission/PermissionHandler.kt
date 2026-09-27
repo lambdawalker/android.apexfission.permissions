@@ -23,6 +23,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * @param permissionContent Optional host UI replacing the built-in primer; receives controllers
  * in the same order as [permissions]. Use [HandlePermissionsIndividually] when that custom UI
  * needs individual request controllers.
+ * @param displayMode Whether the built-in carousel shows all permissions or only those missing.
+ * The custom [permissionContent] path still receives every controller.
  * @param content Composable displayed only when all listed permissions are granted.
  */
 @Composable
@@ -33,10 +35,19 @@ fun HandlePermissions(
     modifier: Modifier = Modifier,
     permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
     overview: PermissionOverview = PermissionOverview(),
+    displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     content: @Composable () -> Unit,
 ) {
     if (permissionContent == null) {
-        HandlePermissionBundle(permissions, onBack, onNotNow, modifier, overview, content = content)
+        HandlePermissionBundle(
+            permissions = permissions,
+            onBack = onBack,
+            onNotNow = onNotNow,
+            modifier = modifier,
+            overview = overview,
+            displayMode = displayMode,
+            content = content,
+        )
         return
     }
     HandlePermissionsIndividually(
