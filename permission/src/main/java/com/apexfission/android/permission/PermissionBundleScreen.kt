@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -263,7 +264,9 @@ fun PermissionBundleScreen(
     }
 
     Surface(
-        modifier = modifier.fillMaxSize().pointerInput(Unit) {
+        modifier = modifier.fillMaxSize()
+            .onPreviewKeyEvent { stopAutoAdvance(); false }
+            .pointerInput(Unit) {
             awaitPointerEventScope {
                 while (true) {
                     val event = awaitPointerEvent(PointerEventPass.Initial)
@@ -283,7 +286,7 @@ fun PermissionBundleScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                IconButton(onClick = onBack, modifier = Modifier.size(44.dp)) {
+                IconButton(onClick = { stopAutoAdvance(); onBack() }, modifier = Modifier.size(44.dp)) {
                     Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.permission_back))
                 }
                 Text(stringResource(R.string.permission_progress, current + 1, pageCount),
@@ -339,6 +342,7 @@ fun PermissionBundleScreen(
             Spacer(Modifier.height(12.dp))
             Button(
                 onClick = {
+                    stopAutoAdvance()
                     when (action) {
                         BundleAction.Request -> onRequest()
                         BundleAction.Settings -> onOpenSettings()
@@ -360,7 +364,8 @@ fun PermissionBundleScreen(
                     fontWeight = FontWeight.Bold,
                 )
             }
-            TextButton(onClick = onNotNow, modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
+            TextButton(onClick = { stopAutoAdvance(); onNotNow() },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
                 Text(stringResource(R.string.camera_permission_not_now))
             }
         }
