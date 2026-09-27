@@ -19,6 +19,6 @@ Library files above live in `permission/src/main/java/com/apexfission/android/pe
 ./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :permission:generatePomFileForMavenPublication :app:assembleDebug
 ```
 
-Unit tests are in `permission/src/test/`; visual fixtures are in `permission/src/screenshotTest/`. [Render permission screens](../.github/workflows/render-permission-screens.yml) runs them in GitHub Actions and uploads PNGs. Screenshots do not test system dialogs. For launcher changes, test grant, partial denial, settings recovery, and Activity recreation on a device or emulator.
+Unit tests are in `permission/src/test/`; visual fixtures are in `permission/src/screenshotTest/`. [Render permission screens](../.github/workflows/render-permission-screens.yml) runs them in GitHub Actions and uploads PNGs. The [README gallery](../README.md#screenshots) uses committed PNGs; follow the [screenshot mapping and refresh steps](../docs/screenshots/README.md) whenever the UI changes. Screenshots do not test system dialogs. For launcher changes, test grant, partial denial, settings recovery, and Activity recreation on a device or emulator.
 
 `:permission` publishes as `com.apexfission.android.permission:core:<version>`. [Publish permission library](../.github/workflows/publish-permission.yml) is manually triggered on `main` and stages a signed deployment. A maintainer publishes it from Central Portal. See [README](../README.md#publish-to-maven-central) for namespace and signing setup; never commit signing material.

@@ -7,6 +7,7 @@ This repository provides Android runtime permission UI and callback helpers. Pub
 | Compose explanation screen that gates a feature | [Compose integration](agents/compose.md) — `HandlePermissions` |
 | No library UI; ask from an Activity with callbacks | [Code-only integration](agents/code-only.md) — `PermissionRequester` |
 | Check grants and own the Android launcher | [Code-only integration](agents/code-only.md) — `runIfPermissionsGranted` |
+| Choose overview visibility or inspect rendered states | [Compose integration](agents/compose.md#overview-page) and [screenshot gallery](README.md#screenshots) |
 | Change this repository, test, or release | [Maintainer notes](agents/maintenance.md) |
 
 Declare every requested permission in the host Android manifest. These APIs target ordinary **runtime** permissions. Special app access (overlay, all-files access, exact alarms) and staged platform requests (such as background location) need a host-managed flow. Android can grant only part of a batch; protected content waits for all required grants.
