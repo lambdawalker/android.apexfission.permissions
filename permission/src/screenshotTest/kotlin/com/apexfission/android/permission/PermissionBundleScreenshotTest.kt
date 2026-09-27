@@ -1,11 +1,13 @@
 package com.apexfission.android.permission
 
 import android.Manifest
+import android.content.res.Configuration
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
@@ -143,6 +145,36 @@ class PermissionBundleScreenshotTest {
                 permissions = visible.map(all::get),
                 statuses = visible.map(statuses::get),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Single missing permission", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun singleMissingPermission() {
+        val statuses = listOf(PermissionStatus.Granted, PermissionStatus.NotRequested)
+        val visible = visiblePermissionIndices(statuses, PermissionDisplayMode.MissingOnly)
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = visible.map(permissions::get),
+                statuses = visible.map(statuses::get),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Granted badge dark", widthDp = 393, heightDp = 852,
+        uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+    @Composable
+    fun grantedBadgeDark() {
+        MaterialTheme(colorScheme = darkColorScheme()) {
+            PermissionBundleScreen(
+                permissions = permissions,
+                statuses = listOf(PermissionStatus.Granted, PermissionStatus.NotRequested),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                initialPage = 1,
             )
         }
     }

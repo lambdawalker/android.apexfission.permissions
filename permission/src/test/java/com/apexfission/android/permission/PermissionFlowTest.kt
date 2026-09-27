@@ -16,6 +16,7 @@ class PermissionFlowTest {
     @Test fun `only all granted unlocks protected content`() {
         assertTrue(allPermissionsGranted(listOf(PermissionStatus.Granted, PermissionStatus.Granted)))
         assertFalse(allPermissionsGranted(listOf(PermissionStatus.Granted, PermissionStatus.NotRequested)))
+        assertFalse(allPermissionsGranted(emptyList()))
     }
 
     @Test fun `next outstanding permission wraps and skips granted pages`() {

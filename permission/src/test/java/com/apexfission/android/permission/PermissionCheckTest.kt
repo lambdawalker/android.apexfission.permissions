@@ -38,4 +38,32 @@ class PermissionCheckTest {
             evaluatePermissionCheck(listOf(" "), { true }) {}
         }
     }
+
+    @Test fun `result is a snapshot and does not resume work after a later grant`() {
+        var granted = false
+        var protectedActions = 0
+        val result = evaluatePermissionCheck(listOf("camera"), { granted }) {
+            protectedActions++
+        }
+        granted = true
+
+        var missing: List<String>? = null
+        result otherwise { missing = it }
+        assertEquals(listOf("camera"), missing)
+        assertEquals(0, protectedActions)
+
+        evaluatePermissionCheck(listOf("camera"), { granted }) { protectedActions++ }
+        assertEquals(1, protectedActions)
+    }
+
+    @Test fun `duplicate names are checked once`() {
+        var checks = 0
+        val result = evaluatePermissionCheck(listOf("camera", "camera", "audio"), {
+            checks++
+            it == "camera"
+        }) {}
+
+        assertEquals(2, checks)
+        assertEquals(listOf("audio"), result.missing)
+    }
 }
