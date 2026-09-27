@@ -4,11 +4,22 @@ A Compose library for explaining and requesting a set of Android runtime permiss
 
 ## Install
 
+Once the first release has been published on Maven Central, use:
+
+```kotlin
+// settings.gradle.kts: ensure mavenCentral() is in dependencyResolutionManagement repositories
+dependencies {
+    implementation("com.apexfission.android.permission:core:0.1.0")
+}
+```
+
+For a source checkout, include the module and use:
+
 ```kotlin
 dependencies { implementation(project(":permission")) }
 ```
 
-The module is `:permission` (`com.apexfission.android.permission`, minSdk 24). Declare every requested permission in your app manifest:
+The module is `:permission` (namespace `com.apexfission.android.permission`, minSdk 24). The published version is chosen when the release workflow runs; replace `0.1.0` above with the version actually published. Declare every requested permission in your app manifest:
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
@@ -17,36 +28,55 @@ The module is `:permission` (`com.apexfission.android.permission`, minSdk 24). D
 
 ## Request a group
 
+The following is a complete Activity example. The permissions are checked on composition; the system request starts only after the user taps the action button.
+
 ```kotlin
-HandlePermissions(
-    permissions = listOf(
-        PermissionDescription(
-            permission = Manifest.permission.CAMERA,
-            label = "Camera",                 // selector and accessibility metadata
-            icon = Icons.Default.PhotoCamera, // selector icon
-        ) {
-            DefaultPermissionPage(
-                label = "Camera",
-                icon = Icons.Default.PhotoCamera,
-                title = "Scan documents",
-                body = "Allow camera access to capture a document when you start a scan.",
-            )
-        },
-        PermissionDescription(permission = Manifest.permission.RECORD_AUDIO) {
-            MyAudioPage() // hero and explanation together
-        },
-    ),
-    overview = PermissionOverview(page = {
-        FeatureOverviewPage() // full carousel page
-    }),
-    modifier = Modifier.padding(innerPadding),
-    displayMode = PermissionDisplayMode.All, // default; or MissingOnly
-    onBack = { finish() },
-    onNotNow = { finish() },
-) {
-    Greeting(name = "Permissions granted")
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                HandlePermissions(
+                    permissions = listOf(
+                        PermissionDescription(
+                            permission = Manifest.permission.CAMERA,
+                            label = "Camera",
+                            icon = Icons.Default.PhotoCamera,
+                        ) {
+                            DefaultPermissionPage(
+                                label = "Camera",
+                                icon = Icons.Default.PhotoCamera,
+                                title = "Scan documents",
+                                body = "Allow camera access when you start a scan.",
+                            )
+                        },
+                        PermissionDescription(
+                            permission = Manifest.permission.RECORD_AUDIO,
+                            label = "Microphone",
+                            icon = Icons.Default.Mic,
+                        ), // localized default page
+                    ),
+                    overview = PermissionOverview(page = {
+                        DefaultPermissionPage(
+                            label = "Access",
+                            icon = Icons.Default.Lock,
+                            title = "Prepare your scan",
+                            body = "Review the access needed before continuing.",
+                        )
+                    }),
+                    displayMode = PermissionDisplayMode.All, // or MissingOnly
+                    onBack = { finish() },
+                    onNotNow = { finish() },
+                ) {
+                    Text("Ready to scan")
+                }
+            }
+        }
+    }
 }
 ```
+
+Imports: `android.Manifest`, `android.os.Bundle`, `androidx.activity.ComponentActivity`, `androidx.activity.compose.setContent`, Compose Material icons (`Icons`, `PhotoCamera`, `Mic`, `Lock`), `MaterialTheme`, `Text`, and the public types from `com.apexfission.android.permission`. See [the runnable sample](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) for an expanded version with its own success screen.
 
 With multiple permissions, the carousel starts on a general feature overview and then shows one page per permission. `PermissionDescription { ... }` and `PermissionOverview(page = { ... })` each own a full carousel page: hero and explanation can be composed together. `DefaultPermissionPage` supplies both default hero and text in a single call. If `page` is omitted, the library uses localized default copy and imagery; older `hero` and `description` properties remain supported. Set `icon` and `label` on `PermissionDescription` so the persistent selector and accessibility have stable metadata.
 
@@ -117,4 +147,18 @@ This is a `Context` extension, so the **check** works in any class holding a val
 
 Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :app:assembleDebug`. [GitHub Actions](.github/workflows/render-permission-screens.yml) renders Compose previews and uploads the PNGs. The previews do not exercise Android system permission prompts; validate grant and denial paths on a device or emulator.
 
-See [the bundle guide](docs/batch-request.md), [AGENTS.md](AGENTS.md), and [LICENSE](LICENSE). This repository does not publish a Maven artifact.
+## Publish to Maven Central
+
+The `:permission` module uses the Vanniktech Maven Publish plugin to produce a signed Android AAR, sources, Javadoc jar, and POM under `com.apexfission.android.permission:core:<version>`. The [manual release workflow](.github/workflows/publish-permission.yml) runs tests, builds the sample, then stages a signed deployment. It does not click Publish in Central Portal for you.
+
+Setup:
+
+1. Create a [Central Portal](https://central.sonatype.com/) account and verify ownership of the `com.apexfission.android.permission` namespace (or an accepted parent). If your registered namespace differs, edit the group in `permission/build.gradle.kts` and the install coordinates above before releasing.
+2. Generate a Central Portal **user token** from Account. Store its username and password as GitHub Actions secrets `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`; the account sign-in password is not the publishing token.
+3. Generate a password-protected GPG key, publish its public key to a keyserver, and export its ASCII-armored **private** key with `gpg --export-secret-keys --armor <KEY_ID>`. Store the complete armored block as `SIGNING_IN_MEMORY_KEY` and its passphrase as `SIGNING_IN_MEMORY_KEY_PASSWORD` GitHub Actions secrets. Keep the private key and passphrase out of the repository.
+4. In repository Settings → Environments, create `maven-central`. Add required reviewers if you want a separate approval before uploading. Put the four secrets in that environment or at repository level.
+5. In Actions → **Publish permission library** → **Run workflow**, select `main` and enter a new version such as `0.1.0`. The workflow accepts a version only on `main` and uploads to Central Portal. Inspect and **Publish** the validated deployment under Central Portal → Deployments. Each release version must be unique; update the README install version after publishing.
+
+To verify the publication locally without uploading, run `./gradlew :permission:publishToMavenLocal -PpermissionVersion=0.1.0` with signing credentials configured. Android system permission prompts still require device or emulator testing.
+
+See [the bundle guide](docs/batch-request.md), [AGENTS.md](AGENTS.md), and [LICENSE](LICENSE).

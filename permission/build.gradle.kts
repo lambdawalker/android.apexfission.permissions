@@ -2,6 +2,43 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.screenshot)
+    id("com.vanniktech.maven.publish") version "0.37.0"
+}
+
+mavenPublishing {
+    coordinates(
+        "com.apexfission.android.permission",
+        "core",
+        providers.gradleProperty("permissionVersion").orElse("0.1.0").get(),
+    )
+    publishToMavenCentral()
+    signAllPublications()
+
+    pom {
+        name.set("Apexfission Permissions")
+        description.set("Customizable Jetpack Compose screens and callback helpers for Android runtime permissions.")
+        inceptionYear.set("2026")
+        url.set("https://github.com/lambdawalker/android.apexfission.permissions")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+        developers {
+            developer {
+                id.set("lambdawalker")
+                name.set("David Garcia")
+                email.set("lambdawalker@isdavid.com")
+                url.set("https://github.com/lambdawalker")
+            }
+        }
+        scm {
+            url.set("https://github.com/lambdawalker/android.apexfission.permissions")
+            connection.set("scm:git:https://github.com/lambdawalker/android.apexfission.permissions.git")
+            developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.permissions.git")
+        }
+    }
 }
 
 android {
