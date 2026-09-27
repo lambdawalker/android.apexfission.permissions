@@ -4,6 +4,7 @@ This repository is a Compose library for Android runtime permission explanations
 
 - Module `:permission`, package `com.apexfission.android.permission`.
 - `PermissionState.kt`: generic status, controller, per-permission request history and pure flow decisions.
+- `PermissionCheck.kt`: code-only `Context.runIfPermissionsGranted` vararg/list checks and `otherwise` missing branch.
 - `PermissionHandler.kt`: `HandlePermissions` gate, which shows protected content only when all statuses are granted; camera-only compatibility wrapper.
 - `PermissionScreen.kt`: `PermissionDescription`, optional per-item composable hero, wrapping icon selector, horizontal pager, and selected-page action.
 - `CameraPermissionState.kt` and `PermissionViewModel.kt`: camera compatibility types and Accompanist adapter.
@@ -13,3 +14,5 @@ This repository is a Compose library for Android runtime permission explanations
 The host owns the list order and must declare every requested runtime permission in its manifest. `HandlePermissions` is the default batch gate, delegating to `HandlePermissionBundle`: one button requests the set after the overview/permission carousel. `HandlePermissionsIndividually` retains the old sequential path. No request launches from composition. `PermissionDescription` has a trailing `page` composable for its full carousel page (hero plus explanation); `PermissionOverview(page = { ... })` provides the general first page for multiple permissions. Legacy `hero` and `description` fields remain usable when `page` is absent. Keep selector `label`/`icon` metadata in the description model. The icon strip stays outside the pager, just above the button, and uses full screen width. It centers the selected permission or centers the whole row on overview, overflowing equally on both sides. Keep generic defaults localized and public API documented with KDoc. Special app access requires a distinct Android flow.
 
 Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :app:assembleDebug`. The GitHub render workflow uploads PNGs; previews do not test system dialogs. No Maven coordinate is published.
+
+The code-only checker never launches a system prompt. Its action runs synchronously when all permissions are granted; after an Activity Result grant callback, callers must recheck before using protected work. Avoid an unconditional retry from a denied result, which would repeatedly reopen the prompt.

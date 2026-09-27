@@ -57,6 +57,32 @@ For a single permission, the same API skips the overview page. `HandleCameraPerm
 
 The launcher handles ordinary Android runtime permissions. Special app access (exact alarms, overlay, all-files access) and runtime permissions with platform-specific sequencing (such as background location) need their own host flow. Do not assume the batch is atomic or that Android will present exactly one system dialog.
 
+## Code-only permission check
+
+Use `runIfPermissionsGranted` when the host wants to handle its own request flow without a library screen. It accepts either varargs or a `List<String>` and returns the missing permission names to `otherwise`:
+
+```kotlin
+private val permissionLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestMultiplePermissions()
+) { grants ->
+    if (grants.isNotEmpty() && grants.values.all { it }) startFeature() // recheck
+    else showDeniedState()
+}
+
+private fun startFeature() {
+    runIfPermissionsGranted(
+        Manifest.permission.CAMERA,
+        Manifest.permission.RECORD_AUDIO,
+    ) {
+        doSomething()
+    }.otherwise { missing ->
+        permissionLauncher.launch(missing.toTypedArray())
+    }
+}
+```
+
+This is a `Context` extension, so the **check** works in any class holding a valid `Context`. The **request** still needs an Activity, Fragment, or Compose-owned result launcher and an appropriate lifecycle. The check is synchronous; requesting is asynchronous. Recheck after a successful callback, and handle denial separately to avoid repeatedly launching the prompt. This helper does not render an explanation or manage special app access.
+
 ## Screenshots and checks
 
 Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :app:assembleDebug`. [GitHub Actions](.github/workflows/render-permission-screens.yml) renders Compose previews and uploads the PNGs. The previews do not exercise Android system permission prompts; validate grant and denial paths on a device or emulator.
