@@ -14,11 +14,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.apexfission.android.permissions.demo.DemoHomeScreen
+import com.apexfission.android.permissions.demo.CodeOnlyDemo
+import com.apexfission.android.permissions.demo.HeroArtworkDemo
 import com.apexfission.android.permissions.demo.PermissionCarouselDemo
 import com.apexfission.android.permissions.demo.PlatformRecipesDemo
+import com.apexfission.android.permission.requester.PermissionRequester
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
 
 class MainActivity : ComponentActivity() {
+    private val permissionRequester = PermissionRequester(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,6 +38,8 @@ class MainActivity : ComponentActivity() {
                         DemoDestination.Home -> DemoHomeScreen(
                             onCarousel = { destination = DemoDestination.Carousel },
                             onRecipes = { destination = DemoDestination.Recipes },
+                            onCallbacks = { destination = DemoDestination.Callbacks },
+                            onArtwork = { destination = DemoDestination.Artwork },
                             modifier = modifier,
                         )
                         DemoDestination.Carousel -> PermissionCarouselDemo(
@@ -44,6 +51,15 @@ class MainActivity : ComponentActivity() {
                         DemoDestination.Recipes -> PlatformRecipesDemo(
                             onBack = { destination = DemoDestination.Home }, modifier = modifier,
                         )
+                        DemoDestination.Callbacks -> CodeOnlyDemo(
+                            requester = permissionRequester,
+                            onBack = { destination = DemoDestination.Home },
+                            modifier = modifier,
+                        )
+                        DemoDestination.Artwork -> HeroArtworkDemo(
+                            onBack = { destination = DemoDestination.Home },
+                            modifier = modifier,
+                        )
                     }
                 }
             }
@@ -51,4 +67,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class DemoDestination { Home, Carousel, Recipes }
+private enum class DemoDestination { Home, Carousel, Recipes, Callbacks, Artwork }

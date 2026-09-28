@@ -3,7 +3,7 @@ title: Install and request
 description: Add the library and request your first group of permissions.
 ---
 
-The host app must declare each permission in its manifest. The library needs Android minSdk 24, and Gradle must have `mavenCentral()` configured.
+The host app must declare each permission in its manifest. The library needs Android minSdk 24, and Gradle must have `mavenCentral()` in dependency resolution. Request ordinary runtime permissions after a user action; Android may show several dialogs and grant only part of a batch.
 
 ```kotlin title="app/build.gradle.kts"
 dependencies {
@@ -51,6 +51,8 @@ HandlePermissions(
 
 `HandlePermissions` lives in `com.apexfission.android.permission.requester`; `PermissionDescription` and `DefaultPermissionPage` live in `.ui`. Declare the permissions in the host manifest and call this inside an Activity's `setContent`. The single primary action requests missing permissions together, though Android can show multiple dialogs. The protected content appears once all **required** permissions are granted. Optional grants are available through the `grants` snapshot.
 
+Import `android.Manifest`, Compose Material icon types, and the library declarations, for example `com.apexfission.android.permission.requester.HandlePermissions`, `com.apexfission.android.permission.ui.PermissionDescription`, and `com.apexfission.android.permission.ui.DefaultPermissionPage`. Supply your own `Scanner` composable in this example. When the library gate sits inside a `Scaffold`, let its screen handle the system-bar inset; applying the Scaffold's `innerPadding` to the gate adds the status-bar inset twice. Apply layout padding to protected content as appropriate.
+
 For a single permission, use a one-item list; the overview is hidden unless you set `overviewMode = PermissionOverviewMode.Show`. The system request is never launched simply by composing the screen.
 
-Next: [shape the Compose flow](../compose/) or [browse the screenshots](../gallery/).
+Next: [shape the Compose flow](../compose/), [choose a code-only path](../callbacks/), or [browse the screenshots](../gallery/).

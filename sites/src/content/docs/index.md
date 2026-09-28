@@ -9,9 +9,9 @@ hero:
     - text: Get started
       link: /android.apexfission.permissions/getting-started/
       icon: right-arrow
-    - text: View the repository
-      link: https://github.com/lambdawalker/android.apexfission.permissions
-      icon: external
+    - text: Explore demos
+      link: /android.apexfission.permissions/demos/
+      icon: right-arrow
       variant: minimal
 ---
 
@@ -19,8 +19,10 @@ hero:
 
 <div class="site-grid">
   <a class="site-card" href="./compose/"><strong>One considered flow</strong><span>Use your own Compose pages and icons while the library handles request and recovery states.</span></a>
-  <a class="site-card" href="./callbacks/"><strong>Your UI, your choice</strong><span>Use callback helpers or platform-aware recipes when a built-in screen is not the right fit.</span></a>
-  <a class="site-card" href="./gallery/"><strong>See the states</strong><span>Browse real Compose screenshot fixtures for single and grouped access.</span></a>
+  <a class="site-card" href="./callbacks/"><strong>Your UI, your choice</strong><span>Use callback helpers when your Activity owns the permission flow.</span></a>
+  <a class="site-card" href="./recipes/"><strong>Follow platform rules</strong><span>Handle location, notifications, and photo selection in staged flows.</span></a>
+  <a class="site-card" href="./demos/"><strong>Try the sample app</strong><span>Walk through the carousel, recipes, callbacks, and artwork.</span></a>
+  <a class="site-card" href="./gallery/"><strong>See the states</strong><span>Browse Compose screenshot fixtures for single and grouped access.</span></a>
 </div>
 
 ## Built for an honest request
@@ -39,8 +41,8 @@ hero:
 
 - **One or several permissions:** use the same `HandlePermissions` API and one request action.
 - **Required and optional access:** only required grants block protected content; inspect optional grants in `PermissionGrants`.
-- **Custom pages:** pass a full composable page for each permission or use localized generic defaults.
+- **Custom pages:** pass a full composable for each permission; `DefaultPermissionPage` is available for a ready-made layout.
 - **Recovery:** use a cautious Settings message and customize the action for your feature.
 - **Timed reading:** opt in to an automatically advancing carousel with per-page timing and a segmented indicator.
 
-The library handles ordinary Android runtime permissions. Background location, notifications, and the photo picker have separate [platform recipes](./callbacks/#platform-aware-recipes).
+The library handles ordinary Android runtime permissions. Background location, notifications, and the photo picker have separate [platform recipes](./recipes/). Everything needed to integrate it is on this site: [installation](./getting-started/), [Compose behavior](./compose/), [callback examples](./callbacks/), [public declarations](./reference/), and [testing and release steps](./development/).
