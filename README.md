@@ -167,8 +167,6 @@ HandlePermissions(
 
 For a single permission, the same API skips the overview page by default; use `overviewMode = PermissionOverviewMode.Show` to include it. `HandlePermissionsIndividually` remains available for intentionally sequential integrations. `PermissionScreen` and `PermissionBundleScreen` can render host-managed statuses and actions without launching requests themselves. The `permissionContent` parameter of `HandlePermissions` preserves its existing controller-driven custom UI path.
 
-If migrating from the camera-only API, replace `HandleCameraPermission` with `HandlePermissions(permissions = listOf(PermissionDescription(Manifest.permission.CAMERA, ...)), ...) { grants -> ... }`. Supply your camera label, icon, title, body, and button caption in `PermissionDescription` to retain your previous copy. Replace `rememberCameraPermissionController()` with `rememberPermissionController(Manifest.permission.CAMERA)`; its `PermissionStatus` has the same four statuses and it still exposes `requestPermission()` and `openAppSettings()`. Replace `PermissionViewModel.rememberCameraPermissionState()` with `rememberRuntimePermissionState(Manifest.permission.CAMERA)`. The camera-only symbols have been removed from the public API, so clients using them must migrate before upgrading.
-
 The launcher handles ordinary Android runtime permissions. Special app access (exact alarms, overlay, all-files access) and runtime permissions with platform-specific sequencing (such as background location) need their own host flow. Do not assume the batch is atomic or that Android will present exactly one system dialog.
 
 ### Platform-aware recipes

@@ -96,4 +96,3 @@ See the [selected permission](../docs/screenshots/permission-detail.png), [setti
 
 See [README.md](../README.md) and [the sample Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).
 
-Older camera-only entry points (`HandleCameraPermission`, `CameraPermissionController`, `CameraPermissionStatus`, `rememberCameraPermissionController`, and `rememberCameraPermissionState`) were removed. Use `HandlePermissions` for the built-in gate, or `rememberPermissionController(Manifest.permission.CAMERA)` for a custom screen. Pass camera copy through `PermissionDescription`. See the [migration note](../README.md#required-and-optional-access).
