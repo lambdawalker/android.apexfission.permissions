@@ -1,6 +1,5 @@
 package com.apexfission.android.permission.ui
 
-import android.Manifest
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -27,23 +26,6 @@ class PermissionViewModel : ViewModel() {
         permission = permission,
         onPermissionResult = onPermissionResult,
     )
-
-    /**
-     * A Composable function that creates and remembers the state for the camera permission.
-     *
-     * This function must be called within a Composable context (like `HandleCameraPermission`)
-     * because it uses `rememberPermissionState` to hook into Compose's state management system.
-     * It ensures that the `PermissionState` object persists across recompositions.
-     *
-     * @param onPermissionResult Callback receiving the result of a system permission request.
-     * @return The remembered [PermissionState] for `android.Manifest.permission.CAMERA`.
-     */
-    @Composable
-    fun rememberCameraPermissionState(
-        onPermissionResult: (Boolean) -> Unit = {},
-    ): PermissionState {
-        return rememberRuntimePermissionState(Manifest.permission.CAMERA, onPermissionResult)
-    }
 
     /**
      * Provides a synchronous check of the current permission status.
