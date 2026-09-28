@@ -1,19 +1,9 @@
 package com.apexfission.android.permission.requester
 
-import android.Manifest
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.apexfission.android.permission.CameraPermissionController
-import com.apexfission.android.permission.CameraPermissionStatus
 import com.apexfission.android.permission.recipe.PermissionController
-import com.apexfission.android.permission.recipe.PermissionStatus
-import com.apexfission.android.permission.R
-import com.apexfission.android.permission.rememberCameraPermissionController
 import com.apexfission.android.permission.recipe.rememberPermissionController
 import com.apexfission.android.permission.ui.HandlePermissionBundle
 import com.apexfission.android.permission.ui.PermissionDescription
@@ -21,7 +11,6 @@ import com.apexfission.android.permission.ui.PermissionDisplayMode
 import com.apexfission.android.permission.ui.PermissionOverview
 import com.apexfission.android.permission.ui.PermissionOverviewMode
 import com.apexfission.android.permission.ui.PermissionScreen
-import com.apexfission.android.permission.ui.PermissionViewModel
 
 /**
  * Protects [content] until every required Android runtime permission is granted. One button
@@ -126,56 +115,6 @@ fun HandlePermissionsIndividually(
             onOpenSettings = { index ->
                 if (onOpenSettings != null) onOpenSettings() else controllers[index].openAppSettings()
             },
-            recoveryContent = recoveryContent,
-            settingsActionLabel = settingsActionLabel,
-            modifier = modifier,
-        )
-    }
-}
-
-/**
- * Camera-only compatibility gate. New integrations should use [HandlePermissions].
- * [permissionContent] can still provide custom camera UI with explicit request/settings actions.
- */
-@Composable
-fun HandleCameraPermission(
-    modifier: Modifier = Modifier,
-    onBack: () -> Unit,
-    onNotNow: () -> Unit,
-    permissionViewModel: PermissionViewModel = viewModel(),
-    permissionContent: (@Composable (CameraPermissionController) -> Unit)? = null,
-    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
-    settingsActionLabel: String? = null,
-    onOpenSettings: (() -> Unit)? = null,
-    content: @Composable () -> Unit,
-) {
-    val controller = rememberCameraPermissionController(permissionViewModel)
-    when {
-        controller.status == CameraPermissionStatus.Granted -> content()
-        permissionContent != null -> permissionContent(controller)
-        else -> PermissionScreen(
-            permissions = listOf(
-                PermissionDescription(
-                    permission = Manifest.permission.CAMERA,
-                    label = stringResource(R.string.camera_permission_label),
-                    icon = Icons.Default.PhotoCamera,
-                    title = stringResource(R.string.camera_permission_title),
-                    body = stringResource(R.string.camera_permission_body),
-                    requestLabel = stringResource(R.string.camera_permission_allow),
-                )
-            ),
-            statuses = listOf(
-                when (controller.status) {
-                    CameraPermissionStatus.Granted -> PermissionStatus.Granted
-                    CameraPermissionStatus.NotRequested -> PermissionStatus.NotRequested
-                    CameraPermissionStatus.RationaleRequired -> PermissionStatus.RationaleRequired
-                    CameraPermissionStatus.PermanentlyDenied -> PermissionStatus.PermanentlyDenied
-                }
-            ),
-            onBack = onBack,
-            onNotNow = onNotNow,
-            onRequest = { controller.requestPermission() },
-            onOpenSettings = { if (onOpenSettings != null) onOpenSettings() else controller.openAppSettings() },
             recoveryContent = recoveryContent,
             settingsActionLabel = settingsActionLabel,
             modifier = modifier,

@@ -90,8 +90,10 @@ See the [selected permission](../docs/screenshots/permission-detail.png), [setti
 ## Other UI entry points
 
 - `HandlePermissionBundle` offers the same batch UI plus `onPermissionsResult: (Map<String, Boolean>) -> Unit`. Do not treat a batch result as atomic.
-- `HandlePermissionsIndividually` requests per permission; `HandleCameraPermission` is the camera compatibility wrapper.
+- `HandlePermissionsIndividually` requests per permission. For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA)`; the overview is hidden by default.
 - `HandlePermissions(permissionContent = { controllers -> ... })` replaces the built-in UI and receives **all** controllers regardless of display mode. This uses the **individual** request path, so it does not provide the built-in one-button batch action. Each controller exposes `status`, `requestPermission()`, and `openAppSettings()`; invoke actions only on a user action. For a custom carousel page with the built-in batch button, supply `PermissionDescription(page = { ... })` instead.
 - `PermissionScreen` and `PermissionBundleScreen` render host-managed statuses and actions without launching Android requests.
 
 See [README.md](../README.md) and [the sample Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).
+
+Older camera-only entry points (`HandleCameraPermission`, `CameraPermissionController`, `CameraPermissionStatus`, `rememberCameraPermissionController`, and `rememberCameraPermissionState`) were removed. Use `HandlePermissions` for the built-in gate, or `rememberPermissionController(Manifest.permission.CAMERA)` for a custom screen. Pass camera copy through `PermissionDescription`. See the [migration note](../README.md#required-and-optional-access).
