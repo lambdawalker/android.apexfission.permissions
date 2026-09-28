@@ -44,9 +44,13 @@ class PermissionRecoveryDeviceTest {
         repeat(2) {
             compose.onNodeWithText(if (it == 0) "Request permissions" else "Request remaining permissions")
                 .performClick()
-            val deny = device.wait(Until.findObject(By.text("Don't allow")), 10_000)
-                ?: device.wait(Until.findObject(By.text("Deny")), 2_000)
-            assertNotNull("Android permission dialog did not appear", deny)
+            val deny = device.wait(Until.findObject(By.res(
+                "com.google.android.permissioncontroller", "permission_deny_button")), 10_000)
+                ?: device.findObject(By.res("com.android.permissioncontroller", "permission_deny_button"))
+                ?: device.findObject(By.text("Don't allow"))
+                ?: device.findObject(By.text("Deny"))
+            assertNotNull("Denial button missing; visible buttons: " +
+                device.findObjects(By.clazz("android.widget.Button")).map { it.text }, deny)
             deny!!.click()
             compose.waitForIdle()
         }

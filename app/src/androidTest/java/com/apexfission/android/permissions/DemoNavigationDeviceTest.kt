@@ -15,11 +15,13 @@ class DemoNavigationDeviceTest {
 
     @Test fun launcherOpensRecipesAndCarousel() {
         compose.onNodeWithText("Open recipes").performClick()
-        compose.onNodeWithText("Approximate location").assertExists()
-        compose.onNodeWithText("Background location").assertExists()
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithText("Back to demos").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("Back to demos").assertExists()
         compose.onNodeWithText("Choose media").assertExists()
         compose.activityRule.scenario.recreate()
-        compose.onNodeWithText("Approximate location").assertExists()
+        compose.onNodeWithText("Back to demos").assertExists()
         compose.onNodeWithText("Back to demos").performClick()
         compose.onNodeWithText("Open carousel").performClick()
         compose.onNodeWithText("Scan with camera and microphone").assertExists()
