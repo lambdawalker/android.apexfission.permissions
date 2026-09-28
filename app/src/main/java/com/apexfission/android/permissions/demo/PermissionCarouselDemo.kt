@@ -28,14 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.apexfission.android.permission.DefaultPermissionPage
-import com.apexfission.android.permission.HandlePermissions
-import com.apexfission.android.permission.PermissionDescription
-import com.apexfission.android.permission.PermissionDisplayMode
-import com.apexfission.android.permission.PermissionOverview
-import com.apexfission.android.permission.ReadingPace
-import com.apexfission.android.permission.estimateReadingDelayMillis
-import com.apexfission.android.permission.openPermissionRecipeSettings
+import com.apexfission.android.permission.ui.DefaultPermissionPage
+import com.apexfission.android.permission.requester.HandlePermissions
+import com.apexfission.android.permission.ui.PermissionDescription
+import com.apexfission.android.permission.ui.PermissionDisplayMode
+import com.apexfission.android.permission.ui.PermissionOverview
+import com.apexfission.android.permission.ui.ReadingPace
+import com.apexfission.android.permission.ui.estimateReadingDelayMillis
+import com.apexfission.android.permission.recipe.openPermissionRecipeSettings
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
 
 private const val CAMERA_TITLE = "Scan documents"

@@ -1,5 +1,13 @@
 package com.apexfission.android.permission
 
+import com.apexfission.android.permission.recipe.PermissionPrimaryAction
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.recipe.allPermissionsGranted
+import com.apexfission.android.permission.recipe.nextOutstandingPermission
+import com.apexfission.android.permission.recipe.primaryAction
+import com.apexfission.android.permission.recipe.resolvePermissionStatus
+import com.apexfission.android.permission.requester.PermissionGrants
+import com.apexfission.android.permission.ui.PermissionDescription
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -31,7 +39,8 @@ class PermissionFlowTest {
         assertFalse(grants.isGranted("android.permission.RECORD_AUDIO"))
         assertEquals(setOf("android.permission.RECORD_AUDIO"), grants.missingOptional)
         assertEquals(emptySet<String>(), grants.missingRequired)
-        assertEquals(PermissionStatus.PermanentlyDenied,
+        assertEquals(
+            PermissionStatus.PermanentlyDenied,
             grants.statusByPermission["android.permission.RECORD_AUDIO"])
     }
 
@@ -40,8 +49,10 @@ class PermissionFlowTest {
             PermissionDescription("android.permission.CAMERA"),
             PermissionDescription("android.permission.RECORD_AUDIO", required = false),
         )
-        val grants = PermissionGrants(permissions,
-            listOf(PermissionStatus.NotRequested, PermissionStatus.Granted))
+        val grants = PermissionGrants(
+            permissions,
+            listOf(PermissionStatus.NotRequested, PermissionStatus.Granted)
+        )
         assertFalse(grants.canProceed)
         assertEquals(setOf("android.permission.CAMERA"), grants.missingRequired)
     }

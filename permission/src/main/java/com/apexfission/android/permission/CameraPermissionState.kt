@@ -3,11 +3,16 @@ package com.apexfission.android.permission
 import android.Manifest
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.apexfission.android.permission.recipe.PermissionController
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.recipe.rememberPermissionController
+import com.apexfission.android.permission.recipe.resolvePermissionStatus
+import com.apexfission.android.permission.ui.PermissionViewModel
 
-/** Compatibility status for camera-only consumers. Prefer [PermissionStatus]. */
+/** Compatibility status for camera-only consumers. Prefer [com.apexfission.android.permission.recipe.PermissionStatus]. */
 enum class CameraPermissionStatus { Granted, NotRequested, RationaleRequired, PermanentlyDenied }
 
-/** Camera-only compatibility controller. Prefer [PermissionController]. */
+/** Camera-only compatibility controller. Prefer [com.apexfission.android.permission.recipe.PermissionController]. */
 class CameraPermissionController internal constructor(private val delegate: PermissionController) {
     /** Camera permission status. */
     val status: CameraPermissionStatus get() = delegate.status.toCameraStatus()
@@ -17,7 +22,7 @@ class CameraPermissionController internal constructor(private val delegate: Perm
     fun openAppSettings() = delegate.openAppSettings()
 }
 
-/** Camera-only compatibility API. Prefer [rememberPermissionController]. */
+/** Camera-only compatibility API. Prefer [com.apexfission.android.permission.recipe.rememberPermissionController]. */
 @Composable
 fun rememberCameraPermissionController(
     permissionViewModel: PermissionViewModel = viewModel(),

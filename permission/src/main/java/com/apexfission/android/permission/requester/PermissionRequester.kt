@@ -1,4 +1,4 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.requester
 
 import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity

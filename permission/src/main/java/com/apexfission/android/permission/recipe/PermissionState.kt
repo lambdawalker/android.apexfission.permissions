@@ -1,4 +1,4 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.recipe
 
 import android.content.Context
 import android.content.Intent
@@ -14,6 +14,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.apexfission.android.permission.ui.PermissionViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale

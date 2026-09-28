@@ -1,5 +1,7 @@
 package com.apexfission.android.permission
 
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.recipe.inferredRecoveryPermissions
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -45,6 +45,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.apexfission.android.permission.requester.DefaultPermissionRecovery
+import com.apexfission.android.permission.recipe.PermissionPrimaryAction
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.R
+import com.apexfission.android.permission.recipe.nextOutstandingPermission
+import com.apexfission.android.permission.recipe.primaryAction
 import kotlinx.coroutines.launch
 
 /**

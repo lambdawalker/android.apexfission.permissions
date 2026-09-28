@@ -12,8 +12,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
-import com.apexfission.android.permission.HandlePermissions
-import com.apexfission.android.permission.PermissionDescription
+import com.apexfission.android.permission.requester.HandlePermissions
+import com.apexfission.android.permission.ui.PermissionDescription
 import org.junit.Assert.assertNotNull
 import org.junit.Assume.assumeTrue
 import org.junit.Rule

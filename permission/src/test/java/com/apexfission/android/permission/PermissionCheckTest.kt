@@ -1,5 +1,6 @@
 package com.apexfission.android.permission
 
+import com.apexfission.android.permission.requester.evaluatePermissionCheck
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test

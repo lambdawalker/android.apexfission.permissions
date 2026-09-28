@@ -31,12 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.apexfission.android.permission.LocationAccuracy
-import com.apexfission.android.permission.PermissionRecipeStep
-import com.apexfission.android.permission.PermissionRecipes
-import com.apexfission.android.permission.VisualMediaSelection
-import com.apexfission.android.permission.openPermissionRecipeSettings
-import com.apexfission.android.permission.rememberVisualMediaPicker
+import com.apexfission.android.permission.recipe.LocationAccuracy
+import com.apexfission.android.permission.recipe.PermissionRecipeStep
+import com.apexfission.android.permission.recipe.PermissionRecipes
+import com.apexfission.android.permission.recipe.VisualMediaSelection
+import com.apexfission.android.permission.recipe.openPermissionRecipeSettings
+import com.apexfission.android.permission.recipe.rememberVisualMediaPicker
 
 private enum class Recipe { Approximate, Precise, Background, Notifications }
 

@@ -1,4 +1,4 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.recipe
 
 import android.Manifest
 import android.content.Context

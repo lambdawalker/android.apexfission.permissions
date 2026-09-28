@@ -6,9 +6,9 @@ import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.apexfission.android.permission.LocationAccuracy
-import com.apexfission.android.permission.PermissionRecipeStep
-import com.apexfission.android.permission.PermissionRecipes
+import com.apexfission.android.permission.recipe.LocationAccuracy
+import com.apexfission.android.permission.recipe.PermissionRecipeStep
+import com.apexfission.android.permission.recipe.PermissionRecipes
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

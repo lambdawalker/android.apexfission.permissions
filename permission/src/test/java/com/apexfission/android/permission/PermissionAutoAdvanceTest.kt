@@ -1,5 +1,10 @@
 package com.apexfission.android.permission
 
+import com.apexfission.android.permission.ui.ReadingPace
+import com.apexfission.android.permission.ui.estimateReadingDelayMillis
+import com.apexfission.android.permission.ui.nextAutoAdvancePage
+import com.apexfission.android.permission.ui.remainingAutoAdvanceMillis
+import com.apexfission.android.permission.ui.segmentProgressForPage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

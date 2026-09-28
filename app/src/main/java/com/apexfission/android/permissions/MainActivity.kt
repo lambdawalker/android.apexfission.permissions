@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
             AndroidpermissionsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val modifier = Modifier.padding(innerPadding)
+
                     when (destination) {
                         DemoDestination.Home -> DemoHomeScreen(
                             onCarousel = { destination = DemoDestination.Carousel },

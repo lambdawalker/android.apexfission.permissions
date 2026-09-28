@@ -1,9 +1,10 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.requester
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.apexfission.android.permission.R
 
 /**
  * Default note for permissions inferred to need recovery. The inference can be wrong, so the

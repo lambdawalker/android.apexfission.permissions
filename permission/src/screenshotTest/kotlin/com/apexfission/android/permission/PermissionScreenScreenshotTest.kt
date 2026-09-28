@@ -18,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.tools.screenshot.PreviewTest
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.ui.PermissionDescription
+import com.apexfission.android.permission.ui.PermissionScreen
 
 /** Static snapshots for generic, customized, and multiple permission pages. */
 class PermissionScreenScreenshotTest {
@@ -33,8 +36,10 @@ class PermissionScreenScreenshotTest {
                     Modifier.size(190.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Default.PhotoCamera, null, Modifier.size(80.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Icon(
+                        Icons.Default.PhotoCamera, null, Modifier.size(80.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
             },
         ),

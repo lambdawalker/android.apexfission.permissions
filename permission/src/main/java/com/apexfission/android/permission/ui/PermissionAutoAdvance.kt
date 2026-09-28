@@ -1,4 +1,4 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.ui
 
 import kotlin.math.roundToInt
 

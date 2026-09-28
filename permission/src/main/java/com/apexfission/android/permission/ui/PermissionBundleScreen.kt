@@ -1,16 +1,16 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.ui
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -24,14 +24,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -57,33 +56,41 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.apexfission.android.permission.requester.DefaultPermissionRecovery
+import com.apexfission.android.permission.requester.PermissionGrants
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.R
+import com.apexfission.android.permission.recipe.allPermissionsGranted
+import com.apexfission.android.permission.recipe.inferredRecoveryPermissions
+import com.apexfission.android.permission.recipe.resolvePermissionStatus
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 
 /** Content for the optional first carousel page. */
@@ -97,14 +104,16 @@ class PermissionOverview(
     /** Full page composable. Replaces [hero], [description], and the default copy. */
     val page: (@Composable () -> Unit)? = null,
 ) {
-    init { require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" } }
+    init {
+        require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" }
+    }
 }
 
 /** Reusable text body for a custom [PermissionDescription.description] or overview page. */
 @Composable
 fun DefaultDescription(
     label: String,
-    icon: ImageVector = Icons.Default.Lock,
+    icon: ImageVector? = null,
     title: String? = null,
     body: String? = null,
     features: List<PermissionFeature> = emptyList(),
@@ -125,8 +134,12 @@ fun DefaultDescription(
     if (features.isNotEmpty()) {
         Spacer(Modifier.height(24.dp))
         features.forEach { feature ->
-            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(feature.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(icon ?: feature.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Column(Modifier.padding(start = 12.dp)) {
                     Text(feature.title, fontWeight = FontWeight.SemiBold)
                     Text(feature.subtitle, style = MaterialTheme.typography.bodySmall)
@@ -145,7 +158,11 @@ fun DefaultPermissionPage(
     body: String? = null,
     features: List<PermissionFeature> = emptyList(),
 ) {
-    Box(Modifier.fillMaxWidth().height(210.dp), contentAlignment = Alignment.Center) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(210.dp), contentAlignment = Alignment.Center
+    ) {
         DefaultBundleHero(icon)
     }
     Spacer(Modifier.height(24.dp))
@@ -175,12 +192,11 @@ enum class PermissionOverviewMode {
     Hide,
 }
 
-internal fun shouldShowOverview(visiblePermissionCount: Int, mode: PermissionOverviewMode): Boolean =
-    when (mode) {
-        PermissionOverviewMode.Automatic -> visiblePermissionCount > 1
-        PermissionOverviewMode.Show -> true
-        PermissionOverviewMode.Hide -> false
-    }
+internal fun shouldShowOverview(visiblePermissionCount: Int, mode: PermissionOverviewMode): Boolean = when (mode) {
+    PermissionOverviewMode.Automatic -> visiblePermissionCount > 1
+    PermissionOverviewMode.Show -> true
+    PermissionOverviewMode.Hide -> false
+}
 
 internal fun visiblePermissionIndices(
     statuses: List<PermissionStatus>,
@@ -196,8 +212,7 @@ internal fun bundleAction(statuses: List<PermissionStatus>): BundleAction = when
 }
 
 /** 64 dp icon slots: center one slot, or center the full row on the overview. */
-internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
-    if (selectedIndex < 0) (count - 1) * 32 else selectedIndex * 64
+internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int = if (selectedIndex < 0) (count - 1) * 32 else selectedIndex * 64
 
 /**
  * One action requests all runtime permissions. A multi-permission carousel starts with a feature
@@ -260,8 +275,8 @@ fun PermissionBundleScreen(
         }
     }
     val context = LocalContext.current
-    val touchExplorationEnabled = (context.getSystemService(Context.ACCESSIBILITY_SERVICE)
-        as? AccessibilityManager)?.isTouchExplorationEnabled == true
+    val touchExplorationEnabled =
+        (context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager)?.isTouchExplorationEnabled == true
     val lifecycleOwner = LocalLifecycleOwner.current
     val resumed = remember(lifecycleOwner) {
         mutableStateOf(lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
@@ -275,7 +290,7 @@ fun PermissionBundleScreen(
     }
     val settled = pager.settledPage
     val pageDelayMillis = if (hasOverview && settled == 0) overview.autoAdvanceDelayMillis
-        else permissions[settled.coerceIn(0, pageCount - 1) - if (hasOverview) 1 else 0].autoAdvanceDelayMillis
+    else permissions[settled.coerceIn(0, pageCount - 1) - if (hasOverview) 1 else 0].autoAdvanceDelayMillis
     val nextPage = nextAutoAdvancePage(settled, pageCount)
     val progress = remember(settled, pageDelayMillis, pageCount) {
         Animatable(if (nextPage == null) 1f else 0f)
@@ -284,8 +299,9 @@ fun PermissionBundleScreen(
         targetValue = if (stopped.value || touchExplorationEnabled) 0f else 1f,
         label = "Reading progress visibility",
     )
-    LaunchedEffect(autoAdvance, stopped.value, resumed.value, touchExplorationEnabled,
-        settled, pageCount, pageDelayMillis, progress) {
+    LaunchedEffect(
+        autoAdvance, stopped.value, resumed.value, touchExplorationEnabled, settled, pageCount, pageDelayMillis, progress
+    ) {
         if (!autoAdvance || stopped.value || !resumed.value || touchExplorationEnabled) return@LaunchedEffect
         val next = nextPage ?: return@LaunchedEffect
         val remainingMillis = remainingAutoAdvanceMillis(progress.value, pageDelayMillis)
@@ -300,7 +316,7 @@ fun PermissionBundleScreen(
         color = MaterialTheme.colorScheme.background,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().systemBarsPadding(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (autoAdvance && pageCount > 1) {
@@ -308,7 +324,8 @@ fun PermissionBundleScreen(
                 val trackColor = MaterialTheme.colorScheme.surfaceVariant
                 val fillColor = MaterialTheme.colorScheme.primary
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .graphicsLayer { alpha = indicatorAlpha }
                         .clearAndSetSemantics {
                             if (!stopped.value && !touchExplorationEnabled) {
@@ -319,7 +336,11 @@ fun PermissionBundleScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     repeat(pageCount) { page ->
-                        Canvas(Modifier.weight(1f).height(4.dp)) {
+                        Canvas(
+                            Modifier
+                                .weight(1f)
+                                .height(4.dp)
+                        ) {
                             val radius = CornerRadius(size.height / 2f)
                             drawRoundRect(trackColor, cornerRadius = radius)
                             val filledWidth = size.width * segmentProgressForPage(page, settled, progress.value)
@@ -331,7 +352,9 @@ fun PermissionBundleScreen(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
                     .padding(top = 12.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -339,8 +362,9 @@ fun PermissionBundleScreen(
                 IconButton(onClick = { stopAutoAdvance(); onBack() }, modifier = Modifier.size(44.dp)) {
                     Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.permission_back))
                 }
-                Text(stringResource(R.string.permission_progress, current + 1, pageCount),
-                    style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(R.string.permission_progress, current + 1, pageCount), style = MaterialTheme.typography.labelMedium
+                )
                 if (autoAdvance && nextPage != null && !touchExplorationEnabled) {
                     val paused = stopped.value
                     IconButton(onClick = {
@@ -366,7 +390,10 @@ fun PermissionBundleScreen(
             HorizontalPager(
                 state = pager,
                 key = { if (hasOverview && it == 0) "overview" else permissions[it - if (hasOverview) 1 else 0].permission },
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 24.dp)
                     .onPreviewKeyEvent { stopAutoAdvance(); false }
                     .pointerInput(Unit) {
                         awaitPointerEventScope {
@@ -380,14 +407,20 @@ fun PermissionBundleScreen(
                 val index = page - if (hasOverview) 1 else 0
                 val item = permissions.getOrNull(index)
                 Column(
-                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     when {
                         item?.page != null -> item.page.invoke()
                         item == null && overview.page != null -> overview.page.invoke()
                         else -> {
-                            Box(Modifier.fillMaxWidth().height(210.dp), contentAlignment = Alignment.Center) {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(210.dp), contentAlignment = Alignment.Center
+                            ) {
                                 when {
                                     item?.hero != null -> item.hero.invoke()
                                     item == null && overview.hero != null -> overview.hero.invoke()
@@ -400,28 +433,37 @@ fun PermissionBundleScreen(
                                 item != null -> DefaultDescription(item.label, item.icon, item.title, item.body, item.features)
                                 overview.description != null -> overview.description.invoke()
                                 else -> DefaultDescription(
-                            label = stringResource(R.string.permission_bundle_label),
-                            title = overview.title ?: stringResource(R.string.permission_bundle_overview_title),
-                            body = overview.body ?: stringResource(R.string.permission_bundle_overview_body),
-                        )
+                                    label = stringResource(R.string.permission_bundle_label),
+                                    title = overview.title ?: stringResource(R.string.permission_bundle_overview_title),
+                                    body = overview.body ?: stringResource(R.string.permission_bundle_overview_body),
+                                )
                             }
                         }
                     }
                     if (item != null && statuses[index] == PermissionStatus.Granted) {
                         Spacer(Modifier.height(16.dp))
-                        Text(stringResource(R.string.permission_bundle_granted),
-                            color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            stringResource(R.string.permission_bundle_granted),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                     if (item != null && !item.required) {
                         Spacer(Modifier.height(12.dp))
-                        Text(stringResource(R.string.permission_optional),
+                        Text(
+                            stringResource(R.string.permission_optional),
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
             if (recoveryPermissions.isNotEmpty()) {
-                Box(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                ) {
                     recoveryContent(recoveryPermissions)
                 }
             }
@@ -439,23 +481,30 @@ fun PermissionBundleScreen(
                         BundleAction.Complete -> onComplete()
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Text(
                     when (action) {
                         BundleAction.Request -> if (statuses.any {
-                            it == PermissionStatus.RationaleRequired || it == PermissionStatus.PermanentlyDenied
-                        }) stringResource(R.string.permission_bundle_retry)
+                                it == PermissionStatus.RationaleRequired || it == PermissionStatus.PermanentlyDenied
+                            }) stringResource(R.string.permission_bundle_retry)
                         else stringResource(R.string.permission_bundle_request)
+
                         BundleAction.Settings -> settingsActionLabel ?: stringResource(R.string.permission_open_settings)
                         BundleAction.Complete -> stringResource(R.string.permission_done)
                     },
                     fontWeight = FontWeight.Bold,
                 )
             }
-            TextButton(onClick = { stopAutoAdvance(); onNotNow() },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
+            TextButton(
+                onClick = { stopAutoAdvance(); onNotNow() }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            ) {
                 Text(stringResource(R.string.camera_permission_not_now))
             }
         }
@@ -477,46 +526,55 @@ private fun PermissionIconStrip(
         val scroll = rememberScrollState(initial = offset)
         LaunchedEffect(offset) { scroll.animateScrollTo(offset) }
         Row(
-            modifier = Modifier.fillMaxWidth().horizontalScroll(scroll),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(scroll),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(Modifier.width(edgeSpace))
             permissions.forEachIndexed { index, item ->
-            val selected = index == selectedIndex
-            val size by animateDpAsState(if (selected) 56.dp else 44.dp, label = "bundle icon size")
-            Box(
-                modifier = Modifier.padding(horizontal = 4.dp).size(56.dp)
-                    .semantics { contentDescription = item.label }
-                    .clickable { onSelect(index) },
-                contentAlignment = Alignment.Center,
-            ) {
+                val selected = index == selectedIndex
+                val size by animateDpAsState(if (selected) 56.dp else 44.dp, label = "bundle icon size")
                 Box(
-                    modifier = Modifier.size(size).background(
-                        if (selected) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.surfaceVariant,
-                        CircleShape,
-                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(56.dp)
+                        .semantics { contentDescription = item.label }
+                        .clickable { onSelect(index) },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        item.icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(if (selected) 27.dp else 22.dp),
-                        tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                if (statuses[index] == PermissionStatus.Granted) {
                     Box(
-                        modifier = Modifier.align(Alignment.BottomEnd).size(20.dp)
-                            .background(MaterialTheme.colorScheme.surface, CircleShape),
+                        modifier = Modifier
+                            .size(size)
+                            .background(
+                                if (selected) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.surfaceVariant,
+                                CircleShape,
+                            ),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = null,
-                            modifier = Modifier.size(16.dp), tint = Color(0xFF16803A))
+                        Icon(
+                            item.icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(if (selected) 27.dp else 22.dp),
+                            tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    if (statuses[index] == PermissionStatus.Granted) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(20.dp)
+                                .background(MaterialTheme.colorScheme.surface, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFF16803A)
+                            )
+                        }
                     }
                 }
-            }
             }
             Spacer(Modifier.width(edgeSpace))
         }
@@ -526,12 +584,14 @@ private fun PermissionIconStrip(
 @Composable
 private fun DefaultBundleHero(icon: ImageVector) {
     Box(
-        modifier = Modifier.size(width = 260.dp, height = 200.dp)
+        modifier = Modifier
+            .size(width = 260.dp, height = 200.dp)
             .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f), RoundedCornerShape(28.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(72.dp),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer)
+        Icon(
+            icon, contentDescription = null, modifier = Modifier.size(72.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 
@@ -593,7 +653,7 @@ fun HandlePermissionBundle(
         results.forEach { (name, granted) ->
             if (granted) {
                 requested[name] = false
-                history.edit().putBoolean(name, false).apply()
+                history.edit { putBoolean(name, false) }
             }
         }
         currentResultCallback(results)
@@ -611,7 +671,7 @@ fun HandlePermissionBundle(
         names.zip(statuses).forEach { (name, status) ->
             if (status == PermissionStatus.Granted && requested[name] == true) {
                 requested[name] = false
-                history.edit().putBoolean(name, false).apply()
+                history.edit { putBoolean(name, false) }
             }
         }
     }
@@ -630,15 +690,17 @@ fun HandlePermissionBundle(
                 onRequest = {
                     names.zip(statuses).filter { it.second != PermissionStatus.Granted }.forEach { (name, _) ->
                         requested[name] = true
-                        history.edit().putBoolean(name, true).apply()
+                        history.edit { putBoolean(name, true) }
                     }
                     state.launchMultiplePermissionRequest()
                 },
                 onOpenSettings = {
                     if (onOpenSettings != null) onOpenSettings()
                     else context.startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", context.packageName, null)
+                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 },
                 recoveryContent = recoveryContent,

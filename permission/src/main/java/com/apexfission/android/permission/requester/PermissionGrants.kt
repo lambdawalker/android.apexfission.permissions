@@ -1,4 +1,7 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.requester
+
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.ui.PermissionDescription
 
 /**
  * Current grant snapshot supplied to protected content. Required permissions determine

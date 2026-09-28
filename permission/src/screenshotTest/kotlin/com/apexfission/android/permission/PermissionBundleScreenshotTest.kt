@@ -12,6 +12,14 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
+import com.apexfission.android.permission.recipe.PermissionStatus
+import com.apexfission.android.permission.ui.DefaultPermissionPage
+import com.apexfission.android.permission.ui.PermissionBundleScreen
+import com.apexfission.android.permission.ui.PermissionDescription
+import com.apexfission.android.permission.ui.PermissionDisplayMode
+import com.apexfission.android.permission.ui.PermissionOverview
+import com.apexfission.android.permission.ui.PermissionOverviewMode
+import com.apexfission.android.permission.ui.visiblePermissionIndices
 
 /** The default one-button carousel: overview, individual page, and denial recovery. */
 class PermissionBundleScreenshotTest {
@@ -23,9 +31,11 @@ class PermissionBundleScreenshotTest {
             title = "Scan a document",
             body = "We use the camera when you choose to scan a document.",
             page = {
-                DefaultPermissionPage("Camera", Icons.Default.PhotoCamera,
+                DefaultPermissionPage(
+                    "Camera", Icons.Default.PhotoCamera,
                     title = "Scan a document",
-                    body = "We use the camera when you choose to scan a document.")
+                    body = "We use the camera when you choose to scan a document."
+                )
             },
         ),
         PermissionDescription(
@@ -58,8 +68,10 @@ class PermissionBundleScreenshotTest {
             PermissionBundleScreen(
                 permissions = listOf(
                     PermissionDescription(Manifest.permission.CAMERA, label = "Camera", icon = Icons.Default.PhotoCamera),
-                    PermissionDescription(Manifest.permission.RECORD_AUDIO, label = "Microphone",
-                        icon = Icons.Default.Mic, required = false),
+                    PermissionDescription(
+                        Manifest.permission.RECORD_AUDIO, label = "Microphone",
+                        icon = Icons.Default.Mic, required = false
+                    ),
                 ),
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
@@ -78,9 +90,11 @@ class PermissionBundleScreenshotTest {
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
                 overview = PermissionOverview(page = {
-                    DefaultPermissionPage("Permissions", Icons.Default.PhotoCamera,
+                    DefaultPermissionPage(
+                        "Permissions", Icons.Default.PhotoCamera,
                         title = "Create a narrated scan",
-                        body = "Review camera and microphone access before starting.")
+                        body = "Review camera and microphone access before starting."
+                    )
                 }),
             )
         }

@@ -13,12 +13,12 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="BatchPermissionActivity">
+      <SelectionState runConfigName="PermissionsReadyPreview">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-09-27T16:08:24.262290100Z">
+        <DropdownSelection timestamp="2026-09-27T16:01:20.294646400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CX41W54QB" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\D\.android\avd\Sv2-001.avd" />
             </handle>
           </Target>
         </DropdownSelection>

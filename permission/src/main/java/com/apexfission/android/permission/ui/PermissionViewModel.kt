@@ -1,4 +1,4 @@
-package com.apexfission.android.permission
+package com.apexfission.android.permission.ui
 
 import android.Manifest
 import androidx.compose.runtime.Composable
