@@ -113,14 +113,19 @@ fun PlatformRecipesDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
         if (message != null) Text(message!!, color = MaterialTheme.colorScheme.primary)
         Text("Foreground accuracy: ${accuracy?.name ?: "none"}", style = MaterialTheme.typography.bodyMedium)
+
         RecipeCard("Approximate location", "Ask for coarse location only.",
             steps.getValue(Recipe.Approximate), onClick = { start(Recipe.Approximate) })
+
         RecipeCard("Precise location", "Ask for coarse and fine together. The user may still choose approximate.",
             steps.getValue(Recipe.Precise), onClick = { start(Recipe.Precise) })
+
         RecipeCard("Background location", "First grant foreground location, then request background access separately.",
             steps.getValue(Recipe.Background), onClick = { start(Recipe.Background) })
+
         RecipeCard("Notifications", "Ask when you want to send updates; Settings can restore disabled notifications.",
             steps.getValue(Recipe.Notifications), onClick = { start(Recipe.Notifications) })
+
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text("Photo picker", style = MaterialTheme.typography.titleMedium)

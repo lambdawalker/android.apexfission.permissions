@@ -243,18 +243,4 @@ This is a `Context` extension, so the **check** works in any class holding a val
 
 Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :permission:generatePomFileForMavenPublication :app:assembleDebug`. [GitHub Actions](.github/workflows/render-permission-screens.yml) renders Compose previews, checks the publication POM, and uploads the PNGs. The previews do not exercise Android system permission prompts; validate grant and denial paths on a device or emulator.
 
-## Publish to Maven Central
-
-The `:permission` module uses the Vanniktech Maven Publish plugin to produce a signed Android AAR, sources, Javadoc jar, and POM under `com.apexfission.android.permission:core:<version>`. The [manual release workflow](.github/workflows/publish-permission.yml) runs tests, builds the sample, then stages a signed deployment. It does not click Publish in Central Portal for you.
-
-Setup:
-
-1. Create a [Central Portal](https://central.sonatype.com/) account and verify ownership of the `com.apexfission.android.permission` namespace (or an accepted parent). If your registered namespace differs, edit the group in `permission/build.gradle.kts` and the install coordinates above before releasing.
-2. Generate a Central Portal **user token** from Account. Store its username and password as GitHub Actions secrets `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`; the account sign-in password is not the publishing token.
-3. Generate a password-protected GPG key, publish its public key to a keyserver, and export its ASCII-armored **private** key with `gpg --export-secret-keys --armor <KEY_ID>`. Store the complete armored block as `SIGNING_IN_MEMORY_KEY` and its passphrase as `SIGNING_IN_MEMORY_KEY_PASSWORD` GitHub Actions secrets. Keep the private key and passphrase out of the repository.
-4. In repository Settings → Environments, create `maven-central`. Add required reviewers if you want a separate approval before uploading. Put the four secrets in that environment or at repository level.
-5. In Actions → **Publish permission library** → **Run workflow**, select `main` and enter a new version such as `0.1.0`. The workflow accepts a version only on `main` and uploads to Central Portal. Inspect and **Publish** the validated deployment under Central Portal → Deployments. Each release version must be unique; update the README install version after publishing.
-
-To verify the publication locally without uploading, run `./gradlew :permission:publishToMavenLocal -PpermissionVersion=0.1.0` with signing credentials configured. Android system permission prompts still require device or emulator testing.
-
 See [the bundle guide](docs/batch-request.md), [AGENTS.md](AGENTS.md), and [LICENSE](LICENSE).

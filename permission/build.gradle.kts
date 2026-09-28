@@ -9,8 +9,8 @@ val projectUrl = "https://github.com/lambdawalker/android.apexfission.permission
 
 mavenPublishing {
     coordinates(
-        "com.apexfission.android.permission",
-        "core",
+        "com.apexfission.androi",
+        "permission",
         providers.gradleProperty("permissionVersion").orElse("0.1.0").get(),
     )
     publishToMavenCentral()
