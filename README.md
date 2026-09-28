@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             DefaultPermissionPage(
                                 label = "Camera",
-                                icon = Icons.Default.PhotoCamera,
+                                heroImage = Icons.Default.PhotoCamera,
                                 title = "Scan documents",
                                 body = "Allow camera access when you start a scan.",
                             )
@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                     overview = PermissionOverview(page = {
                         DefaultPermissionPage(
                             label = "Access",
-                            icon = Icons.Default.Lock,
+                            heroImage = Icons.Default.Lock,
                             title = "Prepare your scan",
                             body = "Review the access needed before continuing.",
                         )
@@ -100,6 +100,21 @@ Imports: `android.Manifest`, `android.os.Bundle`, `androidx.activity.ComponentAc
 A generic overview is supplied by default: it uses a lock icon, the title “Before you continue,” and a short explanation. `Automatic` shows it when more than one permission is visible. Pass `overview = PermissionOverview { MyIntroduction() }` to replace its entire page, or set `overviewMode = PermissionOverviewMode.Hide` to start on the first permission even with several. `overviewMode = PermissionOverviewMode.Show` includes the overview even for one permission; `Hide` skips it.
 
 Every `PermissionDescription` requires a full page composable. `DefaultPermissionPage` is an optional helper for a ready-made hero and text; otherwise compose any UI you want. The persistent icon selector reads `PermissionDescription.label` as its accessibility name. `label` and `icon` default to permission-specific metadata for common Android runtime permissions (camera, microphone, location, notifications, media, and more). Unknown strings use a readable name and lock icon. Override either property when your feature needs a different name or icon, especially for localized accessibility text. Use `PermissionVisualDefaults.forPermission(permission)` if you want the same visual inside your page. The screen owns request and recovery actions; the page only supplies explanation content. A caller-created `PermissionOverview` also requires a full page; only the omitted argument receives the library's default.
+
+`DefaultPermissionPage(heroImage = …)` accepts an `ImageVector` (the default is a lock), an Android `Bitmap`, an Android `Drawable`, or a drawable resource ID. The hero artwork stays inside the page; `PermissionDescription.icon` independently controls the small icon in the persistent strip. For example:
+
+```kotlin
+PermissionDescription(Manifest.permission.CAMERA) {
+    DefaultPermissionPage(
+        label = "Camera",
+        heroImage = R.drawable.scan_hero, // vector or bitmap drawable resource
+        title = "Scan a document",
+        body = "Allow camera access when you start scanning.",
+    )
+}
+```
+
+You can pass `heroImage = myBitmap` or `heroImage = myDrawable` in the same call. Keep an owned bitmap valid while its page is composed. See the [API declarations](agents/api-reference.md#ui-pages-and-carousel) for all overloads.
 
 ### Replace the default page with your own Compose UI
 
@@ -290,4 +305,4 @@ This is a `Context` extension, so the **check** works in any class holding a val
 
 Run `./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :permission:generatePomFileForMavenPublication :app:assembleDebug`. [GitHub Actions](.github/workflows/render-permission-screens.yml) renders Compose previews, checks the publication POM, and uploads the PNGs. The previews do not exercise Android system permission prompts; validate grant and denial paths on a device or emulator.
 
-See [the bundle guide](docs/batch-request.md), [AGENTS.md](AGENTS.md), and [LICENSE](LICENSE).
+See [the bundle guide](docs/batch-request.md), [AI integration guide](AI_INTEGRATION_GUIDE.md), and [LICENSE](LICENSE).

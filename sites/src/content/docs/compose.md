@@ -7,6 +7,8 @@ description: Customize the overview, per-permission pages, recovery, and timing.
 
 `PermissionDescription { ... }` requires the entire page, including its hero and copy. The library keeps the icon strip and action button in place outside the carousel. `DefaultPermissionPage` is a reusable helper you can call within the lambda. `label` and `icon` default to permission-specific metadata for the persistent strip and accessibility; override them as needed.
 
+The page's `heroImage` can be an `ImageVector`, Android `Bitmap`, `Drawable`, or drawable resource ID such as `R.drawable.scan_hero`. The `PermissionDescription.icon` remains the separate, smaller icon in the strip. Keep a supplied bitmap alive while the page uses it.
+
 ```kotlin
 PermissionDescription(
     permission = Manifest.permission.CAMERA,

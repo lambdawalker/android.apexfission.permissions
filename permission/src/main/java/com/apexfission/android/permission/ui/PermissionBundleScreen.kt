@@ -1,12 +1,18 @@
 package com.apexfission.android.permission.ui
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.view.View
 import android.view.accessibility.AccessibilityManager
+import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -55,14 +61,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -97,7 +109,7 @@ class PermissionOverview(
 internal fun defaultPermissionOverview(): PermissionOverview = PermissionOverview {
     DefaultPermissionPage(
         label = stringResource(R.string.permission_bundle_label),
-        icon = Icons.Default.Lock,
+        heroImage = Icons.Default.Lock,
         title = stringResource(R.string.permission_bundle_overview_title),
         body = stringResource(R.string.permission_bundle_overview_body),
     )
@@ -146,24 +158,96 @@ fun DefaultDescription(
     }
 }
 
-/** Default full page, useful inside a single [PermissionDescription.page] lambda. */
+/** Default full page with a vector hero. [heroImage] is decorative; the text explains access. */
 @Composable
 fun DefaultPermissionPage(
     label: String,
-    icon: ImageVector = Icons.Default.Lock,
+    heroImage: ImageVector = Icons.Default.Lock,
     title: String? = null,
     body: String? = null,
     features: List<PermissionFeature> = emptyList(),
 ) {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(210.dp), contentAlignment = Alignment.Center
-    ) {
-        DefaultBundleHero(icon)
+    DefaultPermissionPageLayout(label, title, body, features) {
+        DefaultHeroFrame {
+            Icon(heroImage, contentDescription = null, modifier = Modifier.size(72.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer)
+        }
     }
+}
+
+/** Android [Bitmap] hero; the caller retains ownership and must keep it valid while composed. */
+@Composable
+fun DefaultPermissionPage(
+    label: String,
+    heroImage: Bitmap,
+    title: String? = null,
+    body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+) {
+    DefaultPermissionPageLayout(label, title, body, features) {
+        HeroPainter(BitmapPainter(heroImage.asImageBitmap()))
+    }
+}
+
+/** Drawable resource hero (vector or bitmap); pass `R.drawable.your_artwork`. */
+@Composable
+fun DefaultPermissionPage(
+    label: String,
+    @DrawableRes heroImage: Int,
+    title: String? = null,
+    body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+) {
+    val painter = painterResource(heroImage)
+    DefaultPermissionPageLayout(label, title, body, features) { HeroPainter(painter) }
+}
+
+/** Android [Drawable] instance hero. The host owns its lifecycle. */
+@Composable
+fun DefaultPermissionPage(
+    label: String,
+    heroImage: Drawable,
+    title: String? = null,
+    body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+) {
+    DefaultPermissionPageLayout(label, title, body, features) {
+        DefaultHeroFrame {
+            AndroidView(
+                factory = { context -> ImageView(context).apply {
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                } },
+                update = { it.setImageDrawable(heroImage) },
+                modifier = Modifier.size(width = 212.dp, height = 152.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DefaultPermissionPageLayout(
+    label: String,
+    title: String?,
+    body: String?,
+    features: List<PermissionFeature>,
+    hero: @Composable () -> Unit,
+) {
+    Box(Modifier.fillMaxWidth().height(210.dp), contentAlignment = Alignment.Center) { hero() }
     Spacer(Modifier.height(24.dp))
-    DefaultDescription(label, icon, title, body, features)
+    DefaultDescription(label = label, title = title, body = body, features = features)
+}
+
+@Composable
+private fun HeroPainter(painter: Painter) {
+    DefaultHeroFrame {
+        Image(
+            painter = painter,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(width = 212.dp, height = 152.dp),
+        )
+    }
 }
 
 internal enum class BundleAction { Request, Settings, Complete }
@@ -227,7 +311,7 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int = if (selec
  * [initialPage] is zero for the
  * overview when it is present, otherwise zero for the first permission.
  * [autoAdvance] advances through pages using their explicit delays until the user interacts.
- * A progress bar shows the remaining reading time; the adjacent control pauses or resumes it.
+ * A segmented progress bar shows the remaining reading time; the adjacent control pauses or resumes it.
  * After the last page it returns to the first. A touch, swipe, or icon selection pauses it
  * until resumed.
  * [recoveryContent] is shown for statuses inferred to need recovery, including mixed batches.
@@ -573,15 +657,13 @@ private fun PermissionIconStrip(
 }
 
 @Composable
-private fun DefaultBundleHero(icon: ImageVector) {
+private fun DefaultHeroFrame(content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .size(width = 260.dp, height = 200.dp)
             .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f), RoundedCornerShape(28.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            icon, contentDescription = null, modifier = Modifier.size(72.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        content()
     }
 }

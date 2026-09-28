@@ -63,9 +63,21 @@ data class PermissionFeature(val icon: ImageVector, val title: String, val subti
 
 @Composable fun DefaultPermissionPage(
     label: String,
-    icon: ImageVector = Icons.Default.Lock,
+    heroImage: ImageVector = Icons.Default.Lock,
     title: String? = null,
     body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+)
+@Composable fun DefaultPermissionPage(
+    label: String, heroImage: Bitmap, title: String? = null, body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+)
+@Composable fun DefaultPermissionPage(
+    label: String, @DrawableRes heroImage: Int, title: String? = null, body: String? = null,
+    features: List<PermissionFeature> = emptyList(),
+)
+@Composable fun DefaultPermissionPage(
+    label: String, heroImage: Drawable, title: String? = null, body: String? = null,
     features: List<PermissionFeature> = emptyList(),
 )
 
@@ -83,7 +95,7 @@ object PermissionVisualDefaults {
 }
 ```
 
-Every `PermissionDescription` and caller-created `PermissionOverview` requires a **whole page** composable. The library's icon strip, buttons, progress, and recovery text sit outside the page. `DefaultPermissionPage` is optional: it draws a centered icon hero and explanatory text. Compose your own `page` for another layout. `label` and `icon` supply the icon strip, with common Android permission defaults; override them for feature wording or localization. `DefaultDescription` is the text portion of the built-in page. `PermissionFeature` adds benefit rows there. `All` retains granted pages and adds green checks; `MissingOnly` hides granted pages but does not change the batch or grant checks.
+Every `PermissionDescription` and caller-created `PermissionOverview` requires a **whole page** composable. The library's icon strip, buttons, progress, and recovery text sit outside the page. `DefaultPermissionPage` is optional: it draws a centered hero and explanatory text. `heroImage` accepts an `ImageVector` (default lock), Android `Bitmap`, `Drawable`, or a drawable resource ID such as `R.drawable.permission_hero`. The image is decorative; the text provides its meaning to accessibility services. Keep a supplied bitmap valid while its page is composed. The permission's `icon` is separate metadata for the icon strip. Compose your own `page` for another layout. `label` and `icon` supply the icon strip, with common Android permission defaults; override them for feature wording or localization. `DefaultDescription` is the text portion of the built-in page. `PermissionFeature` adds benefit rows there. `All` retains granted pages and adds green checks; `MissingOnly` hides granted pages but does not change the batch or grant checks.
 
 ```kotlin
 @Composable fun PermissionBundleScreen(

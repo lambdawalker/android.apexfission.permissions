@@ -25,7 +25,7 @@ HandlePermissions(
         ) {
             DefaultPermissionPage(
                 label = "Camera",
-                icon = Icons.Default.PhotoCamera,
+                heroImage = Icons.Default.PhotoCamera,
                 title = "Scan a document",
                 body = "Allow camera access when you start scanning.",
             )
@@ -37,7 +37,7 @@ HandlePermissions(
     overview = PermissionOverview(page = {
         DefaultPermissionPage(
             label = "Access",
-            icon = Icons.Default.Lock,
+            heroImage = Icons.Default.Lock,
             title = "Prepare your scan",
             body = "Review the permissions needed for this feature.",
         )
@@ -53,11 +53,13 @@ HandlePermissions(
 
 The trailing `PermissionDescription { ... }` lambda is the **required entire page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` is a ready-made helper you can call within the required lambda. The icon strip reads `PermissionDescription.label` as its accessibility name. The library supplies an icon and label for common Android permissions through `PermissionVisualDefaults`; unrecognized strings use a lock and a readable name derived from the string. Override either `label` or `icon` for feature-specific wording, another language, or a custom visual. `PermissionVisualDefaults.forPermission(permission)` exposes the same pair if your page needs it. The carousel owns the batch request button and its caption.
 
+The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImage = Icons.Default.PhotoCamera` for a vector, `heroImage = R.drawable.scan_hero` for a raster or vector drawable resource, or pass an Android `Bitmap` or `Drawable` instance. Bitmap and drawable artwork fits inside the hero frame; preserve an owned bitmap until the page leaves composition. `PermissionDescription.icon` still controls the small icon in the strip. See [all overloads](api-reference.md#ui-pages-and-carousel).
+
 ## Choose a page layout
 
 | Use | Page content |
 | --- | --- |
-| `DefaultPermissionPage` | A centered icon hero, heading, description, and optional `PermissionFeature` rows. Supply it inside `PermissionDescription { ... }` when this layout fits. |
+| `DefaultPermissionPage` | A centered vector, bitmap, or drawable hero, heading, description, and optional `PermissionFeature` rows. Supply it inside `PermissionDescription { ... }` when this layout fits. |
 | Host composable | Your own full page layout. Use it when the feature calls for a distinct visual hierarchy; the library still draws the icon strip, segmented timer, request button, and recovery UI. |
 
 The demo's `NarrationPermissionPage` is a **host composable, not part of the library**. Its recording console, waveform, and left-aligned text are intentionally different from the centered default page. Pass it to the same `PermissionDescription` API:

@@ -62,7 +62,7 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 ),
             ) {
                 DefaultPermissionPage(
-                    label = "Camera", icon = Icons.Default.PhotoCamera,
+                    label = "Camera", heroImage = Icons.Default.PhotoCamera,
                     title = CAMERA_TITLE, body = CAMERA_BODY,
                 )
             },
@@ -97,7 +97,7 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
             ),
             page = {
                 DefaultPermissionPage(
-                    label = "Permissions", icon = Icons.Default.Lock,
+                    label = "Permissions", heroImage = Icons.Default.Lock,
                     title = OVERVIEW_TITLE, body = OVERVIEW_BODY,
                 )
             },

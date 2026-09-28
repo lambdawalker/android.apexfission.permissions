@@ -1,6 +1,9 @@
 package com.apexfission.android.permissions
 
 import android.Manifest
+import android.graphics.Bitmap
+import android.graphics.drawable.ColorDrawable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.ui.PermissionDescription
 import com.apexfission.android.permission.ui.PermissionBundleScreen
+import com.apexfission.android.permission.ui.DefaultPermissionPage
 import com.apexfission.android.permission.ui.PermissionOverviewMode
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -75,5 +79,21 @@ class PermissionPageDeviceTest {
         compose.onNodeWithText("1 of 3").assertExists()
         compose.onNodeWithText("Before you continue").assertExists()
         compose.onNodeWithText("The app needs some permissions to work for you.").assertExists()
+    }
+
+    @Test fun defaultPageAcceptsBitmapDrawableAndDrawableResourceHeroes() {
+        val bitmap = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888)
+        compose.setContent {
+            MaterialTheme {
+                Column {
+                    DefaultPermissionPage(label = "Bitmap", heroImage = bitmap, title = "Bitmap hero")
+                    DefaultPermissionPage(label = "Drawable", heroImage = ColorDrawable(android.graphics.Color.BLUE), title = "Drawable hero")
+                    DefaultPermissionPage(label = "Resource", heroImage = android.R.drawable.ic_menu_camera, title = "Resource hero")
+                }
+            }
+        }
+        compose.onNodeWithText("Bitmap hero").assertExists()
+        compose.onNodeWithText("Drawable hero").assertExists()
+        compose.onNodeWithText("Resource hero").assertExists()
     }
 }

@@ -30,7 +30,7 @@ HandlePermissions(
         ) {
             DefaultPermissionPage(
                 label = "Camera",
-                icon = Icons.Default.PhotoCamera,
+                heroImage = Icons.Default.PhotoCamera,
                 title = "Scan documents",
                 body = "Allow camera access when you start a scan.",
             )

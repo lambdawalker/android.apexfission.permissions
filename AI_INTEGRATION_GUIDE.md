@@ -1,4 +1,4 @@
-# Agent guide
+# AI integration guide
 
 This repository provides Android runtime permission UI and callback helpers. Public APIs live in `:permission` under `com.apexfission.android.permission`. The `:app` module is a runnable example.
 
