@@ -35,7 +35,9 @@ class MainActivity : ComponentActivity() {
                             modifier = modifier,
                         )
                         DemoDestination.Carousel -> PermissionCarouselDemo(
-                            onBack = { destination = DemoDestination.Home }, modifier = modifier,
+                            // The library screen handles system bars itself. Scaffold's innerPadding
+                            // would add the status-bar inset a second time.
+                            onBack = { destination = DemoDestination.Home },
                         )
                         DemoDestination.Recipes -> PlatformRecipesDemo(
                             onBack = { destination = DemoDestination.Home }, modifier = modifier,
