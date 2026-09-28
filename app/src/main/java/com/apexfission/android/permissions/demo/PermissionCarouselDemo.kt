@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.apexfission.android.permission.DefaultPermissionPage
@@ -34,6 +35,7 @@ import com.apexfission.android.permission.PermissionDisplayMode
 import com.apexfission.android.permission.PermissionOverview
 import com.apexfission.android.permission.ReadingPace
 import com.apexfission.android.permission.estimateReadingDelayMillis
+import com.apexfission.android.permission.openPermissionRecipeSettings
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
 
 private const val CAMERA_TITLE = "Scan documents"
@@ -45,6 +47,7 @@ private const val OVERVIEW_BODY = "Camera access is needed to scan. Microphone a
 
 @Composable
 fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     HandlePermissions(
         permissions = listOf(
             PermissionDescription(
@@ -80,6 +83,16 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
         onNotNow = onBack,
         displayMode = PermissionDisplayMode.All,
         autoAdvance = true,
+        recoveryContent = { inferred ->
+            Text(
+                "Android may not show another request for ${if (inferred.size == 1) "this permission" else "these permissions"}. " +
+                    "If it doesn't, review the app's access in Settings.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+        settingsActionLabel = "Review access in Settings",
+        onOpenSettings = { context.openPermissionRecipeSettings() },
         overview = PermissionOverview(
             autoAdvanceDelayMillis = estimateReadingDelayMillis(
                 "$OVERVIEW_TITLE $OVERVIEW_BODY", ReadingPace.Slow

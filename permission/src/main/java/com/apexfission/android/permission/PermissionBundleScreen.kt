@@ -207,6 +207,8 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int =
  * A progress bar shows the remaining reading time; the adjacent control pauses or resumes it.
  * After the last page it returns to the first. A touch, swipe, or icon selection pauses it
  * until resumed.
+ * [recoveryContent] is shown for statuses inferred to need recovery, including mixed batches.
+ * [settingsActionLabel] changes the Settings button caption; [onOpenSettings] owns its action.
  */
 @Composable
 fun PermissionBundleScreen(
@@ -225,6 +227,10 @@ fun PermissionBundleScreen(
     onUserInteraction: () -> Unit = {},
     initialAutoAdvanceStopped: Boolean = false,
     onAutoAdvanceResume: () -> Unit = {},
+    /** Replaces the default uncertain-recovery note; receives permission strings inferred blocked. */
+    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
+    /** Overrides the Settings button caption when Settings is the primary action. */
+    settingsActionLabel: String? = null,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
@@ -235,6 +241,7 @@ fun PermissionBundleScreen(
     val pager = rememberPagerState(initialPage = initialPage, pageCount = { pageCount })
     val scope = rememberCoroutineScope()
     val action = bundleAction(statuses)
+    val recoveryPermissions = inferredRecoveryPermissions(permissions.map { it.permission }, statuses)
     val current = pager.currentPage.coerceIn(0 until pageCount)
     val stopped = rememberSaveable { mutableStateOf(initialAutoAdvanceStopped) }
     val currentOnUserInteraction = rememberUpdatedState(onUserInteraction)
@@ -383,6 +390,11 @@ fun PermissionBundleScreen(
                     }
                 }
             }
+            if (recoveryPermissions.isNotEmpty()) {
+                Box(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)) {
+                    recoveryContent(recoveryPermissions)
+                }
+            }
             PermissionIconStrip(permissions, statuses, if (hasOverview) current - 1 else current) { selected ->
                 stopAutoAdvance()
                 scope.launch { pager.animateScrollToPage(selected + if (hasOverview) 1 else 0) }
@@ -406,7 +418,7 @@ fun PermissionBundleScreen(
                             it == PermissionStatus.RationaleRequired || it == PermissionStatus.PermanentlyDenied
                         }) stringResource(R.string.permission_bundle_retry)
                         else stringResource(R.string.permission_bundle_request)
-                        BundleAction.Settings -> stringResource(R.string.permission_open_settings)
+                        BundleAction.Settings -> settingsActionLabel ?: stringResource(R.string.permission_open_settings)
                         BundleAction.Complete -> stringResource(R.string.permission_done)
                     },
                     fontWeight = FontWeight.Bold,
@@ -506,6 +518,8 @@ private fun DefaultBundleHero(icon: ImageVector) {
  * overview (or sole remaining permission).
  * [autoAdvance] is opt-in and uses each page's `autoAdvanceDelayMillis`. User interaction
  * permanently stops it for this screen visit, including after a partial permission result.
+ * [recoveryContent] can replace the uncertain default recovery note; [settingsActionLabel]
+ * and [onOpenSettings] customize the user-triggered Settings action.
  *
  * Special app access and permissions with platform-specific sequencing need host-managed flows.
  */
@@ -521,6 +535,12 @@ fun HandlePermissionBundle(
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     autoAdvance: Boolean = false,
+    /** Replaces the built-in recovery note with feature-specific copy or UI. */
+    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
+    /** Label for the Settings action when a request may no longer show a system prompt. */
+    settingsActionLabel: String? = null,
+    /** Overrides opening the app details page. Called after the user taps the Settings action. */
+    onOpenSettings: (() -> Unit)? = null,
     content: @Composable (PermissionGrants) -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
@@ -585,11 +605,14 @@ fun HandlePermissionBundle(
                     state.launchMultiplePermissionRequest()
                 },
                 onOpenSettings = {
-                    context.startActivity(
+                    if (onOpenSettings != null) onOpenSettings()
+                    else context.startActivity(
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 },
+                recoveryContent = recoveryContent,
+                settingsActionLabel = settingsActionLabel,
                 overview = overview,
                 overviewMode = overviewMode,
                 autoAdvance = autoAdvance,

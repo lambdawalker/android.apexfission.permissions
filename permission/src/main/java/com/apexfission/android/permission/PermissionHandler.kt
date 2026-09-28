@@ -29,6 +29,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * shows it when more than one permission is visible; Show and Hide override either count.
  * @param autoAdvance Whether to advance through the carousel using each page's configured delay
  * until the first user interaction. Disabled by default.
+ * @param recoveryContent Replaces the built-in note shown when local history and Android's
+ * rationale signal suggest that a permission prompt may no longer appear. Receives the inferred
+ * permission strings; this status is not certain.
+ * @param settingsActionLabel Optional caption for the Settings button.
+ * @param onOpenSettings Optional host action for the Settings button; defaults to app details.
  * @param content Composable displayed when all required permissions are granted. Its
  * [PermissionGrants] snapshot reports optional grants, including after a partial result.
  */
@@ -43,6 +48,9 @@ fun HandlePermissions(
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     autoAdvance: Boolean = false,
+    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
+    settingsActionLabel: String? = null,
+    onOpenSettings: (() -> Unit)? = null,
     content: @Composable (PermissionGrants) -> Unit,
 ) {
     if (permissionContent == null) {
@@ -55,12 +63,16 @@ fun HandlePermissions(
             displayMode = displayMode,
             overviewMode = overviewMode,
             autoAdvance = autoAdvance,
+            recoveryContent = recoveryContent,
+            settingsActionLabel = settingsActionLabel,
+            onOpenSettings = onOpenSettings,
             content = content,
         )
         return
     }
     HandlePermissionsIndividually(
-        permissions, onBack, onNotNow, modifier, permissionContent, content,
+        permissions, onBack, onNotNow, modifier, permissionContent, recoveryContent,
+        settingsActionLabel, onOpenSettings, content,
     )
 }
 
@@ -72,6 +84,9 @@ fun HandlePermissionsIndividually(
     onNotNow: () -> Unit,
     modifier: Modifier = Modifier,
     permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
+    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
+    settingsActionLabel: String? = null,
+    onOpenSettings: (() -> Unit)? = null,
     content: @Composable (PermissionGrants) -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
@@ -94,7 +109,11 @@ fun HandlePermissionsIndividually(
             onBack = onBack,
             onNotNow = onNotNow,
             onRequest = { controllers[it].requestPermission() },
-            onOpenSettings = { controllers[it].openAppSettings() },
+            onOpenSettings = { index ->
+                if (onOpenSettings != null) onOpenSettings() else controllers[index].openAppSettings()
+            },
+            recoveryContent = recoveryContent,
+            settingsActionLabel = settingsActionLabel,
             modifier = modifier,
         )
     }
@@ -111,6 +130,9 @@ fun HandleCameraPermission(
     onNotNow: () -> Unit,
     permissionViewModel: PermissionViewModel = viewModel(),
     permissionContent: (@Composable (CameraPermissionController) -> Unit)? = null,
+    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
+    settingsActionLabel: String? = null,
+    onOpenSettings: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     val controller = rememberCameraPermissionController(permissionViewModel)
@@ -139,7 +161,9 @@ fun HandleCameraPermission(
             onBack = onBack,
             onNotNow = onNotNow,
             onRequest = { controller.requestPermission() },
-            onOpenSettings = { controller.openAppSettings() },
+            onOpenSettings = { if (onOpenSettings != null) onOpenSettings() else controller.openAppSettings() },
+            recoveryContent = recoveryContent,
+            settingsActionLabel = settingsActionLabel,
             modifier = modifier,
         )
     }

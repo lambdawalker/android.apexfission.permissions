@@ -105,6 +105,8 @@ data class PermissionFeature(val icon: ImageVector, val title: String, val subti
  * @param onOpenSettings Open app settings for the permission at the given index.
  * @param onComplete Called if all permissions are already granted in a standalone screen.
  * @param initialPage Page shown when this screen first enters composition.
+ * @param recoveryContent Content for a status inferred to need Settings; receives its permission string.
+ * @param settingsActionLabel Optional caption for the Settings button.
  */
 @Composable
 fun PermissionScreen(
@@ -117,6 +119,8 @@ fun PermissionScreen(
     modifier: Modifier = Modifier,
     onComplete: () -> Unit = {},
     initialPage: Int = 0,
+    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
+    settingsActionLabel: String? = null,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
@@ -241,6 +245,11 @@ fun PermissionScreen(
                     }
                 }
             }
+            if (status == PermissionStatus.PermanentlyDenied) {
+                Box(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                    recoveryContent(listOf(permission.permission))
+                }
+            }
             Button(
                 onClick = {
                     when (action) {
@@ -257,7 +266,7 @@ fun PermissionScreen(
                     when (action) {
                         PermissionPrimaryAction.Request -> permission.requestLabel
                             ?: stringResource(R.string.permission_generic_allow, permission.label)
-                        PermissionPrimaryAction.Settings -> stringResource(R.string.permission_open_settings)
+                        PermissionPrimaryAction.Settings -> settingsActionLabel ?: stringResource(R.string.permission_open_settings)
                         PermissionPrimaryAction.Next -> if (next == null) stringResource(R.string.permission_done)
                             else stringResource(R.string.permission_next)
                     },

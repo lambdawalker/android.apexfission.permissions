@@ -12,6 +12,7 @@
     <string name="permission_generic_body">Cette fonctionnalité nécessite l’accès à %1$s. Vous pouvez gérer cette autorisation dans les paramètres de l’appareil.</string>
     <string name="permission_generic_allow">Autoriser %1$s</string>
     <string name="permission_open_settings">Ouvrir les paramètres de l’application</string>
+    <string name="permission_recovery_uncertain">Android pourrait ne plus afficher la demande d’autorisation. Si elle n’apparaît pas, vous pouvez activer l’accès dans les paramètres de l’application.</string>
     <string name="permission_next">Autorisation suivante</string>
     <string name="permission_done">Continuer</string>
     <string name="camera_permission_label">la caméra</string>
