@@ -1,5 +1,7 @@
 # Code-only integration
 
+For staged location, notifications, or user-selected media, see [platform-aware recipes](platform-recipes.md) before using a generic permission batch.
+
 Use these APIs when the host owns the UI. Declare every permission in its app manifest. Both paths target ordinary runtime permissions; special app access and staged platform requests need another flow.
 
 ## Library-owned launcher
