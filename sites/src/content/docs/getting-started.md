@@ -7,11 +7,11 @@ The host app must declare each permission in its manifest. The library needs And
 
 ```kotlin title="app/build.gradle.kts"
 dependencies {
-    implementation("com.apexfission.androi:permission:0.1.0")
+    implementation("com.apexfission.androi:permission:0.2.0")
 }
 ```
 
-Use the **version actually published** on Maven Central; `0.1.0` is an example. When developing against this repository, use `implementation(project(":permission"))` instead.
+Use the **version actually published** on Maven Central; `0.2.0` is an example. When developing against this repository, use `implementation(project(":permission"))` instead.
 
 ```xml title="app/src/main/AndroidManifest.xml"
 <uses-permission android:name="android.permission.CAMERA" />

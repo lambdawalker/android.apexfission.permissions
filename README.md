@@ -27,7 +27,7 @@ Once the first release has been published on Maven Central, use:
 ```kotlin
 // settings.gradle.kts: ensure mavenCentral() is in dependencyResolutionManagement repositories
 dependencies {
-    implementation("com.apexfission.androi:permission:0.1.0")
+    implementation("com.apexfission.androi:permission:0.2.0")
 }
 ```
 
@@ -37,7 +37,7 @@ For a source checkout, include the module and use:
 dependencies { implementation(project(":permission")) }
 ```
 
-The module is `:permission` (namespace `com.apexfission.android.permission`, minSdk 24). The published version is chosen when the release workflow runs; replace `0.1.0` above with the version actually published. Declare every requested permission in your app manifest:
+The module is `:permission` (namespace `com.apexfission.android.permission`, minSdk 24). The published version is chosen when the release workflow runs; replace `0.2.0` above with the version actually published. Declare every requested permission in your app manifest:
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Maven version to stage (for example, 0.1.0)'
+        description: 'Maven version to stage (for example, 0.2.0)'
         required: true
         type: string
 
@@ -34,7 +34,7 @@ jobs:
           RELEASE_VERSION: ${{ inputs.version }}
         run: |
           if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.-]+)?$ ]]; then
-            echo "Use a Maven version such as 0.1.0 or 0.1.0-B1" >&2
+            echo "Use a Maven version such as 0.2.0 or 0.2.0-B1" >&2
             exit 1
           fi
           for name in ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword ORG_GRADLE_PROJECT_signingInMemoryKey ORG_GRADLE_PROJECT_signingInMemoryKeyPassword; do

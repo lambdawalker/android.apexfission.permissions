@@ -11,7 +11,7 @@ mavenPublishing {
     coordinates(
         "com.apexfission.androi",
         "permission",
-        providers.gradleProperty("permissionVersion").orElse("0.1.0").get(),
+        providers.gradleProperty("permissionVersion").orElse("0.2.0").get(),
     )
     publishToMavenCentral()
     signAllPublications()
