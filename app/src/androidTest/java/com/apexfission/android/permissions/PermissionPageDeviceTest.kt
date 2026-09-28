@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.ui.PermissionDescription
 import com.apexfission.android.permission.ui.PermissionBundleScreen
+import com.apexfission.android.permission.ui.PermissionOverviewMode
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -48,7 +49,7 @@ class PermissionPageDeviceTest {
                     ),
                     statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                     onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
-                    overview = null,
+                    overviewMode = PermissionOverviewMode.Hide,
                 )
             }
         }

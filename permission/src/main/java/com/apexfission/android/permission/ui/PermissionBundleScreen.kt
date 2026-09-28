@@ -182,7 +182,7 @@ enum class PermissionOverviewMode {
     /** Show the overview when more than one permission is visible; a generic one is supplied by default. */
     Automatic,
 
-    /** Show the supplied overview even for a single visible permission. Requires [PermissionOverview]. */
+    /** Show the overview even for a single visible permission. */
     Show,
 
     /** Go directly to the first permission, even when several are visible. */
@@ -192,13 +192,9 @@ enum class PermissionOverviewMode {
 internal fun shouldShowOverview(
     visiblePermissionCount: Int,
     mode: PermissionOverviewMode,
-    overview: PermissionOverview?,
 ): Boolean = when (mode) {
-    PermissionOverviewMode.Automatic -> overview != null && visiblePermissionCount > 1
-    PermissionOverviewMode.Show -> {
-        requireNotNull(overview) { "overview must be supplied when overviewMode is Show" }
-        true
-    }
+    PermissionOverviewMode.Automatic -> visiblePermissionCount > 1
+    PermissionOverviewMode.Show -> true
     PermissionOverviewMode.Hide -> false
 }
 
@@ -227,7 +223,7 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int = if (selec
  *
  * [onRequest] should launch one multiple-permission request. [onOpenSettings] should open app
  * settings if no outstanding permission can prompt. [overviewMode] controls the overview;
- * Automatic shows it when more than one permission is visible. Show requires a nonnull [overview].
+ * Automatic shows it when more than one permission is visible. Hide omits it.
  * [initialPage] is zero for the
  * overview when it is present, otherwise zero for the first permission.
  * [autoAdvance] advances through pages using their explicit delays until the user interacts.
@@ -246,7 +242,7 @@ fun PermissionBundleScreen(
     onRequest: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
-    overview: PermissionOverview? = defaultPermissionOverview(),
+    overview: PermissionOverview = defaultPermissionOverview(),
     onComplete: () -> Unit = {},
     initialPage: Int = 0,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
@@ -262,7 +258,7 @@ fun PermissionBundleScreen(
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
     require(permissions.map { it.permission }.distinct().size == permissions.size) { "Permissions must be unique" }
-    val hasOverview = shouldShowOverview(permissions.size, overviewMode, overview)
+    val hasOverview = shouldShowOverview(permissions.size, overviewMode)
     val pageCount = permissions.size + if (hasOverview) 1 else 0
     require(initialPage in 0 until pageCount) { "initialPage is out of range" }
     val pager = rememberPagerState(initialPage = initialPage, pageCount = { pageCount })
@@ -294,7 +290,7 @@ fun PermissionBundleScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
     val settled = pager.settledPage
-    val pageDelayMillis = if (hasOverview && settled == 0) requireNotNull(overview).autoAdvanceDelayMillis
+    val pageDelayMillis = if (hasOverview && settled == 0) overview.autoAdvanceDelayMillis
     else permissions[settled.coerceIn(0, pageCount - 1) - if (hasOverview) 1 else 0].autoAdvanceDelayMillis
     val nextPage = nextAutoAdvancePage(settled, pageCount)
     val progress = remember(settled, pageDelayMillis, pageCount) {
@@ -325,36 +321,13 @@ fun PermissionBundleScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (autoAdvance && pageCount > 1) {
-                val progressDescription = stringResource(R.string.permission_auto_advance_progress)
-                val trackColor = MaterialTheme.colorScheme.surfaceVariant
-                val fillColor = MaterialTheme.colorScheme.primary
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer { alpha = indicatorAlpha }
-                        .clearAndSetSemantics {
-                            if (!stopped.value && !touchExplorationEnabled) {
-                                contentDescription = progressDescription
-                                progressBarRangeInfo = ProgressBarRangeInfo(progress.value, 0f..1f)
-                            }
-                        },
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    repeat(pageCount) { page ->
-                        Canvas(
-                            Modifier
-                                .weight(1f)
-                                .height(4.dp)
-                        ) {
-                            val radius = CornerRadius(size.height / 2f)
-                            drawRoundRect(trackColor, cornerRadius = radius)
-                            val filledWidth = size.width * segmentProgressForPage(page, settled, progress.value)
-                            if (filledWidth > 0f) {
-                                drawRoundRect(fillColor, size = Size(filledWidth, size.height), cornerRadius = radius)
-                            }
-                        }
-                    }
-                }
+                SegmentedReadingProgressIndicator(
+                    pageCount = pageCount,
+                    currentPage = settled,
+                    progress = progress.value,
+                    indicatorAlpha = indicatorAlpha,
+                    paused = stopped.value || touchExplorationEnabled,
+                )
             }
             Row(
                 modifier = Modifier
@@ -419,7 +392,7 @@ fun PermissionBundleScreen(
                 ) {
                     when {
                         item != null -> item.page()
-                        else -> requireNotNull(overview).page()
+                        else -> overview.page()
                     }
                     if (item != null && statuses[index] == PermissionStatus.Granted) {
                         Spacer(Modifier.height(16.dp))
@@ -487,6 +460,43 @@ fun PermissionBundleScreen(
                     .padding(horizontal = 24.dp)
             ) {
                 Text(stringResource(R.string.permission_not_now))
+            }
+        }
+    }
+}
+
+/** One reading-time segment per carousel page; completed pages remain filled until wraparound. */
+@Composable
+private fun SegmentedReadingProgressIndicator(
+    pageCount: Int,
+    currentPage: Int,
+    progress: Float,
+    indicatorAlpha: Float,
+    paused: Boolean,
+) {
+    val progressDescription = stringResource(R.string.permission_auto_advance_progress)
+    val trackColor = MaterialTheme.colorScheme.surfaceVariant
+    val fillColor = MaterialTheme.colorScheme.primary
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { alpha = indicatorAlpha }
+            .clearAndSetSemantics {
+                if (!paused) {
+                    contentDescription = progressDescription
+                    progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f)
+                }
+            },
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        repeat(pageCount) { page ->
+            Canvas(Modifier.weight(1f).height(4.dp)) {
+                val radius = CornerRadius(size.height / 2f)
+                drawRoundRect(trackColor, cornerRadius = radius)
+                val filledWidth = size.width * segmentProgressForPage(page, currentPage, progress)
+                if (filledWidth > 0f) {
+                    drawRoundRect(fillColor, size = Size(filledWidth, size.height), cornerRadius = radius)
+                }
             }
         }
     }

@@ -63,15 +63,15 @@ Use a nonempty list with unique, nonblank Android permission names. The batch re
 
 ## Overview page
 
-Omitting `overview` supplies a generic lock-icon `DefaultPermissionPage` titled “Before you continue.” A caller-created `PermissionOverview` must have a full page. Pass `overview = null` to start on the first permission. `overviewMode` applies to `HandlePermissions` and the render-only `PermissionBundleScreen`:
+Omitting `overview` supplies a generic lock-icon `DefaultPermissionPage` titled “Before you continue.” A caller-created `PermissionOverview` must have a full page. Set `overviewMode = PermissionOverviewMode.Hide` to start on the first permission. `overviewMode` applies to `HandlePermissions` and the render-only `PermissionBundleScreen`:
 
 | `PermissionOverviewMode` | Behavior | Preview |
 | --- | --- | --- |
 | `Automatic` (default) | Show the generic or custom overview when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](../docs/screenshots/bundle-overview.png) |
-| `Show` | Include a nonnull overview even with one permission. | [Single-permission overview](../docs/screenshots/single-permission-overview.png) |
+| `Show` | Include the overview even with one permission. | [Single-permission overview](../docs/screenshots/single-permission-overview.png) |
 | `Hide` | Start on the first permission even with several. | [Multiple permissions without overview](../docs/screenshots/multiple-without-overview.png) |
 
-To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. `Show` also works with the default overview. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide` or `overview = null`. Changing the mode does not change which permissions the button requests.
+To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. `Show` also works with the default overview. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`. Changing the mode does not change which permissions the button requests.
 
 ## Timed carousel
 

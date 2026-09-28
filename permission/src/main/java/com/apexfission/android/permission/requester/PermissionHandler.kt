@@ -35,9 +35,9 @@ import com.google.accompanist.permissions.shouldShowRationale
  * requests missing permissions together; each [PermissionDescription] supplies a complete page.
  * The host must declare every requested permission in its manifest.
  *
- * [overview] defaults to a generic lock-icon page. Pass `null` to omit it, or supply a custom
- * page. Automatic [overviewMode] shows the overview when more than one permission is visible.
- * Show requires a nonnull overview.
+ * [overview] defaults to a generic lock-icon page; supply a custom page to replace it.
+ * Automatic [overviewMode] shows the overview when more than one permission is visible;
+ * Hide omits it.
  * [displayMode] filters only the carousel; grant checks and batch requests use the full list.
  * [onPermissionsResult] can report partial grants; the current [PermissionGrants] snapshot is
  * checked again before showing [content]. [recoveryContent], [settingsActionLabel], and
@@ -52,7 +52,7 @@ fun HandlePermissions(
     onBack: () -> Unit,
     onNotNow: () -> Unit,
     modifier: Modifier = Modifier,
-    overview: PermissionOverview? = defaultPermissionOverview(),
+    overview: PermissionOverview = defaultPermissionOverview(),
     onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
@@ -66,9 +66,6 @@ fun HandlePermissions(
     content: @Composable (PermissionGrants) -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
-    require(overviewMode != PermissionOverviewMode.Show || overview != null) {
-        "overview must be supplied when overviewMode is Show"
-    }
     val names = permissions.map { it.permission }
     require(names.distinct().size == names.size && names.all { it.isNotBlank() }) {
         "Permissions must have unique nonblank names"
@@ -116,7 +113,7 @@ fun HandlePermissions(
     } else {
         val visibleIndices = visiblePermissionIndices(statuses, displayMode)
         val visibleNames = visibleIndices.map(names::get)
-        key(visibleNames, overviewMode, overview != null) {
+        key(visibleNames, overviewMode) {
             PermissionBundleScreen(
                 permissions = visibleIndices.map(permissions::get),
                 statuses = visibleIndices.map(statuses::get),

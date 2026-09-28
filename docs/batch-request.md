@@ -1,6 +1,6 @@
 # Batch permission screen
 
-`HandlePermissions` uses one primary action to request the runtime permission set. It supplies a generic lock-icon overview by default when multiple permissions are visible. Provide `PermissionOverview { ... }` to replace that page or `overview = null` to omit it. The same API accepts `onPermissionsResult` to observe partial batch results.
+`HandlePermissions` uses one primary action to request the runtime permission set. It supplies a generic lock-icon overview by default when multiple permissions are visible. Provide `PermissionOverview { ... }` to replace that page or set `overviewMode = PermissionOverviewMode.Hide` to omit it. The same API accepts `onPermissionsResult` to observe partial batch results.
 
 ```kotlin
 HandlePermissions(
@@ -27,7 +27,7 @@ HandlePermissions(
 
 A `PermissionDescription` requires an **entire carousel page**. Compose its hero and explanation together, or call `DefaultPermissionPage` in the lambda. A caller-created `PermissionOverview` also requires a full page; the library supplies a generic overview only when the argument is omitted. Set `icon` and `label` on each permission only when the built-in metadata needs overriding; the library cannot inspect values inside a composable.
 
-`overviewMode = PermissionOverviewMode.Show` includes a nonnull overview with one permission; `Hide` starts on the first permission even with several. `Automatic` is the default and shows the generic or custom overview only when more than one permission is visible. `Show` cannot be combined with `overview = null`.
+`overviewMode = PermissionOverviewMode.Show` includes the overview with one permission; `Hide` starts on the first permission even with several. `Automatic` is the default and shows the generic or custom overview only when more than one permission is visible.
 
 The icon strip is outside the pager, immediately above the primary button, so it stays put as pages swipe. It uses the full screen width and scrolls to center the active icon. On the overview all icons have equal style and the whole row is centered, with overflow clipped on both sides. The button requests the entire list once, says **Request remaining permissions** after a denial, and offers **Open App Settings** if no outstanding permission can prompt. Back and Not Now remain separate navigation actions.
 
