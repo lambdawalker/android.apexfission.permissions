@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-Imports: `android.Manifest`, `android.os.Bundle`, `androidx.activity.ComponentActivity`, `androidx.activity.compose.setContent`, Compose Material icons (`Icons`, `PhotoCamera`, `Mic`, `Lock`), `MaterialTheme`, `Text`, and the public types from `com.apexfission.android.permission`. See [the runnable sample](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) for an expanded version with its own success screen.
+Imports: `android.Manifest`, `android.os.Bundle`, `androidx.activity.ComponentActivity`, `androidx.activity.compose.setContent`, Compose Material icons (`Icons`, `PhotoCamera`, `Mic`, `Lock`), `MaterialTheme`, `Text`, and the public types from `com.apexfission.android.permission`. Run the sample app to choose between the [carousel demo](app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) and the [platform recipes demo](app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt). [MainActivity](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) only hosts the demo navigation.
 
 By default, multiple visible permissions start on a general feature overview and then show one page per permission. A single visible permission starts on its permission page. `overviewMode = PermissionOverviewMode.Show` includes the overview even for one permission; `PermissionOverviewMode.Hide` omits it even for several. `Automatic` (the default) follows the number of visible permissions. Supplying `overview` customizes its content; `overviewMode` decides whether it appears.
 
@@ -117,7 +117,7 @@ PermissionDescription(
 }
 ```
 
-`PermissionOverview` also accepts `autoAdvanceDelayMillis`. Unspecified delays are six seconds. `ReadingPace.Slow` (120 words/minute), `Normal` (180), and `Fast` (230) estimate from whitespace-separated words, add two seconds of orientation time, and clamp to 4–60 seconds. For text without word separators or image-heavy pages, choose the delay directly. The [demo Activity](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) uses the same title and body values for UI and timing.
+`PermissionOverview` also accepts `autoAdvanceDelayMillis`. Unspecified delays are six seconds. `ReadingPace.Slow` (120 words/minute), `Normal` (180), and `Fast` (230) estimate from whitespace-separated words, add two seconds of orientation time, and clamp to 4–60 seconds. For text without word separators or image-heavy pages, choose the delay directly. The [carousel demo](app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) uses the same title and body values for UI and timing.
 
 `displayMode = PermissionDisplayMode.All` (the default) keeps granted permissions in the carousel and marks their icons with a green check badge; selecting one still highlights its icon. `PermissionDisplayMode.MissingOnly` removes granted permissions from both the carousel and icon strip. In `Automatic` overview mode, the overview appears only while more than one **visible** permission remains. After a grant changes the visible set, the carousel starts on the overview if present, otherwise the first remaining permission. Both modes still gate protected content on every original permission and use the same batch request. The setting applies to the built-in UI; custom `permissionContent` receives all controllers.
 
@@ -164,6 +164,8 @@ when (val step = PermissionRecipes.foregroundLocation(this, LocationAccuracy.Pre
 ```
 
 `PermissionRequester` is an Activity property; `useLocation` and `showLocationExplanation` are host functions. On Android 10 the background recipe requests background access **after** foreground is granted; on Android 11+ it points to Settings after a host-provided explanation. Notifications have a runtime prompt on Android 13+ with target SDK 33+. For user-selected photos or videos, use `rememberVisualMediaPicker { uri -> ... }` and launch it on a user gesture instead of requesting a storage permission. See the [complete platform recipes](agents/platform-recipes.md) for manifest setup, photo-picker code, and edge cases.
+
+The app's [platform recipes screen](app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt) runs each of these paths: approximate and precise location, staged background location, notifications, and photo/video selection. It displays the next recipe step, waits for a tap before requesting access, explains Settings and background steps with a decline option, and refreshes status after a request or return from Settings. Its manifest declares the permissions used by the demo. A real host should request background access only for an actual background feature.
 
 ## Code-only request with callbacks
 
