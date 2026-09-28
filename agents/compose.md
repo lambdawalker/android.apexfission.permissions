@@ -57,6 +57,8 @@ HandlePermissions(
 
 The trailing `PermissionDescription { ... }` lambda is the **entire carousel page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` supplies a ready-made page; omitting a page uses generic localized copy and visuals. Keep `label` and `icon` as metadata for the persistent icon strip and accessibility. When `page` is omitted, the separate `hero`, `description`, `title`, and `body` options remain available.
 
+To replace `DefaultPermissionPage` completely, pass your own composable in the lambda: `PermissionDescription(Manifest.permission.RECORD_AUDIO, label = "Microphone", icon = Icons.Default.Mic) { NarrationPermissionPage(title, body) }`. `NarrationPermissionPage` can draw its own hero, heading, and copy with ordinary Compose `Box`, `Column`, `Icon`, and `Text`. The library continues to own the icon strip and request action. See the [copyable custom page](../README.md#replace-the-default-page-with-your-own-compose-ui) and its [runnable demo](../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
+
 Use a nonempty list with unique, nonblank Android permission names. The batch request runs only while required access is missing. If every required permission is already granted, `content` is shown immediately, including when an optional permission is missing.
 
 ## Required and optional permissions
@@ -95,4 +97,3 @@ See the [selected permission](../docs/screenshots/permission-detail.png), [setti
 - `PermissionScreen` and `PermissionBundleScreen` render host-managed statuses and actions without launching Android requests.
 
 See [README.md](../README.md) and [the sample Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).
-

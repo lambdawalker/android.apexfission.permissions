@@ -22,6 +22,43 @@ PermissionDescription(
 
 Here `title` and `body` are values from the host. `estimateReadingDelayMillis` lives in the `.ui` package and uses the supplied text; the library cannot inspect text inside an arbitrary composable.
 
+### Replace `DefaultPermissionPage` entirely
+
+The [runnable carousel demo](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) keeps its camera page on `DefaultPermissionPage` but renders the microphone page with its own Compose layout:
+
+```kotlin
+val title = "Record narration"
+val body = "Allow microphone access to add narration when you record a scan."
+
+PermissionDescription(
+    permission = Manifest.permission.RECORD_AUDIO,
+    label = "Microphone",
+    icon = Icons.Default.Mic,
+    required = false,
+    autoAdvanceDelayMillis = estimateReadingDelayMillis("$title $body", ReadingPace.Slow),
+) {
+    NarrationPermissionPage(title, body)
+}
+
+@Composable
+fun NarrationPermissionPage(title: String, body: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier.fillMaxWidth().height(210.dp)
+                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(28.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Default.Mic, contentDescription = null, modifier = Modifier.size(52.dp))
+        }
+        Spacer(Modifier.height(24.dp))
+        Text(title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
+        Text(body, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+    }
+}
+```
+
+Add the usual Compose layout, shape, Material 3, and `TextAlign` imports. The `label` and `icon` remain metadata for the persistent selector; the library still provides the batch button, progress, and recovery UI. The custom page itself never launches a permission request.
+
 ## Overview and visibility
 
 When several permissions are visible, the feature overview appears automatically. Set `overviewMode = PermissionOverviewMode.Show` to include it even for a single permission, or `Hide` to start on the first permission. Customize it with `overview = PermissionOverview(page = { MyIntroduction() })`.
