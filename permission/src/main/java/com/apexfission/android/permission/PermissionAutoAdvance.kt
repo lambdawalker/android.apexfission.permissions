@@ -24,5 +24,12 @@ fun estimateReadingDelayMillis(text: String, pace: ReadingPace = ReadingPace.Slo
 internal fun nextAutoAdvancePage(currentPage: Int, pageCount: Int): Int? =
     if (pageCount <= 1) null else (currentPage + 1) % pageCount
 
+/** Filled pages precede the current page; upcoming pages remain empty. */
+internal fun segmentProgressForPage(page: Int, currentPage: Int, currentProgress: Float): Float = when {
+    page < currentPage -> 1f
+    page > currentPage -> 0f
+    else -> currentProgress.coerceIn(0f, 1f)
+}
+
 internal fun remainingAutoAdvanceMillis(progress: Float, totalMillis: Long): Int =
     ((1f - progress.coerceIn(0f, 1f)) * totalMillis).roundToInt().coerceAtLeast(1)

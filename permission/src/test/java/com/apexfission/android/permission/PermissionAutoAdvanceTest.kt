@@ -35,4 +35,19 @@ class PermissionAutoAdvanceTest {
         assertEquals(3_000, remainingAutoAdvanceMillis(0.5f, 6_000L))
         assertEquals(1, remainingAutoAdvanceMillis(1f, 6_000L))
     }
+
+    @Test fun `segments show completed current and upcoming pages`() {
+        assertEquals(listOf(1f, 1f, 0.4f, 0f),
+            (0 until 4).map { segmentProgressForPage(it, 2, 0.4f) })
+        assertEquals(listOf(1f, 1f, 1f),
+            (0 until 3).map { segmentProgressForPage(it, 2, 1f) })
+    }
+
+    @Test fun `segments reset when carousel loops to first page`() {
+        assertEquals(listOf(0f, 0f, 0f),
+            (0 until 3).map { segmentProgressForPage(it, 0, 0f) })
+        assertEquals(0.6f, segmentProgressForPage(0, 0, 0.6f))
+        assertEquals(0f, segmentProgressForPage(1, 0, 1.5f)) // upcoming page stays empty
+        assertEquals(1f, segmentProgressForPage(0, 0, 1.5f)) // current progress is bounded
+    }
 }

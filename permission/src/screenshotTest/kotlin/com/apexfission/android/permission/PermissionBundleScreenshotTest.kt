@@ -45,6 +45,7 @@ class PermissionBundleScreenshotTest {
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
                 autoAdvance = true,
+                initialPage = 1, // overview segment complete, camera segment in progress
             )
         }
     }
