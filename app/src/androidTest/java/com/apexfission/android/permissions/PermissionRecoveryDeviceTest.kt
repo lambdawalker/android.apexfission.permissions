@@ -3,7 +3,6 @@ package com.apexfission.android.permissions
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
