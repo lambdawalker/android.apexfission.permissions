@@ -70,7 +70,9 @@ class MainActivity : ComponentActivity() {
                         },
                         PermissionDescription(
                             permission = Manifest.permission.RECORD_AUDIO,
-                        ), // localized default page
+                        ) {
+                            DefaultPermissionPage("Microphone", Icons.Default.Mic)
+                        },
                     ),
                     overview = PermissionOverview(page = {
                         DefaultPermissionPage(
@@ -97,7 +99,7 @@ Imports: `android.Manifest`, `android.os.Bundle`, `androidx.activity.ComponentAc
 
 By default, multiple visible permissions start on a general feature overview and then show one page per permission. A single visible permission starts on its permission page. `overviewMode = PermissionOverviewMode.Show` includes the overview even for one permission; `PermissionOverviewMode.Hide` omits it even for several. `Automatic` (the default) follows the number of visible permissions. Supplying `overview` customizes its content; `overviewMode` decides whether it appears.
 
-`PermissionDescription { ... }` and `PermissionOverview(page = { ... })` each own a full carousel page: hero and explanation can be composed together. `DefaultPermissionPage` supplies both default hero and text in a single call. If `page` is omitted, the library uses localized default copy and imagery; older `hero` and `description` properties remain supported. The persistent icon selector reads `PermissionDescription.label` as its accessibility name. `label` and `icon` default to permission-specific metadata for common Android runtime permissions (camera, microphone, location, notifications, media, and more). Unknown strings use a readable name and lock icon. Override either property when your feature needs a different name or icon, especially for localized accessibility text. Custom page content still belongs to the host; use `PermissionVisualDefaults.forPermission(permission)` if you want the same visual inside your page.
+Every `PermissionDescription` requires a full page composable. `DefaultPermissionPage` is an optional helper for a ready-made hero and text; otherwise compose any UI you want. The persistent icon selector reads `PermissionDescription.label` as its accessibility name. `label` and `icon` default to permission-specific metadata for common Android runtime permissions (camera, microphone, location, notifications, media, and more). Unknown strings use a readable name and lock icon. Override either property when your feature needs a different name or icon, especially for localized accessibility text. Use `PermissionVisualDefaults.forPermission(permission)` if you want the same visual inside your page. The screen owns request and recovery actions; the page only supplies explanation content. The separate `PermissionOverview` remains optional and has its own fallback.
 
 ### Replace the default page with your own Compose UI
 
@@ -168,7 +170,9 @@ Customize the recovery note and Settings route for your feature:
 
 ```kotlin
 HandlePermissions(
-    permissions = listOf(PermissionDescription(Manifest.permission.CAMERA, label = "Camera")),
+    permissions = listOf(PermissionDescription(Manifest.permission.CAMERA) {
+        DefaultPermissionPage("Camera", Icons.Default.PhotoCamera)
+    }),
     onBack = { finish() },
     onNotNow = { finish() },
     recoveryContent = { inferredPermissions ->
@@ -188,8 +192,12 @@ Permissions are required by default. Set `required = false` when the feature can
 ```kotlin
 HandlePermissions(
     permissions = listOf(
-        PermissionDescription(Manifest.permission.CAMERA, required = true),
-        PermissionDescription(Manifest.permission.RECORD_AUDIO, required = false),
+        PermissionDescription(Manifest.permission.CAMERA) {
+            DefaultPermissionPage("Camera", Icons.Default.PhotoCamera)
+        },
+        PermissionDescription(Manifest.permission.RECORD_AUDIO, required = false) {
+            DefaultPermissionPage("Microphone", Icons.Default.Mic)
+        },
     ),
     onBack = { finish() },
     onNotNow = { finish() },

@@ -13,7 +13,9 @@ HandlePermissions(
             DefaultPermissionPage("Camera", Icons.Default.PhotoCamera,
                 title = "Scan a document", body = "We use the camera when you start a scan.")
         },
-        PermissionDescription(Manifest.permission.RECORD_AUDIO, "Microphone", Icons.Default.Mic),
+        PermissionDescription(Manifest.permission.RECORD_AUDIO) {
+            DefaultPermissionPage("Microphone", Icons.Default.Mic)
+        },
     ),
     overview = PermissionOverview(page = {
         FeatureOverviewPage() // complete hero and explanation
@@ -23,7 +25,7 @@ HandlePermissions(
 ) { ProtectedFeature() }
 ```
 
-A `PermissionDescription` trailing composable is the **entire carousel page**. Compose its hero and explanation together, or call `DefaultPermissionPage`. `PermissionOverview(page = { ... })` works the same way. The legacy separate `hero` and `description` fields remain supported when `page` is absent. Specify `icon` and `label` on each permission to customize the fixed icon strip; the library cannot inspect values inside a composable. Generic defaults cover unspecified visuals and copy.
+A `PermissionDescription` requires an **entire carousel page**. Compose its hero and explanation together, or call `DefaultPermissionPage` in the lambda. `PermissionOverview(page = { ... })` can customize the optional overview, which retains its own default. Set `icon` and `label` on each permission only when the built-in metadata needs overriding; the library cannot inspect values inside a composable.
 
 `overviewMode = PermissionOverviewMode.Show` includes the overview with one permission; `Hide` starts on the first permission even with several. `Automatic` is the default and follows the visible count. The `overview` argument supplies page content independently of visibility.
 

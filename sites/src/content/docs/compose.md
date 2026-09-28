@@ -5,7 +5,7 @@ description: Customize the overview, per-permission pages, recovery, and timing.
 
 ## Your page in the carousel
 
-`PermissionDescription { ... }` supplies the entire page, including its hero and copy. The library keeps the icon strip and action button in place outside the carousel. If no page is supplied, generic localized visuals and text are used. The `label` and `icon` remain useful to the persistent strip and accessibility.
+`PermissionDescription { ... }` requires the entire page, including its hero and copy. The library keeps the icon strip and action button in place outside the carousel. `DefaultPermissionPage` is a reusable helper you can call within the lambda. `label` and `icon` default to permission-specific metadata for the persistent strip and accessibility; override them as needed.
 
 ```kotlin
 PermissionDescription(

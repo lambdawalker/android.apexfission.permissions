@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.pager.HorizontalPager
@@ -42,7 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.apexfission.android.permission.requester.DefaultPermissionRecovery
 import com.apexfission.android.permission.recipe.PermissionPrimaryAction
@@ -53,53 +51,33 @@ import com.apexfission.android.permission.recipe.primaryAction
 import kotlinx.coroutines.launch
 
 /**
- * Copy and visuals for one runtime permission. The [permission] value is the Android permission
- * string and must be declared by the app. All other properties are presentation only.
- *
- * [hero] is drawn in a 210 dp tall box and can provide any Compose content. When omitted, the
- * library draws a generic illustration using [icon]. Title, body, and action text also have
- * localized generic defaults based on [label].
+ * Metadata and required page for one runtime permission. The [permission] value must be
+ * declared by the app. The host supplies the entire [page]; the surrounding permission UI
+ * owns navigation, the icon selector, status messages, and request actions.
  *
  * @property permission Android runtime permission string, e.g. `android.permission.CAMERA`.
  * @property label Spoken name in the icon selector, e.g. `Camera`. Defaults to the name in
  * [PermissionVisualDefaults], or a readable permission suffix for unknown strings. Override it
  * with feature-specific or localized wording when appropriate.
- * @property icon Small icon displayed in the selection list and default hero. Defaults to the
+ * @property icon Small icon displayed in the selection list. Defaults to the
  * matching icon in [PermissionVisualDefaults], or a lock for unknown strings.
- * @property title Optional title for this permission page.
- * @property body Optional explanatory text for this permission page.
- * @property requestLabel Optional primary button label before a request.
- * @property features Optional supporting benefits shown beneath the body.
- * @property hero Optional host-supplied hero composable.
- * @property description Optional composable replacing the title, body, and features beneath
- * the icon selector. Keep [icon] and [label] as metadata for the selector and accessibility.
  * @property autoAdvanceDelayMillis Time spent on this page before optional carousel autoplay
  * advances. The host can calculate it with [estimateReadingDelayMillis] from its visible copy.
  * @property required Whether this grant is needed before protected content can appear. Optional
  * permissions are still included in a batch request while the explanation screen is shown.
- * @property page Optional full page composable for the batch carousel. This unifies the hero
- * and explanation; the batch icon strip stays outside the carousel. When omitted, defaults use
- * [hero], [description], and the text properties. The individual screen ignores [page].
+ * @property page Full page composable for both batch and individual screens. The host may use
+ * [DefaultPermissionPage] for a ready-made hero and explanation. The icon strip stays outside it.
  */
 class PermissionDescription(
     val permission: String,
     val label: String = PermissionVisualDefaults.forPermission(permission).label,
     val icon: ImageVector = PermissionVisualDefaults.forPermission(permission).icon,
-    val title: String? = null,
-    val body: String? = null,
-    val requestLabel: String? = null,
-    val features: List<PermissionFeature> = emptyList(),
-    val hero: (@Composable () -> Unit)? = null,
-    val description: (@Composable () -> Unit)? = null,
     val autoAdvanceDelayMillis: Long = 6_000L,
     val required: Boolean = true,
-    val page: (@Composable () -> Unit)? = null,
+    val page: @Composable () -> Unit,
 ) {
     init { require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" } }
 }
-
-/** A supporting benefit shown below a permission's explanation. */
-data class PermissionFeature(val icon: ImageVector, val title: String, val subtitle: String)
 
 /**
  * A generic permission primer. For multiple permissions, icons wrap into rows and select a page
@@ -114,6 +92,8 @@ data class PermissionFeature(val icon: ImageVector, val title: String, val subti
  * @param initialPage Page shown when this screen first enters composition.
  * @param recoveryContent Content for a status inferred to need Settings; receives its permission string.
  * @param settingsActionLabel Optional caption for the Settings button.
+ * @param requestActionLabel Optional caption for the request button; defaults to a generic
+ * label based on the selected permission. This belongs to the screen, not to a page.
  */
 @Composable
 fun PermissionScreen(
@@ -128,6 +108,7 @@ fun PermissionScreen(
     initialPage: Int = 0,
     recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
     settingsActionLabel: String? = null,
+    requestActionLabel: String? = null,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
@@ -209,46 +190,12 @@ fun PermissionScreen(
                     modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().height(210.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (item.hero == null) DefaultPermissionHero(item.icon) else item.hero.invoke()
-                    }
-                    Spacer(Modifier.height(24.dp))
-                    Text(
-                        text = item.title ?: stringResource(R.string.permission_generic_title, item.label),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = item.body ?: stringResource(R.string.permission_generic_body, item.label),
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                    )
+                    item.page()
                     if (!item.required) {
                         Spacer(Modifier.height(12.dp))
                         Text(stringResource(R.string.permission_optional),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    if (item.features.isNotEmpty()) {
-                        Spacer(Modifier.height(32.dp))
-                        item.features.forEach { feature ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(feature.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                                Spacer(Modifier.width(12.dp))
-                                Column {
-                                    Text(feature.title, fontWeight = FontWeight.SemiBold)
-                                    Text(feature.subtitle, style = MaterialTheme.typography.bodySmall)
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -271,7 +218,7 @@ fun PermissionScreen(
             ) {
                 Text(
                     when (action) {
-                        PermissionPrimaryAction.Request -> permission.requestLabel
+                        PermissionPrimaryAction.Request -> requestActionLabel
                             ?: stringResource(R.string.permission_generic_allow, permission.label)
                         PermissionPrimaryAction.Settings -> settingsActionLabel ?: stringResource(R.string.permission_open_settings)
                         PermissionPrimaryAction.Next -> if (next == null) stringResource(R.string.permission_done)
@@ -283,24 +230,6 @@ fun PermissionScreen(
             TextButton(onClick = onNotNow, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.camera_permission_not_now))
             }
-        }
-    }
-}
-
-@Composable
-private fun DefaultPermissionHero(icon: ImageVector) {
-    Box(
-        modifier = Modifier.size(width = 260.dp, height = 200.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f), RoundedCornerShape(28.dp)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            modifier = Modifier.size(112.dp)
-                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(56.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer)
         }
     }
 }

@@ -28,8 +28,6 @@ class PermissionBundleScreenshotTest {
             permission = Manifest.permission.CAMERA,
             label = "Camera",
             icon = Icons.Default.PhotoCamera,
-            title = "Scan a document",
-            body = "We use the camera when you choose to scan a document.",
             page = {
                 DefaultPermissionPage(
                     "Camera", Icons.Default.PhotoCamera,
@@ -42,7 +40,7 @@ class PermissionBundleScreenshotTest {
             permission = Manifest.permission.RECORD_AUDIO,
             label = "Microphone",
             icon = Icons.Default.Mic,
-        ),
+        ) { DefaultPermissionPage("Microphone", Icons.Default.Mic) },
     )
 
     @PreviewTest
@@ -67,11 +65,13 @@ class PermissionBundleScreenshotTest {
         MaterialTheme {
             PermissionBundleScreen(
                 permissions = listOf(
-                    PermissionDescription(Manifest.permission.CAMERA, label = "Camera", icon = Icons.Default.PhotoCamera),
+                    PermissionDescription(Manifest.permission.CAMERA, label = "Camera", icon = Icons.Default.PhotoCamera) {
+                        DefaultPermissionPage("Camera", Icons.Default.PhotoCamera)
+                    },
                     PermissionDescription(
                         Manifest.permission.RECORD_AUDIO, label = "Microphone",
                         icon = Icons.Default.Mic, required = false
-                    ),
+                    ) { DefaultPermissionPage("Microphone", Icons.Default.Mic) },
                 ),
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
@@ -151,7 +151,9 @@ class PermissionBundleScreenshotTest {
         MaterialTheme {
             PermissionBundleScreen(
                 permissions = (1..8).map { index ->
-                    PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic)
+                    PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic) {
+                        DefaultPermissionPage("Permission $index", Icons.Default.Mic)
+                    }
                 },
                 statuses = List(8) { PermissionStatus.NotRequested },
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
@@ -167,7 +169,9 @@ class PermissionBundleScreenshotTest {
         MaterialTheme {
             PermissionBundleScreen(
                 permissions = (1..8).map { index ->
-                    PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic)
+                    PermissionDescription("test.permission.$index", "Permission $index", Icons.Default.Mic) {
+                        DefaultPermissionPage("Permission $index", Icons.Default.Mic)
+                    }
                 },
                 statuses = List(8) { PermissionStatus.NotRequested },
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
@@ -197,7 +201,7 @@ class PermissionBundleScreenshotTest {
             permission = Manifest.permission.ACCESS_FINE_LOCATION,
             label = "Location",
             icon = Icons.Default.LocationOn,
-        )
+        ) { DefaultPermissionPage("Location", Icons.Default.LocationOn) }
         val statuses = listOf(
             PermissionStatus.Granted,
             PermissionStatus.NotRequested,

@@ -12,26 +12,26 @@ import org.junit.Test
 
 class PermissionVisualDefaultsTest {
     @Test fun commonPermissionsHaveSpecificMetadata() {
-        assertEquals("Camera", PermissionDescription(Manifest.permission.CAMERA).label)
-        assertEquals(Icons.Default.PhotoCamera, PermissionDescription(Manifest.permission.CAMERA).icon)
-        assertEquals("Microphone", PermissionDescription(Manifest.permission.RECORD_AUDIO).label)
-        assertEquals(Icons.Default.Mic, PermissionDescription(Manifest.permission.RECORD_AUDIO).icon)
-        assertEquals("Precise location", PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION).label)
-        assertEquals("Notifications", PermissionDescription(Manifest.permission.POST_NOTIFICATIONS).label)
+        assertEquals("Camera", (PermissionDescription(Manifest.permission.CAMERA) {}).label)
+        assertEquals(Icons.Default.PhotoCamera, (PermissionDescription(Manifest.permission.CAMERA) {}).icon)
+        assertEquals("Microphone", (PermissionDescription(Manifest.permission.RECORD_AUDIO) {}).label)
+        assertEquals(Icons.Default.Mic, (PermissionDescription(Manifest.permission.RECORD_AUDIO) {}).icon)
+        assertEquals("Precise location", (PermissionDescription(Manifest.permission.ACCESS_FINE_LOCATION) {}).label)
+        assertEquals("Notifications", (PermissionDescription(Manifest.permission.POST_NOTIFICATIONS) {}).label)
     }
 
     @Test fun unknownPermissionsKeepReadableFallback() {
-        val description = PermissionDescription("com.example.permission.READ_SPECIAL_DATA")
+        val description = PermissionDescription("com.example.permission.READ_SPECIAL_DATA") {}
         assertEquals("Read special data", description.label)
         assertEquals(Icons.Default.Lock, description.icon)
     }
 
     @Test fun callerCanOverrideEitherPartIndependently() {
-        val customLabel = PermissionDescription(Manifest.permission.CAMERA, label = "Document scanner")
+        val customLabel = PermissionDescription(Manifest.permission.CAMERA, label = "Document scanner") {}
         assertEquals("Document scanner", customLabel.label)
         assertEquals(Icons.Default.PhotoCamera, customLabel.icon)
 
-        val customIcon = PermissionDescription(Manifest.permission.CAMERA, icon = Icons.Default.Mic)
+        val customIcon = PermissionDescription(Manifest.permission.CAMERA, icon = Icons.Default.Mic) {}
         assertEquals("Camera", customIcon.label)
         assertEquals(Icons.Default.Mic, customIcon.icon)
     }
