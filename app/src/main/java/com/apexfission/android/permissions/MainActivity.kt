@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
                             // The library screen handles system bars itself. Scaffold's innerPadding
                             // would add the status-bar inset a second time.
                             onBack = { destination = DemoDestination.Home },
+                            modifier = modifier,
                         )
                         DemoDestination.Recipes -> PlatformRecipesDemo(
                             onBack = { destination = DemoDestination.Home }, modifier = modifier,
