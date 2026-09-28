@@ -2,6 +2,8 @@
 
 This repository provides Android runtime permission UI and callback helpers. Public APIs live in `:permission` under `com.apexfission.android.permission`. The `:app` module is a runnable example.
 
+For a consuming app, add `implementation("com.apexfission.android.permission:core:<published-version>")` and `mavenCentral()` (or `implementation(project(":permission"))` in a source checkout). The host needs minSdk 24. Declare requested permissions in the **host app's** manifest, then choose one entry point below. Start requests from a user action; Android may grant only part of a batch.
+
 | Host need | Guide |
 | --- | --- |
 | Compose explanation screen that gates a feature | [Compose integration](agents/compose.md) — `HandlePermissions` |
@@ -10,6 +12,8 @@ This repository provides Android runtime permission UI and callback helpers. Pub
 | Location, notifications, and photo access | [Platform recipes](agents/platform-recipes.md) — staged steps and photo picker |
 | Choose overview visibility or inspect rendered states | [Compose integration](agents/compose.md#overview-page) and [screenshot gallery](README.md#screenshots) |
 | Change this repository, test, or release | [Maintainer notes](agents/maintenance.md) |
+
+`HandlePermissions` is the default when an explanation screen should gate a feature. Its built-in UI requests missing required and optional permissions together; only required grants gate content. For a fully custom UI, `permissionContent` supplies individual controllers and uses the individual request flow. For code-only calls, `PermissionRequester` owns an Activity result launcher, while `runIfPermissionsGranted` only checks current grants and leaves requesting to the host. The linked guides include copyable setup, lifecycle requirements, and failure paths.
 
 Declare every requested permission in the host Android manifest. The generic request APIs target ordinary **runtime** permissions. Special app access (overlay, all-files access, exact alarms) needs a host-managed flow; [platform recipes](agents/platform-recipes.md) guide staged location, notifications, and the photo picker. Android can grant only part of a batch; protected content waits for all required grants. Mark an optional `PermissionDescription(required = false)` and read the `PermissionGrants` snapshot in `content`; see the [Compose guide](agents/compose.md#required-and-optional-permissions).
 
