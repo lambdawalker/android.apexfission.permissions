@@ -25,9 +25,11 @@ class DemoNavigationDeviceTest {
         compose.activityRule.scenario.recreate()
         compose.onNodeWithText("Back to demos").assertExists()
         compose.onNodeWithText("Back to demos").performScrollTo().performClick()
+        compose.onNodeWithText("Open carousel").performScrollTo()
         // The carousel loops its timer; keep the test clock paused for a stable first page.
         compose.mainClock.autoAdvance = false
-        compose.onNodeWithText("Open carousel").performScrollTo().performClick()
+        compose.onNodeWithText("Open carousel").performClick()
+        compose.mainClock.advanceTimeByFrame()
         compose.onNodeWithText("Scan with camera and microphone").assertExists()
     }
 }
