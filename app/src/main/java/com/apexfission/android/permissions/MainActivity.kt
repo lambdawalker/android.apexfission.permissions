@@ -1,6 +1,7 @@
 package com.apexfission.android.permissions
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -31,7 +32,10 @@ class MainActivity : ComponentActivity() {
                     when (destination) {
                         DemoDestination.Home -> DemoHomeScreen(
                             onCarousel = { destination = DemoDestination.Carousel },
-                            onRecipes = { destination = DemoDestination.Recipes },
+                            onRecipes = {
+                                Log.i("DemoNavigationDeviceTest", "onRecipes callback")
+                                destination = DemoDestination.Recipes
+                            },
                             modifier = modifier,
                         )
                         DemoDestination.Carousel -> PermissionCarouselDemo(
