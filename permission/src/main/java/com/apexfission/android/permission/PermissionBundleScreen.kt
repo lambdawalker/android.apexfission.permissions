@@ -10,6 +10,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +41,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,6 +59,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -303,6 +305,8 @@ fun PermissionBundleScreen(
         ) {
             if (autoAdvance && pageCount > 1) {
                 val progressDescription = stringResource(R.string.permission_auto_advance_progress)
+                val trackColor = MaterialTheme.colorScheme.surfaceVariant
+                val fillColor = MaterialTheme.colorScheme.primary
                 Row(
                     modifier = Modifier.fillMaxWidth()
                         .graphicsLayer { alpha = indicatorAlpha }
@@ -315,10 +319,14 @@ fun PermissionBundleScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     repeat(pageCount) { page ->
-                        LinearProgressIndicator(
-                            progress = { segmentProgressForPage(page, settled, progress.value) },
-                            modifier = Modifier.weight(1f).height(4.dp),
-                        )
+                        Canvas(Modifier.weight(1f).height(4.dp)) {
+                            val radius = CornerRadius(size.height / 2f)
+                            drawRoundRect(trackColor, cornerRadius = radius)
+                            val filledWidth = size.width * segmentProgressForPage(page, settled, progress.value)
+                            if (filledWidth > 0f) {
+                                drawRoundRect(fillColor, size = Size(filledWidth, size.height), cornerRadius = radius)
+                            }
+                        }
                     }
                 }
             }
