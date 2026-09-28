@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -28,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.apexfission.android.permission.ui.DefaultPermissionPage
@@ -113,45 +113,40 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
 /** Example of a host-owned page replacing [DefaultPermissionPage] inside the carousel. */
 @Composable
 private fun NarrationPermissionPage(title: String, body: String) {
-    Box(
+    Column(
         modifier = Modifier.fillMaxWidth().height(210.dp)
-            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(28.dp)),
-        contentAlignment = Alignment.Center,
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(28.dp))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Box(
-                modifier = Modifier.size(100.dp)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = null,
-                    modifier = Modifier.size(52.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
+        Text("VOICE NOTES / OPTIONAL", style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSecondaryContainer)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Box(Modifier.size(64.dp).background(MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Mic, contentDescription = null, modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary)
             }
-            Text(
-                "VOICE NOTES",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                listOf(18, 35, 51, 27, 62, 42, 22, 49, 30).forEach { height ->
+                    Box(Modifier.width(5.dp).height(height.dp)
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(3.dp)))
+                }
+            }
         }
+        Text("ADD YOUR VOICE TO A SCAN", style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer)
     }
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
+        Text(title, style = MaterialTheme.typography.headlineMedium)
         Text(
             body,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
         )
     }
 }

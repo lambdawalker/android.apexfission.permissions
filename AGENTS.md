@@ -6,6 +6,7 @@ For a consuming app, add `implementation("com.apexfission.androi:permission:0.1.
 
 | Host need | Guide |
 | --- | --- |
+| Find public classes, functions, enums, and composable signatures | [Public API declarations](agents/api-reference.md) |
 | Compose explanation screen that gates a feature | [Compose integration](agents/compose.md) — `HandlePermissions` |
 | No library UI; ask from an Activity with callbacks | [Code-only integration](agents/code-only.md) — `PermissionRequester` |
 | Check grants and own the Android launcher | [Code-only integration](agents/code-only.md) — `runIfPermissionsGranted` |

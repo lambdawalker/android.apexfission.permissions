@@ -53,7 +53,54 @@ HandlePermissions(
 
 The trailing `PermissionDescription { ... }` lambda is the **required entire page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` is a ready-made helper you can call within the required lambda. The icon strip reads `PermissionDescription.label` as its accessibility name. The library supplies an icon and label for common Android permissions through `PermissionVisualDefaults`; unrecognized strings use a lock and a readable name derived from the string. Override either `label` or `icon` for feature-specific wording, another language, or a custom visual. `PermissionVisualDefaults.forPermission(permission)` exposes the same pair if your page needs it. The carousel owns the batch request button and its caption.
 
-To replace `DefaultPermissionPage` completely, pass your own composable in the lambda: `PermissionDescription(Manifest.permission.RECORD_AUDIO) { NarrationPermissionPage(title, body) }`. `NarrationPermissionPage` can draw its own hero, heading, and copy with ordinary Compose `Box`, `Column`, `Icon`, and `Text`. The library continues to own the icon strip and request action. See the [copyable custom page](../README.md#replace-the-default-page-with-your-own-compose-ui) and its [runnable demo](../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
+## Choose a page layout
+
+| Use | Page content |
+| --- | --- |
+| `DefaultPermissionPage` | A centered icon hero, heading, description, and optional `PermissionFeature` rows. Supply it inside `PermissionDescription { ... }` when this layout fits. |
+| Host composable | Your own full page layout. Use it when the feature calls for a distinct visual hierarchy; the library still draws the icon strip, segmented timer, request button, and recovery UI. |
+
+The demo's `NarrationPermissionPage` is a **host composable, not part of the library**. Its recording console, waveform, and left-aligned text are intentionally different from the centered default page. Pass it to the same `PermissionDescription` API:
+
+```kotlin
+val title = "Record narration"
+val body = "Allow microphone access to add narration when you record a scan."
+PermissionDescription(
+    permission = Manifest.permission.RECORD_AUDIO,
+    required = false,
+    autoAdvanceDelayMillis = estimateReadingDelayMillis("$title $body", ReadingPace.Slow),
+) { NarrationPermissionPage(title, body) }
+```
+
+For example, a compact host implementation can lay out a recording motif and text differently:
+
+```kotlin
+@Composable
+private fun NarrationPermissionPage(title: String, body: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(28.dp))
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            Text("VOICE NOTES / OPTIONAL", style = MaterialTheme.typography.labelLarge)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Icon(Icons.Default.Mic, contentDescription = null)
+                listOf(12, 30, 48, 24, 40, 16).forEach { height ->
+                    Box(Modifier.width(5.dp).height(height.dp)
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(3.dp)))
+                }
+            }
+            Text("ADD YOUR VOICE TO A SCAN", style = MaterialTheme.typography.labelMedium)
+        }
+        Text(title, style = MaterialTheme.typography.headlineMedium)
+        Text(body, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+```
+
+Add the standard Compose layout, shape, material, icon, and `dp` imports. The [runnable demo and preview](../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) use a fuller version; [the README example](../README.md#replace-the-default-page-with-your-own-compose-ui) offers another starting point. For signatures and defaults of all public types, see [Public API declarations](api-reference.md).
 
 Use a nonempty list with unique, nonblank Android permission names. The batch request runs only while required access is missing. If every required permission is already granted, `content` is shown immediately, including when an optional permission is missing.
 
