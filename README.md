@@ -2,6 +2,8 @@
 
 A Compose library for explaining and requesting a set of Android runtime permissions. The main `HandlePermissions` entry point requests the set together after one button tap. Android may show several system prompts and grant only some permissions.
 
+The [library site](https://lambdawalker.github.io/android.apexfission.permissions/) has a short path through installation, Compose examples, callback recipes, and a screenshot gallery. Its source lives in [`sites/`](sites/README.md); `docs/` holds repository documentation and the original screenshot fixtures.
+
 ## Screenshots
 
 | Bundle overview | Selected permission | Settings recovery |

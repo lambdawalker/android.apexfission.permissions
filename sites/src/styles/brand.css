@@ -1,0 +1,35 @@
+:root {
+  --sl-font: 'Avenir Next', 'Segoe UI', sans-serif;
+  --sl-font-mono: 'SFMono-Regular', Consolas, monospace;
+  --sl-color-accent-low: #d9f8ee;
+  --sl-color-accent: #126955;
+  --sl-color-accent-high: #0b4339;
+  --sl-color-bg: #f8faf7;
+  --sl-color-bg-nav: #f8faf7;
+  --sl-color-bg-sidebar: #f4f8f5;
+  --sl-color-text-accent: #126955;
+}
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #113a34;
+  --sl-color-accent: #70dec2;
+  --sl-color-accent-high: #d5fcf0;
+  --sl-color-bg: #0b171b;
+  --sl-color-bg-nav: #101f23;
+  --sl-color-bg-sidebar: #102024;
+  --sl-color-text-accent: #8debcf;
+}
+.hero { padding-block: clamp(3rem, 8vw, 7rem); }
+.hero h1 { letter-spacing: -.055em; line-height: 1.06; }
+.hero .tagline { max-width: 39rem; line-height: 1.55; }
+.sl-markdown-content .site-eyebrow { color: var(--sl-color-text-accent); font-size: .8rem; letter-spacing: .14em; font-weight: 800; text-transform: uppercase; }
+.site-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; margin-block: 2rem; }
+.site-card { display: block; padding: 1.4rem; border: 1px solid var(--sl-color-gray-5); border-radius: 1rem; background: var(--sl-color-bg-nav); text-decoration: none; box-shadow: 0 10px 36px rgb(0 0 0 / .035); }
+.site-card strong { display: block; margin-bottom: .45rem; color: var(--sl-color-text); font-size: 1.1rem; }
+.site-card span { color: var(--sl-color-gray-2); }
+.site-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+.site-gallery figure { margin: 0; padding: .7rem; border-radius: 1.1rem; border: 1px solid var(--sl-color-gray-5); background: var(--sl-color-bg-nav); }
+.site-gallery img { display: block; max-width: 100%; height: auto; border-radius: .6rem; margin-inline: auto; }
+.site-gallery figcaption { padding: .8rem .3rem .25rem; font-weight: 600; }
+.site-showcase { display: grid; grid-template-columns: minmax(0, 1fr) minmax(13rem, 22rem); align-items: center; gap: 2rem; border: 1px solid var(--sl-color-gray-5); border-radius: 1.3rem; padding: clamp(1rem, 4vw, 2rem); background: linear-gradient(130deg, var(--sl-color-bg-nav), var(--sl-color-accent-low)); }
+.site-showcase img { width: min(100%, 20rem); margin-inline: auto; }
+@media (max-width: 46rem) { .site-showcase { grid-template-columns: 1fr; } }
