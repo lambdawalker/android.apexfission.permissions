@@ -103,6 +103,45 @@ By default, multiple visible permissions start on a general feature overview and
 
 `PermissionDescription { ... }` and `PermissionOverview(page = { ... })` each own a full carousel page: hero and explanation can be composed together. `DefaultPermissionPage` supplies both default hero and text in a single call. If `page` is omitted, the library uses localized default copy and imagery; older `hero` and `description` properties remain supported. Set `icon` and `label` on `PermissionDescription` so the persistent selector and accessibility have stable metadata.
 
+### Replace the default page with your own Compose UI
+
+The trailing lambda can render **any** composable, so you do not have to call `DefaultPermissionPage`. The [carousel demo](app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) uses the default camera page and this custom microphone page together:
+
+```kotlin
+val narrationTitle = "Record narration"
+val narrationBody = "Allow microphone access to add narration when you record a scan."
+
+PermissionDescription(
+    permission = Manifest.permission.RECORD_AUDIO,
+    label = "Microphone",
+    icon = Icons.Default.Mic, // metadata for the persistent icon strip
+    required = false,
+    autoAdvanceDelayMillis = estimateReadingDelayMillis(
+        "$narrationTitle $narrationBody", ReadingPace.Slow
+    ),
+) {
+    NarrationPermissionPage(narrationTitle, narrationBody)
+}
+
+@Composable
+fun NarrationPermissionPage(title: String, body: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier.fillMaxWidth().height(210.dp)
+                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(28.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Default.Mic, contentDescription = null, modifier = Modifier.size(52.dp))
+        }
+        Spacer(Modifier.height(24.dp))
+        Text(title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
+        Text(body, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+    }
+}
+```
+
+Add the standard Compose layout, shape, Material 3, and `TextAlign` imports. The library still draws the persistent icon strip, progress indicator, recovery note, and batch action around this page. Keep the text used for `estimateReadingDelayMillis` in sync with the words you actually render. The custom page is Compose UI only; it does not request permission itself.
+
 The icon strip stays above the primary button while pages swipe. It scrolls to center the selected permission; on the overview, the whole icon set is centered, with extra icons clipped equally at either side of the screen. The button requests the permissions as one batch regardless of the carousel page.
 
 ### Optional timed carousel

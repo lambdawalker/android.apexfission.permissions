@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.apexfission.android.permission.ui.DefaultPermissionPage
@@ -73,10 +75,7 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     "$MICROPHONE_TITLE $MICROPHONE_BODY", ReadingPace.Slow
                 ),
             ) {
-                DefaultPermissionPage(
-                    label = "Microphone", icon = Icons.Default.Mic,
-                    title = MICROPHONE_TITLE, body = MICROPHONE_BODY,
-                )
+                NarrationPermissionPage(MICROPHONE_TITLE, MICROPHONE_BODY)
             },
         ),
         modifier = modifier,
@@ -110,6 +109,60 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
             microphoneGranted = grants.isGranted(Manifest.permission.RECORD_AUDIO),
             modifier = modifier.systemBarsPadding(),
         )
+    }
+}
+
+/** Example of a host-owned page replacing [DefaultPermissionPage] inside the carousel. */
+@Composable
+private fun NarrationPermissionPage(title: String, body: String) {
+    Box(
+        modifier = Modifier.fillMaxWidth().height(210.dp)
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(28.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Box(
+                modifier = Modifier.size(100.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Mic,
+                    contentDescription = null,
+                    modifier = Modifier.size(52.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+            Text(
+                "VOICE NOTES",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
+    }
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
+        Text(
+            body,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NarrationPermissionPagePreview() {
+    AndroidpermissionsTheme {
+        NarrationPermissionPage(MICROPHONE_TITLE, MICROPHONE_BODY)
     }
 }
 
