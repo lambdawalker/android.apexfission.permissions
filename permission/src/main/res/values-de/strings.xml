@@ -1,4 +1,7 @@
 <resources>
+    <string name="permission_bundle_label">Berechtigungen</string>
+    <string name="permission_bundle_overview_title">Bevor Sie fortfahren</string>
+    <string name="permission_bundle_overview_body">Die App benötigt einige Berechtigungen, um ordnungsgemäß zu funktionieren.</string>
     <string name="permission_bundle_heading">Berechtigungen prüfen</string>
     <string name="permission_bundle_request">Berechtigungen anfordern</string>
     <string name="permission_bundle_retry">Verbleibende Berechtigungen anfordern</string>

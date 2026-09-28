@@ -1,4 +1,7 @@
 <resources>
+    <string name="permission_bundle_label">Permissions</string>
+    <string name="permission_bundle_overview_title">Before you continue</string>
+    <string name="permission_bundle_overview_body">The app needs some permissions to work for you.</string>
     <string name="permission_bundle_heading">Review permissions</string>
     <string name="permission_bundle_request">Request permissions</string>
     <string name="permission_bundle_retry">Request remaining permissions</string>

@@ -24,6 +24,7 @@ import com.apexfission.android.permission.ui.PermissionDisplayMode
 import com.apexfission.android.permission.ui.PermissionOverview
 import com.apexfission.android.permission.ui.PermissionOverviewMode
 import com.apexfission.android.permission.ui.visiblePermissionIndices
+import com.apexfission.android.permission.ui.defaultPermissionOverview
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -34,8 +35,9 @@ import com.google.accompanist.permissions.shouldShowRationale
  * requests missing permissions together; each [PermissionDescription] supplies a complete page.
  * The host must declare every requested permission in its manifest.
  *
- * [overview] is optional and requires its own page. Automatic [overviewMode] shows a supplied
- * overview when more than one permission is visible. Show requires a supplied overview.
+ * [overview] defaults to a generic lock-icon page. Pass `null` to omit it, or supply a custom
+ * page. Automatic [overviewMode] shows the overview when more than one permission is visible.
+ * Show requires a nonnull overview.
  * [displayMode] filters only the carousel; grant checks and batch requests use the full list.
  * [onPermissionsResult] can report partial grants; the current [PermissionGrants] snapshot is
  * checked again before showing [content]. [recoveryContent], [settingsActionLabel], and
@@ -50,7 +52,7 @@ fun HandlePermissions(
     onBack: () -> Unit,
     onNotNow: () -> Unit,
     modifier: Modifier = Modifier,
-    overview: PermissionOverview? = null,
+    overview: PermissionOverview? = defaultPermissionOverview(),
     onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,

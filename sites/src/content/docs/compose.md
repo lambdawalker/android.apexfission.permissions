@@ -61,7 +61,7 @@ Add the usual Compose layout, shape, Material 3, and `TextAlign` imports. The `l
 
 ## Overview and visibility
 
-The carousel starts on a permission page unless you provide `overview = PermissionOverview { MyIntroduction() }`. With an overview supplied, `Automatic` shows it when several permissions are visible; `Show` includes it even for a single permission, and `Hide` skips it. `Show` requires a supplied overview. The overview page has no generated fallback.
+The carousel has a generic lock-icon overview by default. `Automatic` shows it when several permissions are visible; `Show` includes it even for a single permission, and `Hide` skips it. Pass `overview = PermissionOverview { MyIntroduction() }` to replace the complete page, or `overview = null` to omit it. A caller-created overview must provide its page; `Show` cannot be combined with `null`.
 
 `displayMode = PermissionDisplayMode.All` keeps granted permission pages and adds green checks to their icons. `MissingOnly` hides their pages and icons. Filtering affects the explanation UI, not which grants are required for protected content.
 

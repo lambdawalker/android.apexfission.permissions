@@ -81,7 +81,7 @@ import com.apexfission.android.permission.recipe.allPermissionsGranted
 import com.apexfission.android.permission.recipe.inferredRecoveryPermissions
 import kotlinx.coroutines.launch
 
-/** Host-supplied first carousel page, used only when an overview is provided and visible. */
+/** Complete first carousel page. Callers constructing an overview must supply its content. */
 class PermissionOverview(
     /** Time spent on this page when autoplay is enabled. */
     val autoAdvanceDelayMillis: Long = 6_000L,
@@ -91,6 +91,16 @@ class PermissionOverview(
     init {
         require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" }
     }
+}
+
+/** Generic opening page used when the host does not supply an overview. */
+internal fun defaultPermissionOverview(): PermissionOverview = PermissionOverview {
+    DefaultPermissionPage(
+        label = stringResource(R.string.permission_bundle_label),
+        icon = Icons.Default.Lock,
+        title = stringResource(R.string.permission_bundle_overview_title),
+        body = stringResource(R.string.permission_bundle_overview_body),
+    )
 }
 
 /** A supporting benefit shown below a permission's explanation. */
@@ -169,7 +179,7 @@ enum class PermissionDisplayMode {
 
 /** Controls whether the feature overview is a carousel page. */
 enum class PermissionOverviewMode {
-    /** Show a supplied overview when more than one permission is visible. */
+    /** Show the overview when more than one permission is visible; a generic one is supplied by default. */
     Automatic,
 
     /** Show the supplied overview even for a single visible permission. Requires [PermissionOverview]. */
@@ -209,15 +219,15 @@ internal fun bundleAction(statuses: List<PermissionStatus>): BundleAction = when
 internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int = if (selectedIndex < 0) (count - 1) * 32 else selectedIndex * 64
 
 /**
- * One action requests all runtime permissions. A supplied feature overview may precede the
+ * One action requests all runtime permissions. A generic or host-supplied overview may precede the
  * permission pages. The carousel owns each full page. A fixed, horizontally
  * scrolling icon selector sits above the action button and centers the selected icon. On the
  * overview, the whole icon set is centered with overflow on both sides. Android can show
  * multiple dialogs and return partial grants.
  *
  * [onRequest] should launch one multiple-permission request. [onOpenSettings] should open app
- * settings if no outstanding permission can prompt. [overviewMode] controls a supplied overview;
- * Automatic shows it when more than one permission is visible. Show requires [overview].
+ * settings if no outstanding permission can prompt. [overviewMode] controls the overview;
+ * Automatic shows it when more than one permission is visible. Show requires a nonnull [overview].
  * [initialPage] is zero for the
  * overview when it is present, otherwise zero for the first permission.
  * [autoAdvance] advances through pages using their explicit delays until the user interacts.
@@ -236,7 +246,7 @@ fun PermissionBundleScreen(
     onRequest: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
-    overview: PermissionOverview? = null,
+    overview: PermissionOverview? = defaultPermissionOverview(),
     onComplete: () -> Unit = {},
     initialPage: Int = 0,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,

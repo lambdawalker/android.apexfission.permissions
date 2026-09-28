@@ -63,15 +63,15 @@ Use a nonempty list with unique, nonblank Android permission names. The batch re
 
 ## Overview page
 
-`overview` is optional, but a supplied `PermissionOverview` must have a full page. With no overview, the carousel starts on the first permission. `overviewMode` applies to `HandlePermissions` and the render-only `PermissionBundleScreen`:
+Omitting `overview` supplies a generic lock-icon `DefaultPermissionPage` titled “Before you continue.” A caller-created `PermissionOverview` must have a full page. Pass `overview = null` to start on the first permission. `overviewMode` applies to `HandlePermissions` and the render-only `PermissionBundleScreen`:
 
 | `PermissionOverviewMode` | Behavior | Preview |
 | --- | --- | --- |
-| `Automatic` (default) | Show a supplied overview only when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](../docs/screenshots/bundle-overview.png) |
-| `Show` | Include the supplied overview even with one permission; requires `overview`. | [Single-permission overview](../docs/screenshots/single-permission-overview.png) |
+| `Automatic` (default) | Show the generic or custom overview when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](../docs/screenshots/bundle-overview.png) |
+| `Show` | Include a nonnull overview even with one permission. | [Single-permission overview](../docs/screenshots/single-permission-overview.png) |
 | `Hide` | Start on the first permission even with several. | [Multiple permissions without overview](../docs/screenshots/multiple-without-overview.png) |
 
-To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. To skip a supplied introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`; omitting `overview` also starts directly on the permission pages. Changing the mode does not change which permissions the button requests.
+To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. `Show` also works with the default overview. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide` or `overview = null`. Changing the mode does not change which permissions the button requests.
 
 ## Timed carousel
 
@@ -88,7 +88,7 @@ See the [selected permission](../docs/screenshots/permission-detail.png), [setti
 ## Other UI entry points
 
 - `HandlePermissions(onPermissionsResult = { results -> ... })` observes the batch result. Do not treat it as atomic.
-- For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`; the overview is absent unless you supply one and set `overviewMode = Show`.
+- For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`; the overview is hidden by Automatic unless you set `overviewMode = Show`.
 - For a custom explanation page with the built-in batch button, supply `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`.
 - `PermissionBundleScreen` renders host-managed statuses and actions without launching Android requests.
 

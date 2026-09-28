@@ -1,4 +1,7 @@
 <resources>
+    <string name="permission_bundle_label">Autorisations</string>
+    <string name="permission_bundle_overview_title">Avant de continuer</string>
+    <string name="permission_bundle_overview_body">L’application a besoin de certaines autorisations pour fonctionner correctement.</string>
     <string name="permission_bundle_heading">Vérifier les autorisations</string>
     <string name="permission_bundle_request">Demander les autorisations</string>
     <string name="permission_bundle_retry">Demander les autorisations restantes</string>

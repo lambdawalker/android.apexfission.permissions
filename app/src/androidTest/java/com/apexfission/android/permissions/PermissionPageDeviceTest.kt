@@ -48,11 +48,31 @@ class PermissionPageDeviceTest {
                     ),
                     statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                     onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                    overview = null,
                 )
             }
         }
 
         compose.onNodeWithText("1 of 2").assertExists()
         compose.onNodeWithText("Camera explanation").assertExists()
+    }
+
+    @Test fun multiplePermissionsShowGenericOverviewByDefault() {
+        compose.setContent {
+            MaterialTheme {
+                PermissionBundleScreen(
+                    permissions = listOf(
+                        PermissionDescription(Manifest.permission.CAMERA) { Text("Camera explanation") },
+                        PermissionDescription(Manifest.permission.RECORD_AUDIO) { Text("Audio explanation") },
+                    ),
+                    statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
+                    onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                )
+            }
+        }
+
+        compose.onNodeWithText("1 of 3").assertExists()
+        compose.onNodeWithText("Before you continue").assertExists()
+        compose.onNodeWithText("The app needs some permissions to work for you.").assertExists()
     }
 }
