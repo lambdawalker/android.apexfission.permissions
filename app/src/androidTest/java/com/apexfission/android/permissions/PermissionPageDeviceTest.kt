@@ -5,10 +5,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.ui.PermissionDescription
-import com.apexfission.android.permission.ui.PermissionScreen
+import com.apexfission.android.permission.ui.PermissionBundleScreen
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,21 +19,22 @@ import org.junit.runner.RunWith
 class PermissionPageDeviceTest {
     @get:Rule val compose = createComposeRule()
 
-    @Test fun individualScreenRendersHostPageAndOwnsActionLabel() {
+    @Test fun bundleScreenRendersHostPageAndUsesOneRequestAction() {
+        var requested = false
         compose.setContent {
             MaterialTheme {
-                PermissionScreen(
+                PermissionBundleScreen(
                     permissions = listOf(PermissionDescription(Manifest.permission.CAMERA) {
                         Text("Document scanner explanation")
                     }),
                     statuses = listOf(PermissionStatus.NotRequested),
-                    onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
-                    requestActionLabel = "Continue with camera",
+                    onBack = {}, onNotNow = {}, onRequest = { requested = true }, onOpenSettings = {},
                 )
             }
         }
 
         compose.onNodeWithText("Document scanner explanation").assertExists()
-        compose.onNodeWithText("Continue with camera").assertExists()
+        compose.onNodeWithText("Request permissions").performClick()
+        compose.runOnIdle { assertTrue(requested) }
     }
 }

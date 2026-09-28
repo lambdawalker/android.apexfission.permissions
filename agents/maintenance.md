@@ -2,18 +2,17 @@
 
 ## Map
 
-- `PermissionHandler.kt`: Compose gates for batch and sequential requests.
+- `PermissionHandler.kt`: Compose gate delegating to the batch request flow.
 - `PermissionBundleScreen.kt`: overview, batch carousel, icon strip, display modes, request action.
 - `PermissionAutoAdvance.kt`: reading pace estimator and looping page progression.
-- `PermissionScreen.kt`: description metadata and individual primer.
-- `PermissionState.kt`: status inference and controller actions. `PermanentlyDenied` is a best-effort inference from history and Android rationale.
+- `PermissionDescription.kt`: required host page and icon strip metadata.
+- `PermissionState.kt`: shared status inference. `PermanentlyDenied` is a best-effort inference from history and Android rationale.
 - `PermissionRecovery.kt`: cautious default recovery note for inferred blocked permissions; callers can replace it and control the Settings action.
 - `PermissionGrants.kt`: required/optional grant snapshot passed to protected content.
 - `PermissionCheck.kt`: synchronous Context check and infix `otherwise`.
 - `PermissionRequester.kt`: Activity-owned launcher and infix `onDenied`.
 - `PermissionRecipes.kt`: foreground/background location and notification next-step decisions; see [platform recipes](platform-recipes.md).
 - `VisualMediaPicker.kt`: AndroidX photo picker wrapper for user-selected images and videos, with no storage permission.
-- `PermissionViewModel.kt`: generic Accompanist adapter.
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity; demo composables live in its `demo/` package.
 - `sites/`: Astro Starlight documentation site; [its README](../sites/README.md) covers local builds and GitHub Pages deployment. It copies screenshot PNGs from `docs/screenshots/` during the build.
 

@@ -505,7 +505,7 @@ fun PermissionBundleScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
             ) {
-                Text(stringResource(R.string.camera_permission_not_now))
+                Text(stringResource(R.string.permission_not_now))
             }
         }
     }

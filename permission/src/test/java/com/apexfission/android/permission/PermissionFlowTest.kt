@@ -1,10 +1,7 @@
 package com.apexfission.android.permission
 
-import com.apexfission.android.permission.recipe.PermissionPrimaryAction
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.recipe.allPermissionsGranted
-import com.apexfission.android.permission.recipe.nextOutstandingPermission
-import com.apexfission.android.permission.recipe.primaryAction
 import com.apexfission.android.permission.recipe.resolvePermissionStatus
 import com.apexfission.android.permission.requester.PermissionGrants
 import com.apexfission.android.permission.ui.PermissionDescription
@@ -65,19 +62,5 @@ class PermissionFlowTest {
     @Test fun `all optional permissions allow content without a grant`() {
         val permissions = listOf(PermissionDescription("android.permission.RECORD_AUDIO", required = false) {})
         assertTrue(PermissionGrants(permissions, listOf(PermissionStatus.NotRequested)).canProceed)
-    }
-
-    @Test fun `next outstanding permission wraps and skips granted pages`() {
-        val statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.Granted, PermissionStatus.RationaleRequired)
-        assertEquals(2, nextOutstandingPermission(statuses, 0))
-        assertEquals(0, nextOutstandingPermission(statuses, 2))
-        assertEquals(null, nextOutstandingPermission(listOf(PermissionStatus.Granted), 0))
-    }
-
-    @Test fun `the primary action depends on the currently displayed status`() {
-        assertEquals(PermissionPrimaryAction.Request, primaryAction(PermissionStatus.NotRequested))
-        assertEquals(PermissionPrimaryAction.Request, primaryAction(PermissionStatus.RationaleRequired))
-        assertEquals(PermissionPrimaryAction.Settings, primaryAction(PermissionStatus.PermanentlyDenied))
-        assertEquals(PermissionPrimaryAction.Next, primaryAction(PermissionStatus.Granted))
     }
 }
