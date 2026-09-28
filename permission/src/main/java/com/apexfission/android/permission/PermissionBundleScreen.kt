@@ -375,6 +375,12 @@ fun PermissionBundleScreen(
                         Text(stringResource(R.string.permission_bundle_granted),
                             color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                     }
+                    if (item != null && !item.required) {
+                        Spacer(Modifier.height(12.dp))
+                        Text(stringResource(R.string.permission_optional),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
             }
             PermissionIconStrip(permissions, statuses, if (hasOverview) current - 1 else current) { selected ->
@@ -492,7 +498,8 @@ private fun DefaultBundleHero(icon: ImageVector) {
  * after a button tap. [overview] customizes the optional opening page. [overviewMode] controls
  * whether it appears; Automatic preserves the traditional multiple-permission default. Each
  * [PermissionDescription] accepts one full `page` composable; the strip remains fixed below it.
- * [content] is shown only while all permissions are granted. A callback result can be partial;
+ * [content] is shown when all required permissions are granted. It receives the current
+ * [PermissionGrants] snapshot, including optional grants. A callback result can be partial;
  * permission status is checked again on recomposition and return from Settings.
  * [displayMode] filters only presentation: the underlying batch request and grant gate still
  * use every [permissions] entry. After the visible set changes, the carousel starts at its
@@ -514,7 +521,7 @@ fun HandlePermissionBundle(
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     autoAdvance: Boolean = false,
-    content: @Composable () -> Unit,
+    content: @Composable (PermissionGrants) -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     val names = permissions.map { it.permission }
@@ -558,8 +565,9 @@ fun HandlePermissionBundle(
             }
         }
     }
-    if (allPermissionsGranted(statuses)) {
-        content()
+    val grants = PermissionGrants(permissions, statuses)
+    if (grants.canProceed) {
+        content(grants)
     } else {
         val visibleIndices = visiblePermissionIndices(statuses, displayMode)
         val visibleNames = visibleIndices.map(names::get)

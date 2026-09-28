@@ -7,12 +7,13 @@
 - `PermissionAutoAdvance.kt`: reading pace estimator and looping page progression.
 - `PermissionScreen.kt`: description metadata and individual primer.
 - `PermissionState.kt`: status inference and controller actions. `PermanentlyDenied` is a best-effort inference from history and Android rationale.
+- `PermissionGrants.kt`: required/optional grant snapshot passed to protected content.
 - `PermissionCheck.kt`: synchronous Context check and infix `otherwise`.
 - `PermissionRequester.kt`: Activity-owned launcher and infix `onDenied`.
 - `CameraPermissionState.kt` / `PermissionViewModel.kt`: compatibility and Accompanist adapter.
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity.
 
-Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. The full permission list gates content even when `MissingOnly` filters the carousel. `PermissionOverviewMode.Automatic` follows the visible permission count; `Show` and `Hide` explicitly override it.
+Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. Only required permissions gate content; the full list remains available for batch requests and grant snapshots even when `MissingOnly` filters the carousel. `PermissionOverviewMode.Automatic` follows the visible permission count; `Show` and `Hide` explicitly override it.
 
 Autoplay is opt-in. A user gesture must latch it off even if `MissingOnly` rebuilds the visible pager after a partial grant. Do not infer text by traversing semantics; callers set page delays explicitly or use `estimateReadingDelayMillis` with their copy. Keep auto movement inactive while the host is paused and while touch exploration is enabled.
 

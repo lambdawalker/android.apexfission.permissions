@@ -49,6 +49,24 @@ class PermissionBundleScreenshotTest {
     }
 
     @PreviewTest
+    @Preview(name = "Optional microphone", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun optionalMicrophone() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = listOf(
+                    PermissionDescription(Manifest.permission.CAMERA, label = "Camera", icon = Icons.Default.PhotoCamera),
+                    PermissionDescription(Manifest.permission.RECORD_AUDIO, label = "Microphone",
+                        icon = Icons.Default.Mic, required = false),
+                ),
+                statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                initialPage = 2,
+            )
+        }
+    }
+
+    @PreviewTest
     @Preview(name = "Bundle overview", widthDp = 393, heightDp = 852, showBackground = true)
     @Composable
     fun firstPage() {
