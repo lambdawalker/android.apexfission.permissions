@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -107,7 +108,7 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
     ) { grants ->
         PermissionsReady(
             microphoneGranted = grants.isGranted(Manifest.permission.RECORD_AUDIO),
-            modifier = modifier,
+            modifier = modifier.systemBarsPadding(),
         )
     }
 }

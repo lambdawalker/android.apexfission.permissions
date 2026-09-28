@@ -11,6 +11,8 @@ After the release is available on Maven Central, add `implementation("com.apexfi
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
+The built-in permission screen already applies system-bar padding. When placing `HandlePermissions` inside a `Scaffold`, do not pass `Modifier.padding(innerPadding)` to the gate; that adds the status-bar inset twice. Apply the scaffold padding to your protected `content` instead, if that screen needs it. The [demo Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) shows this arrangement.
+
 ## Gate a feature
 
 Inside an Activity's `setContent` (provide the usual Compose and Android imports):
