@@ -14,18 +14,8 @@
     <string name="permission_auto_advance_resume">Resume automatic pages</string>
     <string name="permission_generic_title">Allow %1$s access</string>
     <string name="permission_generic_body">This feature needs access to %1$s. You can manage this permission in your device settings.</string>
-    <string name="permission_generic_allow">Allow %1$s</string>
     <string name="permission_open_settings">Open App Settings</string>
     <string name="permission_recovery_uncertain">Android might not show another permission prompt. If it doesn’t, you can enable access in App Settings.</string>
-    <string name="permission_next">Next permission</string>
     <string name="permission_done">Continue</string>
-    <string name="camera_permission_label">Camera</string>
-    <string name="camera_permission_title">Camera Access Required</string>
-    <string name="camera_permission_body">To provide a seamless experience, we need access to your camera. This allows us to scan documents, verify your identity, and more.</string>
-    <string name="permission_feature_title_identity">Identity Verification</string>
-    <string name="permission_feature_subtitle_identity">Securely confirm your identity to prevent fraud.</string>
-    <string name="camera_permission_allow">Allow Camera Access</string>
-    <string name="camera_permission_open_settings">Open App Settings</string>
-    <string name="camera_permission_not_now">Not Now</string>
-    <string name="camera_permission_attribution">Powered by LambdaWalker</string>
+    <string name="permission_not_now">Not Now</string>
 </resources>

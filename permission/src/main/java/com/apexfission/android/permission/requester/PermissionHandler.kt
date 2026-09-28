@@ -1,16 +1,12 @@
 package com.apexfission.android.permission.requester
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import com.apexfission.android.permission.recipe.PermissionController
-import com.apexfission.android.permission.recipe.rememberPermissionController
 import com.apexfission.android.permission.ui.HandlePermissionBundle
 import com.apexfission.android.permission.ui.PermissionDescription
 import com.apexfission.android.permission.ui.PermissionDisplayMode
 import com.apexfission.android.permission.ui.PermissionOverview
 import com.apexfission.android.permission.ui.PermissionOverviewMode
-import com.apexfission.android.permission.ui.PermissionScreen
 
 /**
  * Protects [content] until every required Android runtime permission is granted. One button
@@ -20,14 +16,10 @@ import com.apexfission.android.permission.ui.PermissionScreen
  * special app access (such as exact alarms) or install-time permissions, which Android requests
  * through different mechanisms.
  *
- * @param permissions Nonempty list of unique permission strings with optional per-page copy/hero.
+ * @param permissions Nonempty list of unique permission descriptions with full pages.
  * @param onBack Back navigation from the explanation UI.
  * @param onNotNow Exit or defer the feature without requesting access.
- * @param permissionContent Optional host UI replacing the built-in primer; receives controllers
- * in the same order as [permissions]. Use [HandlePermissionsIndividually] when that custom UI
- * needs individual request controllers.
- * @param displayMode Whether the built-in carousel shows all permissions or only those missing.
- * The custom [permissionContent] path still receives every controller.
+ * @param displayMode Whether the carousel shows all permissions or only those missing.
  * @param overviewMode Whether the built-in carousel includes a feature overview page. Automatic
  * shows it when more than one permission is visible; Show and Hide override either count.
  * @param autoAdvance Whether to advance through the carousel using each page's configured delay
@@ -46,7 +38,6 @@ fun HandlePermissions(
     onBack: () -> Unit,
     onNotNow: () -> Unit,
     modifier: Modifier = Modifier,
-    permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
     overview: PermissionOverview = PermissionOverview(),
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
@@ -56,68 +47,18 @@ fun HandlePermissions(
     onOpenSettings: (() -> Unit)? = null,
     content: @Composable (PermissionGrants) -> Unit,
 ) {
-    if (permissionContent == null) {
-        HandlePermissionBundle(
-            permissions = permissions,
-            onBack = onBack,
-            onNotNow = onNotNow,
-            modifier = modifier,
-            overview = overview,
-            displayMode = displayMode,
-            overviewMode = overviewMode,
-            autoAdvance = autoAdvance,
-            recoveryContent = recoveryContent,
-            settingsActionLabel = settingsActionLabel,
-            onOpenSettings = onOpenSettings,
-            content = content,
-        )
-        return
-    }
-    HandlePermissionsIndividually(
-        permissions, onBack, onNotNow, modifier, permissionContent, recoveryContent,
-        settingsActionLabel, onOpenSettings, content,
+    HandlePermissionBundle(
+        permissions = permissions,
+        onBack = onBack,
+        onNotNow = onNotNow,
+        modifier = modifier,
+        overview = overview,
+        displayMode = displayMode,
+        overviewMode = overviewMode,
+        autoAdvance = autoAdvance,
+        recoveryContent = recoveryContent,
+        settingsActionLabel = settingsActionLabel,
+        onOpenSettings = onOpenSettings,
+        content = content,
     )
-}
-
-/** Legacy per-permission request flow, retained for callers that need individual actions. */
-@Composable
-fun HandlePermissionsIndividually(
-    permissions: List<PermissionDescription>,
-    onBack: () -> Unit,
-    onNotNow: () -> Unit,
-    modifier: Modifier = Modifier,
-    permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
-    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
-    settingsActionLabel: String? = null,
-    onOpenSettings: (() -> Unit)? = null,
-    content: @Composable (PermissionGrants) -> Unit,
-) {
-    require(permissions.isNotEmpty()) { "At least one permission is required" }
-    require(permissions.map { it.permission }.distinct().size == permissions.size) {
-        "Permissions must be unique"
-    }
-    val controllers = permissions.map { description ->
-        key(description.permission) { rememberPermissionController(description.permission) }
-    }
-    val statuses = controllers.map { it.status }
-    val grants = PermissionGrants(permissions, statuses)
-    if (grants.canProceed) {
-        content(grants)
-    } else if (permissionContent != null) {
-        permissionContent(controllers)
-    } else {
-        PermissionScreen(
-            permissions = permissions,
-            statuses = statuses,
-            onBack = onBack,
-            onNotNow = onNotNow,
-            onRequest = { controllers[it].requestPermission() },
-            onOpenSettings = { index ->
-                if (onOpenSettings != null) onOpenSettings() else controllers[index].openAppSettings()
-            },
-            recoveryContent = recoveryContent,
-            settingsActionLabel = settingsActionLabel,
-            modifier = modifier,
-        )
-    }
 }
