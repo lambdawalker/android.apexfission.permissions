@@ -29,8 +29,8 @@ class PermissionFlowTest {
 
     @Test fun `optional denial does not block required access`() {
         val permissions = listOf(
-            PermissionDescription("android.permission.CAMERA"),
-            PermissionDescription("android.permission.RECORD_AUDIO", required = false),
+            PermissionDescription("android.permission.CAMERA") {},
+            PermissionDescription("android.permission.RECORD_AUDIO", required = false) {},
         )
         val statuses = listOf(PermissionStatus.Granted, PermissionStatus.PermanentlyDenied)
         val grants = PermissionGrants(permissions, statuses)
@@ -46,8 +46,8 @@ class PermissionFlowTest {
 
     @Test fun `missing required permission still blocks access`() {
         val permissions = listOf(
-            PermissionDescription("android.permission.CAMERA"),
-            PermissionDescription("android.permission.RECORD_AUDIO", required = false),
+            PermissionDescription("android.permission.CAMERA") {},
+            PermissionDescription("android.permission.RECORD_AUDIO", required = false) {},
         )
         val grants = PermissionGrants(
             permissions,
@@ -57,13 +57,13 @@ class PermissionFlowTest {
         assertEquals(setOf("android.permission.CAMERA"), grants.missingRequired)
     }
 
-    @Test fun `legacy descriptions remain required by default`() {
-        val permissions = listOf(PermissionDescription("android.permission.CAMERA"))
+    @Test fun `descriptions remain required by default`() {
+        val permissions = listOf(PermissionDescription("android.permission.CAMERA") {})
         assertFalse(PermissionGrants(permissions, listOf(PermissionStatus.NotRequested)).canProceed)
     }
 
     @Test fun `all optional permissions allow content without a grant`() {
-        val permissions = listOf(PermissionDescription("android.permission.RECORD_AUDIO", required = false))
+        val permissions = listOf(PermissionDescription("android.permission.RECORD_AUDIO", required = false) {})
         assertTrue(PermissionGrants(permissions, listOf(PermissionStatus.NotRequested)).canProceed)
     }
 

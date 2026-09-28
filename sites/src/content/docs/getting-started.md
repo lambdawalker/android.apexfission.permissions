@@ -40,7 +40,7 @@ HandlePermissions(
             label = "Microphone",
             icon = Icons.Default.Mic,
             required = false,
-        ),
+        ) { DefaultPermissionPage("Microphone", Icons.Default.Mic) },
     ),
     onBack = { finish() },
     onNotNow = { finish() },

@@ -32,7 +32,7 @@ HandlePermissions(
         },
         PermissionDescription(
             permission = Manifest.permission.RECORD_AUDIO,
-        ), // localized generic page
+        ) { DefaultPermissionPage("Microphone", Icons.Default.Mic) },
     ),
     overview = PermissionOverview(page = {
         DefaultPermissionPage(
@@ -51,7 +51,7 @@ HandlePermissions(
 }
 ```
 
-The trailing `PermissionDescription { ... }` lambda is the **entire carousel page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` supplies a ready-made page; omitting a page uses generic localized copy and visuals. The icon strip reads `PermissionDescription.label` as its accessibility name. The library supplies an icon and label for common Android permissions through `PermissionVisualDefaults`; unrecognized strings use a lock and a readable name derived from the string. Override either `label` or `icon` for feature-specific wording, another language, or a custom visual. Custom page content remains the host's responsibility. `PermissionVisualDefaults.forPermission(permission)` exposes the same pair if your page needs it. When `page` is omitted, the separate `hero`, `description`, `title`, and `body` options remain available.
+The trailing `PermissionDescription { ... }` lambda is the **required entire page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` is a ready-made helper you can call within the required lambda. The icon strip reads `PermissionDescription.label` as its accessibility name. The library supplies an icon and label for common Android permissions through `PermissionVisualDefaults`; unrecognized strings use a lock and a readable name derived from the string. Override either `label` or `icon` for feature-specific wording, another language, or a custom visual. `PermissionVisualDefaults.forPermission(permission)` exposes the same pair if your page needs it. The screen owns the request button and its caption; `PermissionScreen` accepts `requestActionLabel` for a host-supplied caption.
 
 To replace `DefaultPermissionPage` completely, pass your own composable in the lambda: `PermissionDescription(Manifest.permission.RECORD_AUDIO) { NarrationPermissionPage(title, body) }`. `NarrationPermissionPage` can draw its own hero, heading, and copy with ordinary Compose `Box`, `Column`, `Icon`, and `Text`. The library continues to own the icon strip and request action. See the [copyable custom page](../README.md#replace-the-default-page-with-your-own-compose-ui) and its [runnable demo](../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
 
@@ -88,7 +88,7 @@ See the [selected permission](../docs/screenshots/permission-detail.png), [setti
 ## Other UI entry points
 
 - `HandlePermissionBundle` offers the same batch UI plus `onPermissionsResult: (Map<String, Boolean>) -> Unit`. Do not treat a batch result as atomic.
-- `HandlePermissionsIndividually` requests per permission. For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA)`; the overview is hidden by default.
+- `HandlePermissionsIndividually` requests per permission. For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`; the overview is hidden by default.
 - `HandlePermissions(permissionContent = { controllers -> ... })` replaces the built-in UI and receives **all** controllers regardless of display mode. This uses the **individual** request path, so it does not provide the built-in one-button batch action. Each controller exposes `status`, `requestPermission()`, and `openAppSettings()`; invoke actions only on a user action. For a custom carousel page with the built-in batch button, supply `PermissionDescription(page = { ... })` instead.
 - `PermissionScreen` and `PermissionBundleScreen` render host-managed statuses and actions without launching Android requests.
 

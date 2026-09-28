@@ -109,7 +109,10 @@ class PermissionOverview(
     }
 }
 
-/** Reusable text body for a custom [PermissionDescription.description] or overview page. */
+/** A supporting benefit shown below a permission's explanation. */
+data class PermissionFeature(val icon: ImageVector, val title: String, val subtitle: String)
+
+/** Reusable text body for a [PermissionDescription.page] or overview page. */
 @Composable
 fun DefaultDescription(
     label: String,
@@ -413,8 +416,8 @@ fun PermissionBundleScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     when {
-                        item?.page != null -> item.page.invoke()
-                        item == null && overview.page != null -> overview.page.invoke()
+                        item != null -> item.page()
+                        overview.page != null -> overview.page.invoke()
                         else -> {
                             Box(
                                 Modifier
@@ -422,15 +425,12 @@ fun PermissionBundleScreen(
                                     .height(210.dp), contentAlignment = Alignment.Center
                             ) {
                                 when {
-                                    item?.hero != null -> item.hero.invoke()
-                                    item == null && overview.hero != null -> overview.hero.invoke()
-                                    else -> DefaultBundleHero(item?.icon ?: Icons.Default.Lock)
+                                    overview.hero != null -> overview.hero.invoke()
+                                    else -> DefaultBundleHero(Icons.Default.Lock)
                                 }
                             }
                             Spacer(Modifier.height(24.dp))
                             when {
-                                item?.description != null -> item.description.invoke()
-                                item != null -> DefaultDescription(item.label, item.icon, item.title, item.body, item.features)
                                 overview.description != null -> overview.description.invoke()
                                 else -> DefaultDescription(
                                     label = stringResource(R.string.permission_bundle_label),
