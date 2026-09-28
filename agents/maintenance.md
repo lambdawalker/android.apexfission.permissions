@@ -2,7 +2,7 @@
 
 ## Map
 
-- `PermissionHandler.kt`: Compose gate delegating to the batch request flow.
+- `PermissionHandler.kt`: Compose gate and batch runtime request launcher.
 - `PermissionBundleScreen.kt`: overview, batch carousel, icon strip, display modes, request action.
 - `PermissionAutoAdvance.kt`: reading pace estimator and looping page progression.
 - `PermissionDescription.kt`: required host page and icon strip metadata.
@@ -16,7 +16,7 @@
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity; demo composables live in its `demo/` package.
 - `sites/`: Astro Starlight documentation site; [its README](../sites/README.md) covers local builds and GitHub Pages deployment. It copies screenshot PNGs from `docs/screenshots/` during the build.
 
-Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. Only required permissions gate content; the full list remains available for batch requests and grant snapshots even when `MissingOnly` filters the carousel. `PermissionOverviewMode.Automatic` follows the visible permission count; `Show` and `Hide` explicitly override it.
+Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. Only required permissions gate content; the full list remains available for batch requests and grant snapshots even when `MissingOnly` filters the carousel. An overview must provide a page; `Automatic` shows a supplied overview only when more than one permission is visible, `Show` requires one, and `Hide` omits it.
 
 Autoplay is opt-in. A user gesture must latch it off even if `MissingOnly` rebuilds the visible pager after a partial grant. Its segmented indicator follows visible pages, preserves current progress on pause, fades when paused, and resets on wraparound. Do not infer text by traversing semantics; callers set page delays explicitly or use `estimateReadingDelayMillis` with their copy. Keep auto movement inactive while the host is paused and while touch exploration is enabled.
 

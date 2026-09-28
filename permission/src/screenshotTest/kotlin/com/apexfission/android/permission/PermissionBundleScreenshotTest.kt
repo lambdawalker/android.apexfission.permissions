@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +24,14 @@ import com.apexfission.android.permission.ui.visiblePermissionIndices
 
 /** The default one-button carousel: overview, individual page, and denial recovery. */
 class PermissionBundleScreenshotTest {
+    private val defaultOverview = PermissionOverview {
+        DefaultPermissionPage(
+            "Permissions", Icons.Default.Lock,
+            title = "Enable this feature",
+            body = "Review the access this feature needs. You can choose which access to grant in Android’s prompts.",
+        )
+    }
+
     private val permissions = listOf(
         PermissionDescription(
             permission = Manifest.permission.CAMERA,
@@ -53,6 +62,7 @@ class PermissionBundleScreenshotTest {
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
                 autoAdvance = true,
+                overview = defaultOverview,
                 initialPage = 1, // overview segment complete, camera segment in progress
             )
         }
@@ -75,6 +85,7 @@ class PermissionBundleScreenshotTest {
                 ),
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 2,
             )
         }
@@ -109,6 +120,7 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 1,
             )
         }
@@ -123,6 +135,7 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.Granted, PermissionStatus.PermanentlyDenied),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 2,
             )
         }
@@ -137,6 +150,7 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.Granted, PermissionStatus.PermanentlyDenied),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 2,
                 recoveryContent = { inferred -> Text("Access may need Settings: ${inferred.size} permission") },
                 settingsActionLabel = "Review access",
@@ -157,6 +171,7 @@ class PermissionBundleScreenshotTest {
                 },
                 statuses = List(8) { PermissionStatus.NotRequested },
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 8,
             )
         }
@@ -175,6 +190,7 @@ class PermissionBundleScreenshotTest {
                 },
                 statuses = List(8) { PermissionStatus.NotRequested },
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
             )
         }
     }
@@ -188,6 +204,7 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.Granted, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 1,
             )
         }
@@ -213,6 +230,7 @@ class PermissionBundleScreenshotTest {
                 permissions = visible.map(all::get),
                 statuses = visible.map(statuses::get),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
             )
         }
     }
@@ -242,7 +260,10 @@ class PermissionBundleScreenshotTest {
                 statuses = listOf(PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
                 overviewMode = PermissionOverviewMode.Show,
-                overview = PermissionOverview(title = "Before scanning", body = "Review camera access first."),
+                overview = PermissionOverview {
+                    DefaultPermissionPage("Permissions", Icons.Default.Lock,
+                        title = "Before scanning", body = "Review camera access first.")
+                },
             )
         }
     }
@@ -271,6 +292,7 @@ class PermissionBundleScreenshotTest {
                 permissions = permissions,
                 statuses = listOf(PermissionStatus.Granted, PermissionStatus.NotRequested),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                overview = defaultOverview,
                 initialPage = 1,
             )
         }

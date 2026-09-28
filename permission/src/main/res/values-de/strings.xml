@@ -1,7 +1,4 @@
 <resources>
-    <string name="permission_bundle_label">Berechtigungen</string>
-    <string name="permission_bundle_overview_title">Funktion aktivieren</string>
-    <string name="permission_bundle_overview_body">Prüfen Sie, welche Zugriffe diese Funktion benötigt. Sie können in den Android-Dialogen auswählen, welche Sie gewähren.</string>
     <string name="permission_bundle_heading">Berechtigungen prüfen</string>
     <string name="permission_bundle_request">Berechtigungen anfordern</string>
     <string name="permission_bundle_retry">Verbleibende Berechtigungen anfordern</string>

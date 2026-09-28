@@ -3,24 +3,32 @@ package com.apexfission.android.permission
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.ui.BundleAction
 import com.apexfission.android.permission.ui.PermissionDisplayMode
+import com.apexfission.android.permission.ui.PermissionOverview
 import com.apexfission.android.permission.ui.PermissionOverviewMode
 import com.apexfission.android.permission.ui.bundleAction
 import com.apexfission.android.permission.ui.iconScrollOffsetDp
 import com.apexfission.android.permission.ui.shouldShowOverview
 import com.apexfission.android.permission.ui.visiblePermissionIndices
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class PermissionBundleDecisionTest {
     @Test fun `automatic overview follows visible permission count`() {
-        assertEquals(false, shouldShowOverview(1, PermissionOverviewMode.Automatic))
-        assertEquals(true, shouldShowOverview(2, PermissionOverviewMode.Automatic))
+        val overview = PermissionOverview { }
+        assertEquals(false, shouldShowOverview(1, PermissionOverviewMode.Automatic, overview))
+        assertEquals(true, shouldShowOverview(2, PermissionOverviewMode.Automatic, overview))
+        assertEquals(false, shouldShowOverview(2, PermissionOverviewMode.Automatic, null))
     }
 
     @Test fun `overview can be shown for one permission or hidden for several`() {
-        assertEquals(true, shouldShowOverview(1, PermissionOverviewMode.Show))
-        assertEquals(false, shouldShowOverview(2, PermissionOverviewMode.Hide))
-        assertEquals(false, shouldShowOverview(1, PermissionOverviewMode.Hide))
+        val overview = PermissionOverview { }
+        assertEquals(true, shouldShowOverview(1, PermissionOverviewMode.Show, overview))
+        assertEquals(false, shouldShowOverview(2, PermissionOverviewMode.Hide, overview))
+        assertEquals(false, shouldShowOverview(1, PermissionOverviewMode.Hide, null))
+        assertThrows(IllegalArgumentException::class.java) {
+            shouldShowOverview(1, PermissionOverviewMode.Show, null)
+        }
     }
 
     @Test fun `all mode keeps granted pages in their original order`() {

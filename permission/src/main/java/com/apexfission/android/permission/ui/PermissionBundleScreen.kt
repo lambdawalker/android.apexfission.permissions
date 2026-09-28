@@ -1,9 +1,6 @@
 package com.apexfission.android.permission.ui
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
@@ -48,8 +45,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -76,33 +71,22 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.apexfission.android.permission.requester.DefaultPermissionRecovery
-import com.apexfission.android.permission.requester.PermissionGrants
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.R
 import com.apexfission.android.permission.recipe.allPermissionsGranted
 import com.apexfission.android.permission.recipe.inferredRecoveryPermissions
-import com.apexfission.android.permission.recipe.resolvePermissionStatus
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.launch
 
-/** Content for the optional first carousel page. */
+/** Host-supplied first carousel page, used only when an overview is provided and visible. */
 class PermissionOverview(
-    val title: String? = null,
-    val body: String? = null,
-    val hero: (@Composable () -> Unit)? = null,
-    val description: (@Composable () -> Unit)? = null,
     /** Time spent on this page when autoplay is enabled. */
     val autoAdvanceDelayMillis: Long = 6_000L,
-    /** Full page composable. Replaces [hero], [description], and the default copy. */
-    val page: (@Composable () -> Unit)? = null,
+    /** Complete feature overview, including its hero and explanation. */
+    val page: @Composable () -> Unit,
 ) {
     init {
         require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" }
@@ -185,19 +169,26 @@ enum class PermissionDisplayMode {
 
 /** Controls whether the feature overview is a carousel page. */
 enum class PermissionOverviewMode {
-    /** Show the overview when more than one permission is visible. */
+    /** Show a supplied overview when more than one permission is visible. */
     Automatic,
 
-    /** Show the overview even for a single visible permission. */
+    /** Show the supplied overview even for a single visible permission. Requires [PermissionOverview]. */
     Show,
 
     /** Go directly to the first permission, even when several are visible. */
     Hide,
 }
 
-internal fun shouldShowOverview(visiblePermissionCount: Int, mode: PermissionOverviewMode): Boolean = when (mode) {
-    PermissionOverviewMode.Automatic -> visiblePermissionCount > 1
-    PermissionOverviewMode.Show -> true
+internal fun shouldShowOverview(
+    visiblePermissionCount: Int,
+    mode: PermissionOverviewMode,
+    overview: PermissionOverview?,
+): Boolean = when (mode) {
+    PermissionOverviewMode.Automatic -> overview != null && visiblePermissionCount > 1
+    PermissionOverviewMode.Show -> {
+        requireNotNull(overview) { "overview must be supplied when overviewMode is Show" }
+        true
+    }
     PermissionOverviewMode.Hide -> false
 }
 
@@ -218,15 +209,16 @@ internal fun bundleAction(statuses: List<PermissionStatus>): BundleAction = when
 internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int = if (selectedIndex < 0) (count - 1) * 32 else selectedIndex * 64
 
 /**
- * One action requests all runtime permissions. A multi-permission carousel starts with a feature
- * overview, then shows each permission. The carousel owns each full page. A fixed, horizontally
+ * One action requests all runtime permissions. A supplied feature overview may precede the
+ * permission pages. The carousel owns each full page. A fixed, horizontally
  * scrolling icon selector sits above the action button and centers the selected icon. On the
  * overview, the whole icon set is centered with overflow on both sides. Android can show
  * multiple dialogs and return partial grants.
  *
  * [onRequest] should launch one multiple-permission request. [onOpenSettings] should open app
- * settings if no outstanding permission can prompt. [overviewMode] can force the first page on
- * or off; the default follows the visible permission count. [initialPage] is zero for the
+ * settings if no outstanding permission can prompt. [overviewMode] controls a supplied overview;
+ * Automatic shows it when more than one permission is visible. Show requires [overview].
+ * [initialPage] is zero for the
  * overview when it is present, otherwise zero for the first permission.
  * [autoAdvance] advances through pages using their explicit delays until the user interacts.
  * A progress bar shows the remaining reading time; the adjacent control pauses or resumes it.
@@ -244,7 +236,7 @@ fun PermissionBundleScreen(
     onRequest: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
-    overview: PermissionOverview = PermissionOverview(),
+    overview: PermissionOverview? = null,
     onComplete: () -> Unit = {},
     initialPage: Int = 0,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
@@ -260,7 +252,7 @@ fun PermissionBundleScreen(
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.size == statuses.size) { "Each permission needs one status" }
     require(permissions.map { it.permission }.distinct().size == permissions.size) { "Permissions must be unique" }
-    val hasOverview = shouldShowOverview(permissions.size, overviewMode)
+    val hasOverview = shouldShowOverview(permissions.size, overviewMode, overview)
     val pageCount = permissions.size + if (hasOverview) 1 else 0
     require(initialPage in 0 until pageCount) { "initialPage is out of range" }
     val pager = rememberPagerState(initialPage = initialPage, pageCount = { pageCount })
@@ -292,7 +284,7 @@ fun PermissionBundleScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
     val settled = pager.settledPage
-    val pageDelayMillis = if (hasOverview && settled == 0) overview.autoAdvanceDelayMillis
+    val pageDelayMillis = if (hasOverview && settled == 0) requireNotNull(overview).autoAdvanceDelayMillis
     else permissions[settled.coerceIn(0, pageCount - 1) - if (hasOverview) 1 else 0].autoAdvanceDelayMillis
     val nextPage = nextAutoAdvancePage(settled, pageCount)
     val progress = remember(settled, pageDelayMillis, pageCount) {
@@ -417,28 +409,7 @@ fun PermissionBundleScreen(
                 ) {
                     when {
                         item != null -> item.page()
-                        overview.page != null -> overview.page.invoke()
-                        else -> {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(210.dp), contentAlignment = Alignment.Center
-                            ) {
-                                when {
-                                    overview.hero != null -> overview.hero.invoke()
-                                    else -> DefaultBundleHero(Icons.Default.Lock)
-                                }
-                            }
-                            Spacer(Modifier.height(24.dp))
-                            when {
-                                overview.description != null -> overview.description.invoke()
-                                else -> DefaultDescription(
-                                    label = stringResource(R.string.permission_bundle_label),
-                                    title = overview.title ?: stringResource(R.string.permission_bundle_overview_title),
-                                    body = overview.body ?: stringResource(R.string.permission_bundle_overview_body),
-                                )
-                            }
-                        }
+                        else -> requireNotNull(overview).page()
                     }
                     if (item != null && statuses[index] == PermissionStatus.Granted) {
                         Spacer(Modifier.height(16.dp))
@@ -592,127 +563,5 @@ private fun DefaultBundleHero(icon: ImageVector) {
         Icon(
             icon, contentDescription = null, modifier = Modifier.size(72.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
-    }
-}
-
-/**
- * Requests a nonempty, unique list of manifest-declared Android runtime permissions in one batch
- * after a button tap. [overview] customizes the optional opening page. [overviewMode] controls
- * whether it appears; Automatic preserves the traditional multiple-permission default. Each
- * [PermissionDescription] accepts one full `page` composable; the strip remains fixed below it.
- * [content] is shown when all required permissions are granted. It receives the current
- * [PermissionGrants] snapshot, including optional grants. A callback result can be partial;
- * permission status is checked again on recomposition and return from Settings.
- * [displayMode] filters only presentation: the underlying batch request and grant gate still
- * use every [permissions] entry. After the visible set changes, the carousel starts at its
- * overview (or sole remaining permission).
- * [autoAdvance] is opt-in and uses each page's `autoAdvanceDelayMillis`. User interaction
- * permanently stops it for this screen visit, including after a partial permission result.
- * [recoveryContent] can replace the uncertain default recovery note; [settingsActionLabel]
- * and [onOpenSettings] customize the user-triggered Settings action.
- *
- * Special app access and permissions with platform-specific sequencing need host-managed flows.
- */
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun HandlePermissionBundle(
-    permissions: List<PermissionDescription>,
-    onBack: () -> Unit,
-    onNotNow: () -> Unit,
-    modifier: Modifier = Modifier,
-    overview: PermissionOverview = PermissionOverview(),
-    onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
-    displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
-    overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
-    autoAdvance: Boolean = false,
-    /** Replaces the built-in recovery note with feature-specific copy or UI. */
-    recoveryContent: @Composable (List<String>) -> Unit = { DefaultPermissionRecovery(it) },
-    /** Label for the Settings action when a request may no longer show a system prompt. */
-    settingsActionLabel: String? = null,
-    /** Overrides opening the app details page. Called after the user taps the Settings action. */
-    onOpenSettings: (() -> Unit)? = null,
-    content: @Composable (PermissionGrants) -> Unit,
-) {
-    require(permissions.isNotEmpty()) { "At least one permission is required" }
-    val names = permissions.map { it.permission }
-    require(names.distinct().size == names.size && names.all { it.isNotBlank() }) {
-        "Permissions must have unique nonblank names"
-    }
-    val context = LocalContext.current.applicationContext
-    val history = remember(context) {
-        context.getSharedPreferences("camera_permission_state", Context.MODE_PRIVATE)
-    }
-    val requested = remember(names) {
-        mutableStateMapOf<String, Boolean>().apply {
-            names.forEach { put(it, history.getBoolean(it, false)) }
-        }
-    }
-    val autoAdvanceStopped = rememberSaveable { mutableStateOf(false) }
-    val currentResultCallback by rememberUpdatedState(onPermissionsResult)
-    val state = rememberMultiplePermissionsState(permissions = names, onPermissionsResult = { results ->
-        results.forEach { (name, granted) ->
-            if (granted) {
-                requested[name] = false
-                history.edit { putBoolean(name, false) }
-            }
-        }
-        currentResultCallback(results)
-    })
-    val permissionStates = state.permissions.associateBy { it.permission }
-    val statuses = names.map { name ->
-        val permission = requireNotNull(permissionStates[name]) { "Missing permission state for $name" }
-        resolvePermissionStatus(
-            granted = permission.status.isGranted,
-            shouldShowRationale = permission.status.shouldShowRationale,
-            requestedBefore = requested[name] == true,
-        )
-    }
-    LaunchedEffect(statuses, names) {
-        names.zip(statuses).forEach { (name, status) ->
-            if (status == PermissionStatus.Granted && requested[name] == true) {
-                requested[name] = false
-                history.edit { putBoolean(name, false) }
-            }
-        }
-    }
-    val grants = PermissionGrants(permissions, statuses)
-    if (grants.canProceed) {
-        content(grants)
-    } else {
-        val visibleIndices = visiblePermissionIndices(statuses, displayMode)
-        val visibleNames = visibleIndices.map(names::get)
-        key(visibleNames, overviewMode) {
-            PermissionBundleScreen(
-                permissions = visibleIndices.map(permissions::get),
-                statuses = visibleIndices.map(statuses::get),
-                onBack = onBack,
-                onNotNow = onNotNow,
-                onRequest = {
-                    names.zip(statuses).filter { it.second != PermissionStatus.Granted }.forEach { (name, _) ->
-                        requested[name] = true
-                        history.edit { putBoolean(name, true) }
-                    }
-                    state.launchMultiplePermissionRequest()
-                },
-                onOpenSettings = {
-                    if (onOpenSettings != null) onOpenSettings()
-                    else context.startActivity(
-                        Intent(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.fromParts("package", context.packageName, null)
-                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                },
-                recoveryContent = recoveryContent,
-                settingsActionLabel = settingsActionLabel,
-                overview = overview,
-                overviewMode = overviewMode,
-                autoAdvance = autoAdvance,
-                onUserInteraction = { autoAdvanceStopped.value = true },
-                initialAutoAdvanceStopped = autoAdvanceStopped.value,
-                onAutoAdvanceResume = { autoAdvanceStopped.value = false },
-                modifier = modifier,
-            )
-        }
     }
 }

@@ -37,4 +37,22 @@ class PermissionPageDeviceTest {
         compose.onNodeWithText("Request permissions").performClick()
         compose.runOnIdle { assertTrue(requested) }
     }
+
+    @Test fun multiplePermissionsStartOnFirstPageWithoutAnOverview() {
+        compose.setContent {
+            MaterialTheme {
+                PermissionBundleScreen(
+                    permissions = listOf(
+                        PermissionDescription(Manifest.permission.CAMERA) { Text("Camera explanation") },
+                        PermissionDescription(Manifest.permission.RECORD_AUDIO) { Text("Audio explanation") },
+                    ),
+                    statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
+                    onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                )
+            }
+        }
+
+        compose.onNodeWithText("1 of 2").assertExists()
+        compose.onNodeWithText("Camera explanation").assertExists()
+    }
 }
