@@ -55,6 +55,8 @@ HandlePermissions(
 
 The trailing `PermissionDescription { ... }` lambda is the **entire carousel page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` supplies a ready-made page; omitting a page uses generic localized copy and visuals. Keep `label` and `icon` as metadata for the persistent icon strip and accessibility. When `page` is omitted, the separate `hero`, `description`, `title`, and `body` options remain available.
 
+Use a nonempty list with unique, nonblank Android permission names. The batch request runs only while required access is missing. If every required permission is already granted, `content` is shown immediately, including when an optional permission is missing.
+
 ## Required and optional permissions
 
 `PermissionDescription` is required by default. Set `required = false` for a capability the feature can run without. The initial batch includes missing optional permissions whenever the explanation screen is shown because a required grant is missing; an optional denial will not block protected content. The UI marks optional pages. In the `content` lambda, inspect the current snapshot, for example `{ grants -> ScanFeature(narrationEnabled = grants.isGranted(Manifest.permission.RECORD_AUDIO)) }`. It also exposes `missingRequired`, `missingOptional`, `statusByPermission`, and `canProceed`. If required grants are already present, content appears immediately and optional access is not prompted automatically; request optional access separately at the point of use. An all-optional list shows content immediately. See the [sample Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).
@@ -85,7 +87,7 @@ See the [selected permission](../docs/screenshots/permission-detail.png), [setti
 
 - `HandlePermissionBundle` offers the same batch UI plus `onPermissionsResult: (Map<String, Boolean>) -> Unit`. Do not treat a batch result as atomic.
 - `HandlePermissionsIndividually` requests per permission; `HandleCameraPermission` is the camera compatibility wrapper.
-- `HandlePermissions(permissionContent = { controllers -> ... })` replaces the built-in UI and receives **all** controllers regardless of display mode. Each exposes `status`, `requestPermission()`, and `openAppSettings()`; invoke actions only on a user action.
+- `HandlePermissions(permissionContent = { controllers -> ... })` replaces the built-in UI and receives **all** controllers regardless of display mode. This uses the **individual** request path, so it does not provide the built-in one-button batch action. Each controller exposes `status`, `requestPermission()`, and `openAppSettings()`; invoke actions only on a user action. For a custom carousel page with the built-in batch button, supply `PermissionDescription(page = { ... })` instead.
 - `PermissionScreen` and `PermissionBundleScreen` render host-managed statuses and actions without launching Android requests.
 
 See [README.md](../README.md) and [the sample Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).

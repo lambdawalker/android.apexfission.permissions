@@ -14,14 +14,16 @@ Use `PermissionRecipes.foregroundLocation(context, LocationAccuracy.Approximate)
 ```
 
 ```kotlin
+// Inside a ComponentActivity method; permissionRequester is an Activity property.
+val activity = this
 when (val step = PermissionRecipes.foregroundLocation(this, LocationAccuracy.Precise)) {
     is PermissionRecipeStep.RequestRuntime -> with(permissionRequester) {
         requestPermissions(*step.permissions.toTypedArray()) {
             // Recheck accuracy before using location.
-            useLocation(PermissionRecipes.grantedLocationAccuracy(this@MainActivity))
+            useLocation(PermissionRecipes.grantedLocationAccuracy(activity))
         } onDenied { missing -> showLocationExplanation(missing) }
     }
-    PermissionRecipeStep.Ready -> useLocation(PermissionRecipes.grantedLocationAccuracy(this))
+    PermissionRecipeStep.Ready -> useLocation(PermissionRecipes.grantedLocationAccuracy(activity))
     PermissionRecipeStep.OpenAppSettings -> openPermissionRecipeSettings()
     PermissionRecipeStep.SystemControlledPrompt -> Unit
 }
