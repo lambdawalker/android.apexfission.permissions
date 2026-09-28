@@ -1,0 +1,60 @@
+name: Library site
+
+on:
+  pull_request:
+    paths:
+      - 'sites/**'
+      - 'docs/screenshots/**'
+      - '.github/workflows/deploy-library-site.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sites/**'
+      - 'docs/screenshots/**'
+      - '.github/workflows/deploy-library-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: library-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: sites/package-lock.json
+      - name: Install and build
+        working-directory: sites
+        run: |
+          npm ci
+          npm run build
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      - name: Upload site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: sites/dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

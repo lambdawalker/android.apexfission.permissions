@@ -15,6 +15,7 @@
 - `VisualMediaPicker.kt`: AndroidX photo picker wrapper for user-selected images and videos, with no storage permission.
 - `PermissionViewModel.kt`: generic Accompanist adapter.
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity; demo composables live in its `demo/` package.
+- `sites/`: Astro Starlight documentation site; [its README](../sites/README.md) covers local builds and GitHub Pages deployment. It copies screenshot PNGs from `docs/screenshots/` during the build.
 
 Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](compose.md), [code-only guide](code-only.md), and [README](../README.md) aligned with public behavior. Never launch a request during composition. Only required permissions gate content; the full list remains available for batch requests and grant snapshots even when `MissingOnly` filters the carousel. `PermissionOverviewMode.Automatic` follows the visible permission count; `Show` and `Hide` explicitly override it.
 
