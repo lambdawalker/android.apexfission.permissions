@@ -1,7 +1,4 @@
 <resources>
-    <string name="permission_bundle_label">Permissions</string>
-    <string name="permission_bundle_overview_title">Enable this feature</string>
-    <string name="permission_bundle_overview_body">Review the access this feature needs. You can choose which access to grant in Android’s prompts.</string>
     <string name="permission_bundle_heading">Review permissions</string>
     <string name="permission_bundle_request">Request permissions</string>
     <string name="permission_bundle_retry">Request remaining permissions</string>

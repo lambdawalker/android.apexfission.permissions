@@ -63,15 +63,15 @@ Use a nonempty list with unique, nonblank Android permission names. The batch re
 
 ## Overview page
 
-`overviewMode` is independent of the `overview` content argument. It applies to `HandlePermissions`, `HandlePermissionBundle`, and the render-only `PermissionBundleScreen`:
+`overview` is optional, but a supplied `PermissionOverview` must have a full page. With no overview, the carousel starts on the first permission. `overviewMode` applies to `HandlePermissions` and the render-only `PermissionBundleScreen`:
 
 | `PermissionOverviewMode` | Behavior | Preview |
 | --- | --- | --- |
-| `Automatic` (default) | Show only when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](../docs/screenshots/bundle-overview.png) |
-| `Show` | Include the overview even with one permission. | [Single-permission overview](../docs/screenshots/single-permission-overview.png) |
+| `Automatic` (default) | Show a supplied overview only when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](../docs/screenshots/bundle-overview.png) |
+| `Show` | Include the supplied overview even with one permission; requires `overview`. | [Single-permission overview](../docs/screenshots/single-permission-overview.png) |
 | `Hide` | Start on the first permission even with several. | [Multiple permissions without overview](../docs/screenshots/multiple-without-overview.png) |
 
-To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview(page = { IntroPage() })`. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`. Changing the mode does not change which permissions the button requests.
+To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. To skip a supplied introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`; omitting `overview` also starts directly on the permission pages. Changing the mode does not change which permissions the button requests.
 
 ## Timed carousel
 
@@ -81,14 +81,14 @@ See the [segmented progress preview](../docs/screenshots/segmented-reading-progr
 
 `PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both evaluate the **full original list** and request missing permissions together while the explanation is shown. Only required entries gate protected content. After a partial grant that leaves required access missing, the explanation remains; when all remaining permissions are inferred to lack a prompt, the action offers app settings.
 
-`PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` and `HandlePermissionBundle` accept `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [README example](../README.md#request-a-group) and [runnable carousel](../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
+`PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` accepts `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [README example](../README.md#request-a-group) and [runnable carousel](../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
 
 See the [selected permission](../docs/screenshots/permission-detail.png), [settings recovery](../docs/screenshots/settings-recovery.png), and [overflowing icon strip](../docs/screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [README gallery](../README.md#screenshots). They are static Compose previews, not system permission dialogs.
 
 ## Other UI entry points
 
-- `HandlePermissionBundle` offers the same batch UI plus `onPermissionsResult: (Map<String, Boolean>) -> Unit`. Do not treat a batch result as atomic.
-- For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`; the overview is hidden by default.
+- `HandlePermissions(onPermissionsResult = { results -> ... })` observes the batch result. Do not treat it as atomic.
+- For camera alone, use `HandlePermissions` with one `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`; the overview is absent unless you supply one and set `overviewMode = Show`.
 - For a custom explanation page with the built-in batch button, supply `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`.
 - `PermissionBundleScreen` renders host-managed statuses and actions without launching Android requests.
 

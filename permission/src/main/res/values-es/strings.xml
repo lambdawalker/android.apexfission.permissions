@@ -1,7 +1,4 @@
 <resources>
-    <string name="permission_bundle_label">Permisos</string>
-    <string name="permission_bundle_overview_title">Activa esta función</string>
-    <string name="permission_bundle_overview_body">Revisa los permisos que necesita esta función. Puedes elegir cuáles conceder en los avisos de Android.</string>
     <string name="permission_bundle_heading">Revisar permisos</string>
     <string name="permission_bundle_request">Solicitar permisos</string>
     <string name="permission_bundle_retry">Solicitar permisos restantes</string>
