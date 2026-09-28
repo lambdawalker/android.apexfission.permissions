@@ -1,5 +1,6 @@
 package com.apexfission.android.permissions
 
+import android.util.Log
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -16,6 +17,10 @@ class DemoNavigationDeviceTest {
 
     @Test fun launcherOpensRecipesAndCarousel() {
         compose.onNodeWithText("Open recipes").performClick()
+        Log.i("DemoNavigationDeviceTest", "after click: home=" +
+            compose.onAllNodesWithText("Open recipes").fetchSemanticsNodes().size +
+            ", back=" + compose.onAllNodesWithText("Back to demos").fetchSemanticsNodes().size +
+            ", recipes=" + compose.onAllNodesWithText("Platform recipes").fetchSemanticsNodes().size)
         compose.waitUntil(10_000) {
             compose.onAllNodesWithText("Back to demos").fetchSemanticsNodes().isNotEmpty()
         }

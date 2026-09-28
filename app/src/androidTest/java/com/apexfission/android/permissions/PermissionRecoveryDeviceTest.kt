@@ -47,6 +47,7 @@ class PermissionRecoveryDeviceTest {
             val deny = device.wait(Until.findObject(By.res(
                 "com.google.android.permissioncontroller", "permission_deny_button")), 10_000)
                 ?: device.findObject(By.res("com.android.permissioncontroller", "permission_deny_button"))
+                ?: device.findObject(By.text("Don’t allow"))
                 ?: device.findObject(By.text("Don't allow"))
                 ?: device.findObject(By.text("Deny"))
             assertNotNull("Denial button missing; visible buttons: " +
