@@ -121,7 +121,24 @@ PermissionDescription(
 
 `displayMode = PermissionDisplayMode.All` (the default) keeps granted permissions in the carousel and marks their icons with a green check badge; selecting one still highlights its icon. `PermissionDisplayMode.MissingOnly` removes granted permissions from both the carousel and icon strip. In `Automatic` overview mode, the overview appears only while more than one **visible** permission remains. After a grant changes the visible set, the carousel starts on the overview if present, otherwise the first remaining permission. Both modes still gate protected content on every original permission and use the same batch request. The setting applies to the built-in UI; custom `permissionContent` receives all controllers.
 
-`content` appears when every **required** permission is granted. On a partial grant that still lacks a required permission, the screen remains and the button requests missing permissions; if none can prompt, it opens app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.
+`content` appears when every **required** permission is granted. On a partial grant that still lacks a required permission, the screen remains and the button requests missing permissions; if none can prompt, it offers app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The built-in UI therefore says Android *might* skip another prompt. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.
+
+Customize the recovery note and Settings route for your feature:
+
+```kotlin
+HandlePermissions(
+    permissions = listOf(PermissionDescription(Manifest.permission.CAMERA, label = "Camera")),
+    onBack = { finish() },
+    onNotNow = { finish() },
+    recoveryContent = { inferredPermissions ->
+        Text("Android may skip the prompt. You can enable camera access in Settings.")
+    },
+    settingsActionLabel = "Review camera access",
+    onOpenSettings = { showCameraSettingsExplanation() },
+) { grants -> CameraFeature() }
+```
+
+`recoveryContent` receives the permission strings whose status is *inferred* to need recovery; it appears even if another missing permission can still be requested. The callback `onOpenSettings` replaces the default app-details launch and runs only after the user taps the Settings action. A host can show an explanation and a decline choice there before opening Settings. `PermissionBundleScreen` and `PermissionScreen` expose the same recovery content and label hooks; their existing `onOpenSettings` callbacks remain the action. Custom `permissionContent` owns its entire UI and can use each `PermissionController.status` and `openAppSettings()` directly. Never assume this status proves the system cannot show another request.
 
 ### Required and optional access
 

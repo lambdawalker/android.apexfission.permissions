@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,6 +109,22 @@ class PermissionBundleScreenshotTest {
                 statuses = listOf(PermissionStatus.Granted, PermissionStatus.PermanentlyDenied),
                 onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
                 initialPage = 2,
+            )
+        }
+    }
+
+    @PreviewTest
+    @Preview(name = "Custom recovery", widthDp = 393, heightDp = 852, showBackground = true)
+    @Composable
+    fun customRecovery() {
+        MaterialTheme {
+            PermissionBundleScreen(
+                permissions = permissions,
+                statuses = listOf(PermissionStatus.Granted, PermissionStatus.PermanentlyDenied),
+                onBack = {}, onNotNow = {}, onRequest = {}, onOpenSettings = {},
+                initialPage = 2,
+                recoveryContent = { inferred -> Text("Access may need Settings: ${inferred.size} permission") },
+                settingsActionLabel = "Review access",
             )
         }
     }

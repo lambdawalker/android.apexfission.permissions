@@ -7,6 +7,7 @@
 - `PermissionAutoAdvance.kt`: reading pace estimator and looping page progression.
 - `PermissionScreen.kt`: description metadata and individual primer.
 - `PermissionState.kt`: status inference and controller actions. `PermanentlyDenied` is a best-effort inference from history and Android rationale.
+- `PermissionRecovery.kt`: cautious default recovery note for inferred blocked permissions; callers can replace it and control the Settings action.
 - `PermissionGrants.kt`: required/optional grant snapshot passed to protected content.
 - `PermissionCheck.kt`: synchronous Context check and infix `otherwise`.
 - `PermissionRequester.kt`: Activity-owned launcher and infix `onDenied`.

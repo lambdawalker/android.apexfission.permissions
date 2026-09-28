@@ -16,6 +16,7 @@
     <string name="permission_generic_body">This feature needs access to %1$s. You can manage this permission in your device settings.</string>
     <string name="permission_generic_allow">Allow %1$s</string>
     <string name="permission_open_settings">Open App Settings</string>
+    <string name="permission_recovery_uncertain">Android might not show another permission prompt. If it doesn’t, you can enable access in App Settings.</string>
     <string name="permission_next">Next permission</string>
     <string name="permission_done">Continue</string>
     <string name="camera_permission_label">Camera</string>
