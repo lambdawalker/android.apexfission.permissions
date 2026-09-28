@@ -10,6 +10,8 @@
 - `PermissionGrants.kt`: required/optional grant snapshot passed to protected content.
 - `PermissionCheck.kt`: synchronous Context check and infix `otherwise`.
 - `PermissionRequester.kt`: Activity-owned launcher and infix `onDenied`.
+- `PermissionRecipes.kt`: foreground/background location and notification next-step decisions; see [platform recipes](platform-recipes.md).
+- `VisualMediaPicker.kt`: AndroidX photo picker wrapper for user-selected images and videos, with no storage permission.
 - `CameraPermissionState.kt` / `PermissionViewModel.kt`: compatibility and Accompanist adapter.
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity.
 

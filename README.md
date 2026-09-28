@@ -146,6 +146,25 @@ For a single permission, the same API skips the overview page by default; use `o
 
 The launcher handles ordinary Android runtime permissions. Special app access (exact alarms, overlay, all-files access) and runtime permissions with platform-specific sequencing (such as background location) need their own host flow. Do not assume the batch is atomic or that Android will present exactly one system dialog.
 
+### Platform-aware recipes
+
+`PermissionRecipes` computes the next host action for foreground location, separately staged background location, and notifications. A step is `Ready`, `RequestRuntime(permissions)`, `OpenAppSettings`, or `SystemControlledPrompt`. The host shows its explanation and launches the returned action after a user gesture, then calls the recipe again after the result. For example:
+
+```kotlin
+when (val step = PermissionRecipes.foregroundLocation(this, LocationAccuracy.Precise)) {
+    is PermissionRecipeStep.RequestRuntime -> with(permissionRequester) {
+        requestPermissions(*step.permissions.toTypedArray()) {
+            useLocation(PermissionRecipes.grantedLocationAccuracy(this@MainActivity))
+        } onDenied { missing -> showLocationExplanation(missing) }
+    }
+    PermissionRecipeStep.Ready -> useLocation(PermissionRecipes.grantedLocationAccuracy(this))
+    PermissionRecipeStep.OpenAppSettings -> openPermissionRecipeSettings()
+    PermissionRecipeStep.SystemControlledPrompt -> Unit
+}
+```
+
+`PermissionRequester` is an Activity property; `useLocation` and `showLocationExplanation` are host functions. On Android 10 the background recipe requests background access **after** foreground is granted; on Android 11+ it points to Settings after a host-provided explanation. Notifications have a runtime prompt on Android 13+ with target SDK 33+. For user-selected photos or videos, use `rememberVisualMediaPicker { uri -> ... }` and launch it on a user gesture instead of requesting a storage permission. See the [complete platform recipes](agents/platform-recipes.md) for manifest setup, photo-picker code, and edge cases.
+
 ## Code-only request with callbacks
 
 For a flow with no library screen, create a `PermissionRequester` as an Activity property so the Android result launcher is registered before the Activity starts. The infix `onDenied` call is **terminal**: it attaches the handler and starts the request. The library checks current grants first, then rechecks after Android returns. One request may be outstanding at a time.
