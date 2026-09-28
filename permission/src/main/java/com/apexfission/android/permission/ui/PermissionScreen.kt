@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,8 +61,11 @@ import kotlinx.coroutines.launch
  * localized generic defaults based on [label].
  *
  * @property permission Android runtime permission string, e.g. `android.permission.CAMERA`.
- * @property label Human-friendly name, e.g. `Camera`.
- * @property icon Small icon displayed in the selection list and default hero.
+ * @property label Spoken name in the icon selector, e.g. `Camera`. Defaults to the name in
+ * [PermissionVisualDefaults], or a readable permission suffix for unknown strings. Override it
+ * with feature-specific or localized wording when appropriate.
+ * @property icon Small icon displayed in the selection list and default hero. Defaults to the
+ * matching icon in [PermissionVisualDefaults], or a lock for unknown strings.
  * @property title Optional title for this permission page.
  * @property body Optional explanatory text for this permission page.
  * @property requestLabel Optional primary button label before a request.
@@ -81,9 +83,8 @@ import kotlinx.coroutines.launch
  */
 class PermissionDescription(
     val permission: String,
-    val label: String = permission.substringAfterLast('.').replace('_', ' ').lowercase()
-        .replaceFirstChar { it.titlecase() },
-    val icon: ImageVector = Icons.Default.Lock,
+    val label: String = PermissionVisualDefaults.forPermission(permission).label,
+    val icon: ImageVector = PermissionVisualDefaults.forPermission(permission).icon,
     val title: String? = null,
     val body: String? = null,
     val requestLabel: String? = null,

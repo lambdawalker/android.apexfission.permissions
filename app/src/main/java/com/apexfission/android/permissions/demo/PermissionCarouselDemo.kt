@@ -68,8 +68,6 @@ fun PermissionCarouselDemo(onBack: () -> Unit, modifier: Modifier = Modifier) {
             },
             PermissionDescription(
                 permission = Manifest.permission.RECORD_AUDIO,
-                label = "Microphone",
-                icon = Icons.Default.Mic,
                 required = false,
                 autoAdvanceDelayMillis = estimateReadingDelayMillis(
                     "$MICROPHONE_TITLE $MICROPHONE_BODY", ReadingPace.Slow
