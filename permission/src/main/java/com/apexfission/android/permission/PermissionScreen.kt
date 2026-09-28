@@ -67,6 +67,8 @@ import kotlinx.coroutines.launch
  * the icon selector. Keep [icon] and [label] as metadata for the selector and accessibility.
  * @property autoAdvanceDelayMillis Time spent on this page before optional carousel autoplay
  * advances. The host can calculate it with [estimateReadingDelayMillis] from its visible copy.
+ * @property required Whether this grant is needed before protected content can appear. Optional
+ * permissions are still included in a batch request while the explanation screen is shown.
  * @property page Optional full page composable for the batch carousel. This unifies the hero
  * and explanation; the batch icon strip stays outside the carousel. When omitted, defaults use
  * [hero], [description], and the text properties. The individual screen ignores [page].
@@ -83,6 +85,7 @@ class PermissionDescription(
     val hero: (@Composable () -> Unit)? = null,
     val description: (@Composable () -> Unit)? = null,
     val autoAdvanceDelayMillis: Long = 6_000L,
+    val required: Boolean = true,
     val page: (@Composable () -> Unit)? = null,
 ) {
     init { require(autoAdvanceDelayMillis > 0) { "autoAdvanceDelayMillis must be positive" } }
@@ -214,6 +217,12 @@ fun PermissionScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                     )
+                    if (!item.required) {
+                        Spacer(Modifier.height(12.dp))
+                        Text(stringResource(R.string.permission_optional),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                     if (item.features.isNotEmpty()) {
                         Spacer(Modifier.height(32.dp))
                         item.features.forEach { feature ->

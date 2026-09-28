@@ -10,8 +10,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
- * Protects [content] until every listed Android runtime permission is granted. One button
- * requests the permissions together; the carousel provides an overview and individual detail.
+ * Protects [content] until every required Android runtime permission is granted. One button
+ * requests required and optional permissions together; the carousel explains each grant.
  *
  * The host must declare every permission in its manifest. This gate intentionally does not handle
  * special app access (such as exact alarms) or install-time permissions, which Android requests
@@ -29,7 +29,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * shows it when more than one permission is visible; Show and Hide override either count.
  * @param autoAdvance Whether to advance through the carousel using each page's configured delay
  * until the first user interaction. Disabled by default.
- * @param content Composable displayed only when all listed permissions are granted.
+ * @param content Composable displayed when all required permissions are granted. Its
+ * [PermissionGrants] snapshot reports optional grants, including after a partial result.
  */
 @Composable
 fun HandlePermissions(
@@ -42,7 +43,7 @@ fun HandlePermissions(
     displayMode: PermissionDisplayMode = PermissionDisplayMode.All,
     overviewMode: PermissionOverviewMode = PermissionOverviewMode.Automatic,
     autoAdvance: Boolean = false,
-    content: @Composable () -> Unit,
+    content: @Composable (PermissionGrants) -> Unit,
 ) {
     if (permissionContent == null) {
         HandlePermissionBundle(
@@ -71,7 +72,7 @@ fun HandlePermissionsIndividually(
     onNotNow: () -> Unit,
     modifier: Modifier = Modifier,
     permissionContent: (@Composable (List<PermissionController>) -> Unit)? = null,
-    content: @Composable () -> Unit,
+    content: @Composable (PermissionGrants) -> Unit,
 ) {
     require(permissions.isNotEmpty()) { "At least one permission is required" }
     require(permissions.map { it.permission }.distinct().size == permissions.size) {
@@ -80,14 +81,16 @@ fun HandlePermissionsIndividually(
     val controllers = permissions.map { description ->
         key(description.permission) { rememberPermissionController(description.permission) }
     }
-    if (allPermissionsGranted(controllers.map { it.status })) {
-        content()
+    val statuses = controllers.map { it.status }
+    val grants = PermissionGrants(permissions, statuses)
+    if (grants.canProceed) {
+        content(grants)
     } else if (permissionContent != null) {
         permissionContent(controllers)
     } else {
         PermissionScreen(
             permissions = permissions,
-            statuses = controllers.map { it.status },
+            statuses = statuses,
             onBack = onBack,
             onNotNow = onNotNow,
             onRequest = { controllers[it].requestPermission() },

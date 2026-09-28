@@ -49,11 +49,15 @@ HandlePermissions(
     onBack = { finish() },
     onNotNow = { finish() },
 ) {
-    ScanFeature() // composed only when every listed permission is granted
+    ScanFeature() // composed when every required permission is granted
 }
 ```
 
 The trailing `PermissionDescription { ... }` lambda is the **entire carousel page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` supplies a ready-made page; omitting a page uses generic localized copy and visuals. Keep `label` and `icon` as metadata for the persistent icon strip and accessibility. When `page` is omitted, the separate `hero`, `description`, `title`, and `body` options remain available.
+
+## Required and optional permissions
+
+`PermissionDescription` is required by default. Set `required = false` for a capability the feature can run without. The initial batch includes missing optional permissions whenever the explanation screen is shown because a required grant is missing; an optional denial will not block protected content. The UI marks optional pages. In the `content` lambda, inspect the current snapshot, for example `{ grants -> ScanFeature(narrationEnabled = grants.isGranted(Manifest.permission.RECORD_AUDIO)) }`. It also exposes `missingRequired`, `missingOptional`, `statusByPermission`, and `canProceed`. If required grants are already present, content appears immediately and optional access is not prompted automatically; request optional access separately at the point of use. An all-optional list shows content immediately. See the [sample Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).
 
 ## Overview page
 
@@ -71,7 +75,7 @@ To show a custom introduction before a single permission, pass `overviewMode = P
 
 `HandlePermissions(autoAdvance = true)` loops through the visible pages, returning to the first after the last page's timer finishes. The full-width progress bar above the header fills during the current page's reading time; the button beside the page count pauses or resumes. User interaction pauses the timer until the reader resumes it. A single visible page stays still. The default is `false`. The host supplies `autoAdvanceDelayMillis` on each `PermissionDescription` and, if present, on `PermissionOverview` (six seconds by default). Use `estimateReadingDelayMillis("$title $body", ReadingPace.Slow)` to derive a delay from the same copy shown in a custom page; see the [demo Activity](../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt). The library cannot count text inside an arbitrary composable. `ReadingPace.Slow`, `Normal`, and `Fast` use 120, 180, and 230 words per minute. For image-heavy pages or languages without word separators, set the delay directly. Autoplay pauses when the host is not resumed and is disabled for touch exploration.
 
-`PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both gate protected content on the **full original list** and request missing permissions together. After partial grant the explanation remains; if a permission cannot be prompted again, the action opens app settings.
+`PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both evaluate the **full original list** and request missing permissions together while the explanation is shown. Only required entries gate protected content. After a partial grant that leaves required access missing, the explanation remains; if a permission cannot be prompted again, the action opens app settings.
 
 See the [selected permission](../docs/screenshots/permission-detail.png), [settings recovery](../docs/screenshots/settings-recovery.png), and [overflowing icon strip](../docs/screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [README gallery](../README.md#screenshots). They are static Compose previews, not system permission dialogs.
 

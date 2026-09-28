@@ -121,7 +121,26 @@ PermissionDescription(
 
 `displayMode = PermissionDisplayMode.All` (the default) keeps granted permissions in the carousel and marks their icons with a green check badge; selecting one still highlights its icon. `PermissionDisplayMode.MissingOnly` removes granted permissions from both the carousel and icon strip. In `Automatic` overview mode, the overview appears only while more than one **visible** permission remains. After a grant changes the visible set, the carousel starts on the overview if present, otherwise the first remaining permission. Both modes still gate protected content on every original permission and use the same batch request. The setting applies to the built-in UI; custom `permissionContent` receives all controllers.
 
-`content` appears only while every permission is granted. On a partial grant, the screen remains and the button requests remaining permissions; if none can prompt, it opens app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.
+`content` appears when every **required** permission is granted. On a partial grant that still lacks a required permission, the screen remains and the button requests missing permissions; if none can prompt, it opens app settings. The `PermanentlyDenied` status is inferred from request history and Android's rationale signal, not a definitive platform flag. The request callback can be observed with `HandlePermissionBundle(onPermissionsResult = { ... })` when needed.
+
+### Required and optional access
+
+Permissions are required by default. Set `required = false` when the feature can still work without one. The bundle action requests all missing permissions together while the explanation screen is visible, and the optional page is marked “Optional access.” Protected content receives a current `PermissionGrants` snapshot:
+
+```kotlin
+HandlePermissions(
+    permissions = listOf(
+        PermissionDescription(Manifest.permission.CAMERA, required = true),
+        PermissionDescription(Manifest.permission.RECORD_AUDIO, required = false),
+    ),
+    onBack = { finish() },
+    onNotNow = { finish() },
+) { grants ->
+    Scanner(enableNarration = grants.isGranted(Manifest.permission.RECORD_AUDIO))
+}
+```
+
+`grants.canProceed`, `grants.missingRequired`, `grants.missingOptional`, and `grants.statusByPermission` are also available. If all required permissions were already granted, content appears immediately; optional access is **not** requested on its own. To offer it later, launch a separate permission request when the user chooses that capability. An all-optional list likewise shows content immediately. Grants can change outside the app, so use the current snapshot instead of caching it.
 
 For a single permission, the same API skips the overview page by default; use `overviewMode = PermissionOverviewMode.Show` to include it. `HandleCameraPermission` and `HandlePermissionsIndividually` remain available for older or intentionally sequential integrations. `PermissionScreen` and `PermissionBundleScreen` can render host-managed statuses and actions without launching requests themselves. The `permissionContent` parameter of `HandlePermissions` preserves its existing controller-driven custom UI path.
 

@@ -46,7 +46,7 @@ private const val CAMERA_BODY = "Allow camera access to capture a document when 
 private const val MICROPHONE_TITLE = "Record narration"
 private const val MICROPHONE_BODY = "Allow microphone access to add narration when you record a scan."
 private const val OVERVIEW_TITLE = "Scan with camera and microphone"
-private const val OVERVIEW_BODY = "Review the access this feature uses, then request both permissions together."
+private const val OVERVIEW_BODY = "Camera access is needed to scan. Microphone access adds optional narration."
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
                                 permission = Manifest.permission.RECORD_AUDIO,
                                 label = "Microphone",
                                 icon = Icons.Default.Mic,
+                                required = false,
                                 autoAdvanceDelayMillis = estimateReadingDelayMillis(
                                     "$MICROPHONE_TITLE $MICROPHONE_BODY", ReadingPace.Slow
                                 ),
@@ -103,8 +104,11 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                         ),
-                    ) {
-                        PermissionsReady(modifier = Modifier.padding(innerPadding))
+                    ) { grants ->
+                        PermissionsReady(
+                            microphoneGranted = grants.isGranted(Manifest.permission.RECORD_AUDIO),
+                            modifier = Modifier.padding(innerPadding),
+                        )
                     }
                 }
             }
@@ -113,7 +117,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun PermissionsReady(modifier: Modifier = Modifier) {
+private fun PermissionsReady(microphoneGranted: Boolean = true, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -133,7 +137,8 @@ private fun PermissionsReady(modifier: Modifier = Modifier) {
             }
             Text("You're ready to go", style = MaterialTheme.typography.headlineMedium)
             Text(
-                "Camera and microphone access are available. Your app can now start the protected feature.",
+                if (microphoneGranted) "Camera and narration are ready. You can start scanning."
+                else "Camera is ready. You can scan without narration.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -150,7 +155,8 @@ private fun PermissionsReady(modifier: Modifier = Modifier) {
                     }
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Icon(Icons.Default.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Text("Microphone · Record audio")
+                        Text(if (microphoneGranted) "Microphone · Narration available"
+                            else "Microphone · Optional narration unavailable")
                     }
                 }
             }

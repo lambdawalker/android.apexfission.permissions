@@ -6,6 +6,7 @@
     <string name="permission_bundle_request">Request permissions</string>
     <string name="permission_bundle_retry">Request remaining permissions</string>
     <string name="permission_bundle_granted">Already granted</string>
+    <string name="permission_optional">Optional access</string>
     <string name="permission_back">Back</string>
     <string name="permission_progress">%1$d of %2$d</string>
     <string name="permission_auto_advance_progress">Page reading progress</string>
