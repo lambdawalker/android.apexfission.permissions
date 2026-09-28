@@ -25,7 +25,7 @@ Once the first release has been published on Maven Central, use:
 ```kotlin
 // settings.gradle.kts: ensure mavenCentral() is in dependencyResolutionManagement repositories
 dependencies {
-    implementation("com.apexfission.android.permission:core:0.1.0")
+    implementation("com.apexfission.androi:permission:0.1.0")
 }
 ```
 

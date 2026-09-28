@@ -2,7 +2,7 @@
 
 This repository provides Android runtime permission UI and callback helpers. Public APIs live in `:permission` under `com.apexfission.android.permission`. The `:app` module is a runnable example.
 
-For a consuming app, add `implementation("com.apexfission.android.permission:core:<published-version>")` and `mavenCentral()` (or `implementation(project(":permission"))` in a source checkout). The host needs minSdk 24. Declare requested permissions in the **host app's** manifest, then choose one entry point below. Start requests from a user action; Android may grant only part of a batch.
+For a consuming app, add `implementation("com.apexfission.androi:permission:0.1.0")` and `mavenCentral()` (or `implementation(project(":permission"))` in a source checkout). The host needs minSdk 24. Declare requested permissions in the **host app's** manifest, then choose one entry point below. Start requests from a user action; Android may grant only part of a batch.
 
 | Host need | Guide |
 | --- | --- |
