@@ -40,6 +40,8 @@ The module is `:permission` (namespace `com.apexfission.android.permission`, min
 
 ## Request a group
 
+The sample app has [emulator instrumentation tests](app/src/androidTest/java/com/apexfission/android/permissions/) for real permission denial and Settings recovery, platform recipe grant transitions, and both demo routes. Run `./gradlew :app:connectedDebugAndroidTest` on an attached device, or use the [Device permission tests workflow](.github/workflows/device-permission-tests.yml) for API 29 and 35 emulators.
+
 The following is a complete Activity example. The permissions are checked on composition; the system request starts only after the user taps the action button.
 
 ```kotlin
