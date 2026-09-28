@@ -5,6 +5,8 @@ plugins {
     id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
+val projectUrl = "https://github.com/lambdawalker/android.apexfission.permissions"
+
 mavenPublishing {
     coordinates(
         "com.apexfission.android.permission",
@@ -15,14 +17,15 @@ mavenPublishing {
     signAllPublications()
 
     pom {
-        name.set("Apexfission Permissions")
-        description.set("Customizable Jetpack Compose screens and callback helpers for Android runtime permissions.")
+        name.set("Apexfission Android Permissions")
+        description.set("Jetpack Compose screens, callback helpers, and platform-aware recipes for Android permissions.")
         inceptionYear.set("2026")
-        url.set("https://github.com/lambdawalker/android.apexfission.permissions")
+        url.set(projectUrl)
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
             }
         }
         developers {
@@ -33,9 +36,13 @@ mavenPublishing {
                 url.set("https://github.com/lambdawalker")
             }
         }
+        issueManagement {
+            system.set("GitHub Issues")
+            url.set("$projectUrl/issues")
+        }
         scm {
-            url.set("https://github.com/lambdawalker/android.apexfission.permissions")
-            connection.set("scm:git:https://github.com/lambdawalker/android.apexfission.permissions.git")
+            url.set(projectUrl)
+            connection.set("scm:git:$projectUrl.git")
             developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.permissions.git")
         }
     }
