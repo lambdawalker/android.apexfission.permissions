@@ -2,10 +2,12 @@ package com.apexfission.android.permissions
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,6 +23,11 @@ import org.junit.runner.RunWith
 class AppUserJourneyDeviceTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
+    @After
+    fun tearDown() {
+        compose.mainClock.autoAdvance = true
+    }
+
     @Test
     fun homeToCarouselAndBackJourney() {
         // 1. Verify Home screen
@@ -28,23 +35,25 @@ class AppUserJourneyDeviceTest {
         compose.onNodeWithText("Permission carousel").assertExists()
 
         // 2. Navigate to Carousel demo
-        compose.onNodeWithText("Open carousel").performScrollTo().performClick()
-        compose.waitUntil(10_000) {
-            compose.onAllNodesWithText("Scan with camera and microphone").fetchSemanticsNodes().isNotEmpty()
-        }
+        // The carousel loops its timer; keep the test clock paused for a stable first page.
+        compose.onNodeWithText("Open carousel").performScrollTo()
+        compose.mainClock.autoAdvance = false
+        compose.onNodeWithText("Open carousel").performClick()
+        compose.mainClock.advanceTimeByFrame()
         compose.onNodeWithText("Scan with camera and microphone").assertExists()
 
-        // 3. Pause auto-advance and check pages
-        compose.mainClock.autoAdvance = false
-        compose.mainClock.advanceTimeByFrame()
-        compose.onNodeWithText("Scan documents").assertExists()
+        // 3. Check page details
+        compose.onNodeWithText("1 of 3").assertExists()
+        compose.onNodeWithText("Camera access is needed to scan. Microphone access adds optional narration.").assertExists()
 
         // 4. Recreate activity during carousel journey
         compose.activityRule.scenario.recreate()
+        compose.mainClock.advanceTimeByFrame()
         compose.onNodeWithText("Scan with camera and microphone").assertExists()
 
         // 5. Navigate back to home
-        compose.onNodeWithText("Back").performClick()
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.mainClock.autoAdvance = true
         compose.onNodeWithText("Permission demos").assertExists()
     }
 
@@ -78,11 +87,13 @@ class AppUserJourneyDeviceTest {
     @Test
     fun fullAppRoundTripJourneyTest() {
         // Visit Carousel
-        compose.onNodeWithText("Open carousel").performScrollTo().performClick()
-        compose.waitUntil(10_000) {
-            compose.onAllNodesWithText("Scan with camera and microphone").fetchSemanticsNodes().isNotEmpty()
-        }
-        compose.onNodeWithText("Back").performClick()
+        compose.onNodeWithText("Open carousel").performScrollTo()
+        compose.mainClock.autoAdvance = false
+        compose.onNodeWithText("Open carousel").performClick()
+        compose.mainClock.advanceTimeByFrame()
+        compose.onNodeWithText("Scan with camera and microphone").assertExists()
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.mainClock.autoAdvance = true
         compose.onNodeWithText("Permission demos").assertExists()
 
         // Visit Recipes
