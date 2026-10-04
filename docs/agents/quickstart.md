@@ -1,10 +1,6 @@
 # Smallest Compose integration
 
-Use a Compose-enabled Android application with minSdk 24 or newer. Configure `mavenCentral()` in dependency resolution. Use the version actually published for your application; the checked-in build defaults to:
-
-```kotlin
-implementation("com.apexfission.androi:permission:0.2.0")
-```
+Use a Compose-enabled Android application with minSdk 24 or newer. Follow [IMPORT.md](../../IMPORT.md) for the current published dependency and repository setup.
 
 In this repository the demo instead uses `implementation(project(":permission"))`. The app must provide Activity Compose and Material 3 dependencies; see the [demo build](../../app/build.gradle.kts) and [version catalog](../../gradle/libs.versions.toml) for the tested combination. Do not assume every build dependency is exported as API.
 

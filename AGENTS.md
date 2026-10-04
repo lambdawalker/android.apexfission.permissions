@@ -32,7 +32,11 @@ Unit tests are in `permission/src/test/`; visual fixtures are in `permission/src
 
 Run `./gradlew :app:connectedDebugAndroidTest` with an emulator or device attached. [Device permission tests](.github/workflows/device-permission-tests.yml) runs the app instrumentation suite on API 29 and 35 emulators and uploads the test reports. The API 35 recovery test handles two real camera denials, checks the cautious recovery message, opens Settings, and returns. Other tests inspect location and notification recipes against device grant state and navigate both demos. The UI test assumes an English emulator and a fresh app install; use a fresh AVD if permission history from an earlier run persists. The device suite does not replace manual checks of OEM permission dialogs and the photo picker on physical devices.
 
-`:permission` publishes as `com.apexfission.androi:permission:<version>`. [Publish permission library](.github/workflows/publish-permission.yml) is manually triggered on `main` and stages a signed deployment. A maintainer publishes it from Central Portal. See [release setup](sites/src/content/docs/development.md#maven-central-release) for namespace and signing setup; never commit signing material.
+## Installation and released versions
+
+[IMPORT.md](IMPORT.md) is authoritative for the current published version, Maven coordinates, and Gradle Kotlin DSL, Groovy, Maven, and version-catalog installation. Read it when answering installation, importing, dependency, coordinate, or latest-version questions. Do not infer, guess, or hard-code the library version.
+
+Edit `docs/templates/IMPORT.md.template`, then run `./gradlew generateImportDocs verifyImportDocs`; never edit the generated file directly. Normal regeneration preserves its confirmed release version. Publishing alone advances it after Central confirmation. Run `python3 -m unittest discover -s scripts/tests -v` when changing release tooling. The [release guide](docs/releases.md) covers version progression, setup, provenance, and recovery. Never commit signing material.
 
 ## Toolchain and change policy
 

@@ -3,3 +3,5 @@ dist/
 .astro/
 public/screenshots/
 public/agents/
+public/IMPORT.md
+src/content/docs/installation.md

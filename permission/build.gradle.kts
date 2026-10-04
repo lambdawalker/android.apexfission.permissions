@@ -9,9 +9,9 @@ val projectUrl = "https://github.com/lambdawalker/android.apexfission.permission
 
 mavenPublishing {
     coordinates(
-        "com.apexfission.androi",
-        "permission",
-        providers.gradleProperty("permissionVersion").orElse("0.2.0").get(),
+        providers.gradleProperty("GROUP").get(),
+        providers.gradleProperty("POM_ARTIFACT_ID").get(),
+        providers.gradleProperty("releaseVersion").orElse("0.0.0-SNAPSHOT").get(),
     )
     publishToMavenCentral()
     signAllPublications()
@@ -44,6 +44,19 @@ mavenPublishing {
             url.set(projectUrl)
             connection.set("scm:git:$projectUrl.git")
             developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.permissions.git")
+        }
+    }
+}
+
+// Development builds need no released version; Central publishing always does.
+val explicitReleaseVersion = providers.gradleProperty("releaseVersion")
+tasks.configureEach {
+    if (name.contains("MavenCentral") && name.startsWith("publish")) {
+        val versionToPublish = explicitReleaseVersion.orNull
+        doFirst {
+            require(versionToPublish?.matches(
+                Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)")
+            ) == true) { "Central publication requires -PreleaseVersion=X.Y.Z" }
         }
     }
 }

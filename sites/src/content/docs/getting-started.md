@@ -5,13 +5,7 @@ description: Add the library and request your first group of permissions.
 
 The host app must declare each permission in its manifest. The library needs Android minSdk 24, and Gradle must have `mavenCentral()` in dependency resolution. Request ordinary runtime permissions after a user action; Android may show several dialogs and grant only part of a batch.
 
-```kotlin title="app/build.gradle.kts"
-dependencies {
-    implementation("com.apexfission.androi:permission:0.2.0")
-}
-```
-
-Use the **version actually published** on Maven Central; `0.2.0` is an example. When developing against this repository, use `implementation(project(":permission"))` instead.
+Follow [IMPORT.md](../installation/) for the current published version and all installation formats. When developing against this repository, use `implementation(project(":permission"))` instead.
 
 ```xml title="app/src/main/AndroidManifest.xml"
 <uses-permission android:name="android.permission.CAMERA" />

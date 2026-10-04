@@ -12,7 +12,7 @@
 | Settings returned but feature still unavailable | Access was not enabled or host-managed state is stale | Recheck grant/recipe on resume; opening Settings is not success |
 | Callback lost after rotation | Callbacks belonged to destroyed Activity | Restore host intent/state and recheck on the next user action; do not retain old Activity |
 | Import unresolved | Root namespace used instead of subpackage, or obsolete API | Use [API inventory](api.md) and [migration](migration.md) |
-| Maven dependency unresolved | Wrong coordinates/version or repository missing | Match `com.apexfission.androi:permission`, enable Maven Central and verify the chosen publication exists; do not silently correct the group spelling |
+| Maven dependency unresolved | Wrong coordinates/version or repository missing | Copy coordinates and the released version from [IMPORT.md](../../IMPORT.md), including the exact group spelling, and enable Maven Central |
 | Unexpected screen inset | Host and container padding combined incorrectly | Inspect actual layout and apply insets exactly once; current bundle source does not call `systemBarsPadding` |
 | Bitmap crashes or stale artwork | Host recycled/mutated an image while composed | Keep artwork valid and stable until no consumer uses it; library does not take ownership |
 | Approximate grant after precise request | User selected coarse access | Inspect actual accuracy and degrade or explain; never claim fine access from coarse grant |

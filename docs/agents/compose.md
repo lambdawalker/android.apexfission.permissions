@@ -4,7 +4,7 @@ Use `HandlePermissions` for an explanation screen and protected content. Import 
 
 ## Setup
 
-After the release is available on Maven Central, add `implementation("com.apexfission.androi:permission:0.2.0")` with `mavenCentral()` configured. For this source checkout use `implementation(project(":permission"))`. The host requires minSdk 24 and must declare every requested permission in its own manifest:
+Follow [IMPORT.md](../../IMPORT.md) for the current released dependency and repository setup. For this source checkout use `implementation(project(":permission"))`. The host requires minSdk 24 and must declare every requested permission in its own manifest:
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />

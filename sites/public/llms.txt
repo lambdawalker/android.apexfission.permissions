@@ -1,8 +1,10 @@
 # Apexfission Permissions
 
-> Android runtime permission explanations, Compose gates, callback helpers and staged platform recipes. Minimum Android API 24. This documentation follows main; the publication default is 0.2.0, not a claim about release availability.
+> Android runtime permission explanations, Compose gates, callback helpers and staged platform recipes. Minimum Android API 24. This documentation follows main. Read IMPORT.md for published versions and installation; never infer a version from source.
 
 ## Consumer documentation
+
+- [Authoritative installation and released version (IMPORT.md)](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/IMPORT.md)
 
 - [Agent entry point](https://lambdawalker.github.io/android.apexfission.permissions/agents/index.md)
 - [Complete quickstart](https://lambdawalker.github.io/android.apexfission.permissions/agents/quickstart.md)

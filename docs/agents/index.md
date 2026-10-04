@@ -2,7 +2,11 @@
 
 Android runtime permission explanations and requests for Compose apps, plus callback helpers for host-owned UI. Use it to gate a feature on ordinary runtime grants. Do not use it for authentication, special app access, background-only prompting, or a guarantee of permanent access.
 
-This documentation describes `main`, audited against source revision `68d6e2e`. The build's default publication version is **0.2.0**, overridable by `permissionVersion`; this is not evidence that a particular artifact has been published. The exact Maven group is `com.apexfission.androi` (intentional spelling here), artifact `permission`. Runtime minimum: API 24. See [quickstart](quickstart.md) for complete imports, dependency and manifest setup.
+This documentation describes `main`; source changes may be newer than the published artifact. Runtime minimum: API 24. See [quickstart](quickstart.md) for Kotlin imports and manifest setup.
+
+## Installation and released versions
+
+[IMPORT.md](../../IMPORT.md) is authoritative for the current published version, Maven coordinates, and Kotlin DSL, Groovy, Maven, and version-catalog installation. Read it before answering installation, dependency, importing, coordinate, or latest-version questions. Do not infer, guess, or hard-code a release version. It represents the latest successfully published release.
 
 | Situation | Choose | Important rule |
 | --- | --- | --- |

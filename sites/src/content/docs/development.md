@@ -1,6 +1,6 @@
 ---
 title: Build, test, and release
-description: Repository layout, screenshot and device checks, Maven Central staging, and Pages deployment.
+description: Repository layout, screenshot and device checks, Maven Central publishing, and Pages deployment.
 ---
 
 This page is for maintainers and contributors. Consumers can start with [installation](../getting-started/), [Compose usage](../compose/), or [callbacks](../callbacks/).
@@ -37,15 +37,9 @@ The [Device permission tests workflow](https://github.com/lambdawalker/android.a
 
 ## Maven Central release
 
-The `:permission` artifact uses `com.apexfission.androi:permission:<version>`. The publishing workflow is manual, runs only on `main`, builds/tests, signs, and **stages** the artifact; a maintainer finishes publishing in Central Portal. Before running it:
+The manual [Publish permission library workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/publish-permission.yml) runs on `main`, chooses the next patch version from release tags, verifies/builds, and publishes signed artifacts automatically. It waits for public Maven Central availability before updating installation documentation and tagging the exact source commit.
 
-1. Verify ownership of the Maven Central namespace `com.apexfission.androi` and create a Central Portal user token.
-2. Create a GPG signing key and export its ASCII-armored private key. Keep the key and passphrase private.
-3. In the GitHub `maven-central` environment set `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, and `SIGNING_IN_MEMORY_KEY_PASSWORD`. The first pair comes from the Central Portal token.
-4. Open [Publish permission library](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/publish-permission.yml), choose **Run workflow** on `main`, and supply the version, for example `0.2.0`.
-5. Review the staged deployment in Central Portal and publish it there. Confirm the artifact and update version examples on this site when needed.
-
-The artifact is Apache-2.0 licensed; POM metadata includes the project URL, developer, issue tracker, and SCM coordinates. Never commit signing material. The version passed to the workflow overrides the build's fallback `permissionVersion` property.
+See the [release and recovery guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/docs/releases.md) for environment secrets, bootstrap behavior, template editing, validation, and interrupted-publication recovery. [IMPORT.md](../installation/) is authoritative for Maven coordinates and the current published version.
 
 ## Documentation site deployment
 

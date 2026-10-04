@@ -25,3 +25,9 @@ for (const filename of await readdir(agentSource)) {
   });
   await writeFile(resolve(agentTarget, filename), published);
 }
+
+// Publish the one committed installation document as both Markdown and a site page.
+const installation = await readFile(resolve(site, '../IMPORT.md'), 'utf8');
+await writeFile(resolve(site, 'public/IMPORT.md'), installation);
+await writeFile(resolve(site, 'src/content/docs/installation.md'),
+  '---\ntitle: Installation\ndescription: Current published version and dependency setup, generated from IMPORT.md.\n---\n\n' + installation);
