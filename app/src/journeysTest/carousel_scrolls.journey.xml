@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<journey name="Carousel_scrolls">
+    <description xml:space="preserve">Check that the carousel demo works</description>
+    <actions xml:space="preserve">
+        <action>Open the carousel demo</action>
+        <action>Scroll by swiping right until reaching the last page</action>
+    </actions>
+</journey>

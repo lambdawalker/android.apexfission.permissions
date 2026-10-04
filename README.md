@@ -6,12 +6,12 @@ The [library site](https://lambdawalker.github.io/android.apexfission.permission
 
 ## Screenshots
 
-| Bundle overview | Selected permission | Settings recovery |
-| --- | --- | --- |
+| Bundle overview                                                                                               | Selected permission                                                                                  | Settings recovery                                                                                                                |
+|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | <img src="docs/screenshots/bundle-overview.png" width="220" alt="Feature overview for camera and microphone"> | <img src="docs/screenshots/permission-detail.png" width="220" alt="Selected camera permission page"> | <img src="docs/screenshots/settings-recovery.png" width="220" alt="Partially granted permissions with Open App Settings action"> |
 
-| Single permission with overview | Multiple permissions without overview | Overflowing icon strip |
-| --- | --- | --- |
+| Single permission with overview                                                                                              | Multiple permissions without overview                                                                                   | Overflowing icon strip                                                                                                   |
+|------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | <img src="docs/screenshots/single-permission-overview.png" width="220" alt="Optional overview before one camera permission"> | <img src="docs/screenshots/multiple-without-overview.png" width="220" alt="First permission page with overview hidden"> | <img src="docs/screenshots/overflowing-icons.png" width="220" alt="Centered scrolling icon strip for eight permissions"> |
 
 With autoplay enabled, the bar at the top has one segment per visible page. Completed pages are filled; the current segment tracks its reading time. Pausing fades the bar without losing the time already elapsed.
