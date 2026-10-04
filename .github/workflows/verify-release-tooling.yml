@@ -1,0 +1,44 @@
+name: Verify release tooling
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test release policy and check generated docs
+        run: |
+          python3 -m unittest discover -s scripts/tests -v
+          python3 scripts/release.py verify
+          bash -n scripts/finalize-release.sh
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Verify Gradle integration and publication metadata
+        run: |
+          ./gradlew verifyImportDocs generateImportDocs
+          git diff --exit-code -- IMPORT.md
+          ./gradlew :permission:generatePomFileForMavenPublication -PreleaseVersion=9.8.7
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          import release
+          group, artifact = release.coordinates()
+          poms = list(Path('permission/build/publications').glob('*/pom-default.xml'))
+          assert poms, 'No Maven publication POM generated'
+          for pom in poms:
+              release.verify_pom(pom.read_bytes(), group, artifact, '9.8.7')
+          PY

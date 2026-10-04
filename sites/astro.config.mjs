@@ -14,7 +14,8 @@ export default defineConfig({
       sidebar: [
         { label: 'Overview', slug: 'index' },
         { label: 'Start here', items: [
-          { label: 'Install and request', slug: 'getting-started' },
+          { label: 'Installation', slug: 'installation' },
+          { label: 'First request', slug: 'getting-started' },
           { label: 'Compose UI', slug: 'compose' },
           { label: 'Callbacks without library UI', slug: 'callbacks' },
           { label: 'Platform recipes', slug: 'recipes' },

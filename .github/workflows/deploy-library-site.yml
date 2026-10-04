@@ -3,6 +3,7 @@ name: Library site
 on:
   pull_request:
     paths:
+      - 'IMPORT.md'
       - 'sites/**'
       - 'docs/screenshots/**'
       - 'docs/agents/**'
@@ -10,10 +11,15 @@ on:
   push:
     branches: [main]
     paths:
+      - 'IMPORT.md'
       - 'sites/**'
       - 'docs/screenshots/**'
       - 'docs/agents/**'
       - '.github/workflows/deploy-library-site.yml'
+  workflow_run:
+    workflows: [Publish permission library]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -25,6 +31,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,6 +1,6 @@
 # Migration and obsolete examples
 
-Current source defaults to publication version 0.2.0. Release-to-commit mapping for these changes has not been established; do not infer a precise first Maven version from commit order. The commits below are evidence of source changes, not release claims.
+Read [IMPORT.md](../../IMPORT.md) for the current published version. Historical release-to-commit mapping for the changes below has not been established; do not infer a precise first Maven version from commit order. The commits below are evidence of source changes, not release claims.
 
 | Old pattern | Current replacement | Source change |
 | --- | --- | --- |
