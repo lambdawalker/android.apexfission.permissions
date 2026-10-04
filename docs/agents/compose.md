@@ -1,20 +1,17 @@
----
-title: Compose UI
-description: Customize pages, visibility, timing, grants, and recovery.
----
+# Compose integration
 
-Use `HandlePermissions` for an explanation screen and protected content. Import public types from the `com.apexfission.android.permission.requester` and `.ui` packages. Requests begin only after a user tap. Android may show multiple prompts or grant only part of the batch.
+Use `HandlePermissions` for an explanation screen and protected content. Import public types from `com.apexfission.android.permission`. Requests begin only after a user tap. Android may show multiple prompts or grant only part of the batch.
 
 ## Setup
 
-Add `implementation("com.apexfission.androi:permission:0.2.0")` with `mavenCentral()` configured. For this source checkout use `implementation(project(":permission"))`. The host requires minSdk 24 and must declare every requested permission in its own manifest:
+After the release is available on Maven Central, add `implementation("com.apexfission.androi:permission:0.2.0")` with `mavenCentral()` configured. For this source checkout use `implementation(project(":permission"))`. The host requires minSdk 24 and must declare every requested permission in its own manifest:
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-The current bundle implementation does not add system-bar insets itself. The host must apply appropriate insets exactly once for its layout; inspect your edge-to-edge container rather than assuming the gate supplies padding.
+The current bundle implementation does not add system-bar insets itself. The host must apply appropriate insets exactly once for its layout. Inspect the demo and your edge-to-edge container instead of assuming that a gate always includes or excludes Scaffold padding.
 
 ## Gate a feature
 
@@ -56,7 +53,7 @@ HandlePermissions(
 
 The trailing `PermissionDescription { ... }` lambda is the **required entire page**, hero and text together. `PermissionOverview(page = { ... })` supplies content for the optional opening page. `DefaultPermissionPage` is a ready-made helper you can call within the required lambda. The icon strip reads `PermissionDescription.label` as its accessibility name. The library supplies an icon and label for common Android permissions through `PermissionVisualDefaults`; unrecognized strings use a lock and a readable name derived from the string. Override either `label` or `icon` for feature-specific wording, another language, or a custom visual. `PermissionVisualDefaults.forPermission(permission)` exposes the same pair if your page needs it. The carousel owns the batch request button and its caption.
 
-The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImage = Icons.Default.PhotoCamera` for a vector, `heroImage = R.drawable.scan_hero` for a raster or vector drawable resource, or pass an Android `Bitmap` or `Drawable` instance. Bitmap and drawable artwork fits inside the hero frame; preserve an owned bitmap until the page leaves composition. `PermissionDescription.icon` still controls the small icon in the strip. See [all overloads](../reference/#ui-pages-and-carousel).
+The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImage = Icons.Default.PhotoCamera` for a vector, `heroImage = R.drawable.scan_hero` for a raster or vector drawable resource, or pass an Android `Bitmap` or `Drawable` instance. Bitmap and drawable artwork fits inside the hero frame; preserve an owned bitmap until the page leaves composition. `PermissionDescription.icon` still controls the small icon in the strip. See [all overloads](api.md#ui-pages-and-carousel).
 
 ## Choose a page layout
 
@@ -105,13 +102,13 @@ private fun NarrationPermissionPage(title: String, body: String) {
 }
 ```
 
-Add the standard Compose layout, shape, material, icon, and `dp` imports. The [runnable demo and preview](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) use a fuller version. For signatures and defaults of all public types, see [Public API declarations](../reference/).
+Add the standard Compose layout, shape, material, icon, and `dp` imports. The [runnable demo and preview](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) use a fuller version; [the README example](../../README.md#replace-the-default-page-with-your-own-compose-ui) offers another starting point. For signatures and defaults of all public types, see [Public API declarations](api.md).
 
 Use a nonempty list with unique, nonblank Android permission names. The batch request runs only while required access is missing. If every required permission is already granted, `content` is shown immediately, including when an optional permission is missing.
 
 ## Required and optional permissions
 
-`PermissionDescription` is required by default. Set `required = false` for a capability the feature can run without. The initial batch includes missing optional permissions whenever the explanation screen is shown because a required grant is missing; an optional denial will not block protected content. The UI marks optional pages. In the `content` lambda, inspect the current snapshot, for example `{ grants -> ScanFeature(narrationEnabled = grants.isGranted(Manifest.permission.RECORD_AUDIO)) }`. It also exposes `missingRequired`, `missingOptional`, `statusByPermission`, and `canProceed`. If required grants are already present, content appears immediately and optional access is not prompted automatically; request optional access separately at the point of use. An all-optional list shows content immediately. See the [sample Activity](../demos/).
+`PermissionDescription` is required by default. Set `required = false` for a capability the feature can run without. The initial batch includes missing optional permissions whenever the explanation screen is shown because a required grant is missing; an optional denial will not block protected content. The UI marks optional pages. In the `content` lambda, inspect the current snapshot, for example `{ grants -> ScanFeature(narrationEnabled = grants.isGranted(Manifest.permission.RECORD_AUDIO)) }`. It also exposes `missingRequired`, `missingOptional`, `statusByPermission`, and `canProceed`. If required grants are already present, content appears immediately and optional access is not prompted automatically; request optional access separately at the point of use. An all-optional list shows content immediately. See the [sample Activity](../../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).
 
 ## Overview page
 
@@ -119,23 +116,23 @@ Omitting `overview` supplies a generic lock-icon `DefaultPermissionPage` titled 
 
 | `PermissionOverviewMode` | Behavior | Preview |
 | --- | --- | --- |
-| `Automatic` (default) | Show the generic or custom overview when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](/android.apexfission.permissions/screenshots/bundle-overview.png) |
-| `Show` | Include the overview even with one permission. | [Single-permission overview](/android.apexfission.permissions/screenshots/single-permission-overview.png) |
-| `Hide` | Start on the first permission even with several. | [Multiple permissions without overview](/android.apexfission.permissions/screenshots/multiple-without-overview.png) |
+| `Automatic` (default) | Show the generic or custom overview when more than one permission is visible. `MissingOnly` filtering can change that count. | [Bundle overview](../screenshots/bundle-overview.png) |
+| `Show` | Include the overview even with one permission. | [Single-permission overview](../screenshots/single-permission-overview.png) |
+| `Hide` | Start on the first permission even with several. | [Multiple permissions without overview](../screenshots/multiple-without-overview.png) |
 
 To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. `Show` also works with the default overview. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`. Changing the mode does not change which permissions the button requests.
 
 ## Timed carousel
 
-`HandlePermissions(autoAdvance = true)` loops through the visible pages, returning to the first after the last page's timer finishes. The segmented progress bar above the header has one equal-width segment per visible page (including the overview, when shown). Earlier segments are full, the current segment fills during its reading time, and future segments are empty; all fill at the end of the final page and reset on wraparound. The button beside the page count pauses or resumes. User interaction pauses the timer and fades the bar until the reader resumes it; the page keeps its remaining reading time. A single visible page stays still. The default is `false`. The host supplies `autoAdvanceDelayMillis` on each `PermissionDescription` and, if present, on `PermissionOverview` (six seconds by default). Use `estimateReadingDelayMillis("$title $body", ReadingPace.Slow)` to derive a delay from the same copy shown in a custom page; see the [demo Activity](../demos/). The library cannot count text inside an arbitrary composable. `ReadingPace.Slow`, `Normal`, and `Fast` use 120, 180, and 230 words per minute. For image-heavy pages or languages without word separators, set the delay directly. Autoplay pauses when the host is not resumed and is disabled for touch exploration.
+`HandlePermissions(autoAdvance = true)` loops through the visible pages, returning to the first after the last page's timer finishes. The segmented progress bar above the header has one equal-width segment per visible page (including the overview, when shown). Earlier segments are full, the current segment fills during its reading time, and future segments are empty; all fill at the end of the final page and reset on wraparound. The button beside the page count pauses or resumes. User interaction pauses the timer and fades the bar until the reader resumes it; the page keeps its remaining reading time. A single visible page stays still. The default is `false`. The host supplies `autoAdvanceDelayMillis` on each `PermissionDescription` and, if present, on `PermissionOverview` (six seconds by default). Use `estimateReadingDelayMillis("$title $body", ReadingPace.Slow)` to derive a delay from the same copy shown in a custom page; see the [demo Activity](../../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt). The library cannot count text inside an arbitrary composable. `ReadingPace.Slow`, `Normal`, and `Fast` use 120, 180, and 230 words per minute. For image-heavy pages or languages without word separators, set the delay directly. Autoplay pauses when the host is not resumed and is disabled for touch exploration.
 
-See the [segmented progress preview](/android.apexfission.permissions/screenshots/segmented-reading-progress.png) for its placement above the header.
+See the [segmented progress preview](../screenshots/segmented-reading-progress.png) for its placement above the header.
 
 `PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both evaluate the **full original list** and request missing permissions together while the explanation is shown. Only required entries gate protected content. After a partial grant that leaves required access missing, the explanation remains; when all remaining permissions are inferred to lack a prompt, the action offers app settings.
 
-`PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` accepts `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [recovery example below](#custom-recovery-example) and [runnable demo guide](../demos/).
+`PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` accepts `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [README example](../../README.md#request-a-group) and [runnable carousel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
 
-See the [selected permission](/android.apexfission.permissions/screenshots/permission-detail.png), [settings recovery](/android.apexfission.permissions/screenshots/settings-recovery.png), and [overflowing icon strip](/android.apexfission.permissions/screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [screen gallery](../gallery/). They are static Compose previews, not system permission dialogs.
+See the [selected permission](../screenshots/permission-detail.png), [settings recovery](../screenshots/settings-recovery.png), and [overflowing icon strip](../screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [README gallery](../../README.md#screenshots). They are static Compose previews, not system permission dialogs.
 
 ## Other UI entry points
 
@@ -144,23 +141,4 @@ See the [selected permission](/android.apexfission.permissions/screenshots/permi
 - For a custom explanation page with the built-in batch button, supply `PermissionDescription(Manifest.permission.CAMERA) { CameraExplanation() }`.
 - `PermissionBundleScreen` renders host-managed statuses and actions without launching Android requests.
 
-See [the first request](../getting-started/) and [runnable demo guide](../demos/).
-
-## Custom recovery example
-
-```kotlin
-HandlePermissions(
-    permissions = listOf(PermissionDescription(Manifest.permission.CAMERA) {
-        DefaultPermissionPage("Camera", Icons.Default.PhotoCamera)
-    }),
-    onBack = { finish() },
-    onNotNow = { finish() },
-    recoveryContent = { inferred ->
-        Text("Android may skip the prompt. You can review camera access in Settings.")
-    },
-    settingsActionLabel = "Review camera access",
-    onOpenSettings = { showCameraSettingsExplanation() },
-) { grants -> CameraFeature() }
-```
-
-`showCameraSettingsExplanation` is host UI: offer a decline option and open app details only when the user chooses it. See [screen states](../gallery/) for the built-in recovery UI.
+See [README.md](../../README.md) and [the sample Activity](../../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt).

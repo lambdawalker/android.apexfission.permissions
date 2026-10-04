@@ -1,22 +1,3 @@
 # AI integration guide
 
-This repository provides Android runtime permission UI and callback helpers. Public APIs live in `:permission` under `com.apexfission.android.permission`. The `:app` module is a runnable example.
-
-For a consuming app, add `implementation("com.apexfission.androi:permission:0.1.0")` and `mavenCentral()` (or `implementation(project(":permission"))` in a source checkout). The host needs minSdk 24. Declare requested permissions in the **host app's** manifest, then choose one entry point below. Start requests from a user action; Android may grant only part of a batch.
-
-| Host need | Guide |
-| --- | --- |
-| Find public classes, functions, enums, and composable signatures | [Public API declarations](agents/api-reference.md) |
-| Compose explanation screen that gates a feature | [Compose integration](agents/compose.md) — `HandlePermissions` |
-| No library UI; ask from an Activity with callbacks | [Code-only integration](agents/code-only.md) — `PermissionRequester` |
-| Check grants and own the Android launcher | [Code-only integration](agents/code-only.md) — `runIfPermissionsGranted` |
-| Run the four sample flows | [Demo walkthrough](https://lambdawalker.github.io/android.apexfission.permissions/demos/) |
-| Location, notifications, and photo access | [Platform recipes](agents/platform-recipes.md) — staged steps and photo picker |
-| Choose overview visibility or inspect rendered states | [Compose integration](agents/compose.md#overview-page) and [screenshot gallery](README.md#screenshots) |
-| Change this repository, test, or release | [Maintainer notes](agents/maintenance.md) |
-
-`HandlePermissions` gates a feature with a batch request and a carousel. Each `PermissionDescription.page` supplies host-owned explanation UI while the library owns the icon strip and action button. The overview defaults to a generic lock-icon page for multiple visible permissions; set `overviewMode = PermissionOverviewMode.Hide` to omit it or `PermissionOverview { ... }` to replace it. Only required grants gate content. For code-only calls, `PermissionRequester` owns an Activity result launcher, while `runIfPermissionsGranted` only checks current grants and leaves requesting to the host. The linked guides include copyable setup, lifecycle requirements, and failure paths.
-
-Declare every requested permission in the host Android manifest. The generic request APIs target ordinary **runtime** permissions. Special app access (overlay, all-files access, exact alarms) needs a host-managed flow; [platform recipes](agents/platform-recipes.md) guide staged location, notifications, and the photo picker. Android can grant only part of a batch; protected content waits for all required grants. Each `PermissionDescription` requires a full `page` composable; mark optional access with `required = false` and read the `PermissionGrants` snapshot in `content`. See the [Compose guide](agents/compose.md#required-and-optional-permissions).
-
-For the complete browsable documentation and release setup, see the [library site](https://lambdawalker.github.io/android.apexfission.permissions/). The app's [MainActivity](app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) opens the [carousel demo](app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt), [platform recipes demo](app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt), [code-only callbacks demo](app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt), or [hero artwork demo](app/src/main/java/com/apexfission/android/permissions/demo/HeroArtworkDemo.kt).
+Start at the canonical [consumer index](docs/agents/index.md) for API selection, setup, contracts, recipes and limitations. For changes to this repository, read [AGENTS.md](AGENTS.md). This file remains as a compatibility entry point.

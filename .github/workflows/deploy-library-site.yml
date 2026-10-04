@@ -5,12 +5,14 @@ on:
     paths:
       - 'sites/**'
       - 'docs/screenshots/**'
+      - 'docs/agents/**'
       - '.github/workflows/deploy-library-site.yml'
   push:
     branches: [main]
     paths:
       - 'sites/**'
       - 'docs/screenshots/**'
+      - 'docs/agents/**'
       - '.github/workflows/deploy-library-site.yml'
   workflow_dispatch:
 

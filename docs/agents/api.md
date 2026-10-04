@@ -1,12 +1,6 @@
----
-title: Public API reference
-description: Public Kotlin declarations, defaults, lifecycle notes, and examples.
----
+# Public API declarations
 
-For validation errors, lifecycle, ownership and callback timing, see the canonical [agent API contracts](../agents/api.md) and [concepts](../agents/concepts.md).
-
-
-Use this as a quick map of callable library APIs. Names are in `com.apexfission.android.permission`; import from the subpackage shown in each heading. Default arguments and lifecycle behavior are explained in [Compose integration](../compose/), [code-only integration](../callbacks/), and [platform recipes](../recipes/). Declarations below omit KDoc and annotations where they do not affect calling syntax. `defaultPermissionOverview()` is **internal**: callers omit `overview` to get it; they cannot import the factory.
+Use this as a quick map of callable library APIs. Names are in `com.apexfission.android.permission`; import from the subpackage shown in each heading. Default arguments and lifecycle behavior are explained in [Compose integration](compose.md), [code-only integration](code-only.md), and [platform recipes](platform-recipes.md). Declarations below omit KDoc and annotations where they do not affect calling syntax. `defaultPermissionOverview()` is **internal**: callers omit `overview` to get it; they cannot import the factory.
 
 ## `requester`: Compose gate
 
@@ -142,7 +136,7 @@ PermissionDescription(
 ) { NarrationPermissionPage(title, body) }
 ```
 
-`NarrationPermissionPage` is a **demo composable in `:app`**, not a library API. Its recording-console card, waveform, and left-aligned text demonstrate when a custom page is useful. See [the complete demo source](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) and [the page selection guide](../compose/#choose-a-page-layout). Use an explicit delay for visual-heavy pages or languages without whitespace word boundaries.
+`NarrationPermissionPage` is a **demo composable in `:app`**, not a library API. Its recording-console card, waveform, and left-aligned text demonstrate when a custom page is useful. See [the complete demo source](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) and [the page selection guide](compose.md#choose-a-page-layout). Use an explicit delay for visual-heavy pages or languages without whitespace word boundaries.
 
 ## `requester`: code-only requests and checks
 
@@ -166,7 +160,7 @@ class PermissionCheckResult internal constructor(/* library-owned */) {
 }
 ```
 
-Construct `PermissionRequester` as an Activity property before STARTED. `requestPermissions(...) { ... } onDenied { missing -> ... }` starts on `onDenied`; one request can be outstanding. `runIfPermissionsGranted(...) { ... } otherwise { missing -> ... }` is a synchronous check; the host owns any launcher and must recheck after a result. See [copyable calls and lifecycle rules](../callbacks/).
+Construct `PermissionRequester` as an Activity property before STARTED. `requestPermissions(...) { ... } onDenied { missing -> ... }` starts on `onDenied`; one request can be outstanding. `runIfPermissionsGranted(...) { ... } otherwise { missing -> ... }` is a synchronous check; the host owns any launcher and must recheck after a result. See [copyable calls and lifecycle rules](code-only.md).
 
 ## `recipe`: staged access and media selection
 
@@ -194,4 +188,24 @@ class VisualMediaPicker internal constructor(/* library-owned */) {
 @Composable fun rememberVisualMediaPicker(onResult: (Uri?) -> Unit): VisualMediaPicker
 ```
 
-Recipes return the **next host action**; call again after a grant or Settings return. Foreground and background location are staged separately. The photo picker needs no broad media permission for user-selected items. See [version-specific guidance](../recipes/).
+Recipes return the **next host action**; call again after a grant or Settings return. Foreground and background location are staged separately. The photo picker needs no broad media permission for user-selected items. See [version-specific guidance](platform-recipes.md).
+
+## Validation and observable contracts
+
+| API | Preconditions, errors and consequences |
+| --- | --- |
+| `HandlePermissions` | Rejects empty, duplicate or blank names with `IllegalArgumentException`. Only required grants gate content; all-optional immediately proceeds. `onPermissionsResult` observes batch callbacks, not Settings changes. |
+| `PermissionDescription`, `PermissionOverview` | Reject nonpositive delays. Each explicit constructor requires page content. Description name validation occurs at the gate, not its constructor. |
+| `PermissionBundleScreen` | Requires nonempty unique names, equal status count, valid initial page. Uses all supplied statuses for Complete/Request/Settings; required flags only label pages. No automatic `onComplete`: invoked by the completed-state button. `initialPage` is initialization, not a controlled selection property. |
+| `PermissionGrants` | Library constructs snapshot; unknown names return false. Do not cache as permanent authority. |
+| `PermissionRequester` / `PendingPermissionRequest` | Terminal call rejects empty/blank names, deduplicates; overlapping request or repeated terminal call throws `IllegalStateException`. Launcher exceptions propagate after clearing pending state. No cancellation or queue. |
+| `runIfPermissionsGranted` / `PermissionCheckResult` | Empty/blank input throws `IllegalArgumentException`; duplicates collapse. Action runs inline only if no names are missing. Repeated `otherwise` calls each invoke the handler for the same missing snapshot. |
+| `PermissionRecipes` | Synchronous next-step calculation; no launch, denial-history tracking or subscription. Re-evaluate after external changes. |
+| `openPermissionRecipeSettings` | Starts app-details Settings with NEW_TASK. No result or success guarantee; platform launch failures propagate. |
+| `VisualMediaPicker.launch` | Single-item AndroidX picker. Default ImageOrVideo; cancellation yields null. Host handles URI access and persistence. |
+| `DefaultDescription` | Null title/body use string-resource fallback; a supplied icon overrides each feature-row icon. It does not draw a hero. |
+| `PermissionVisualDefaults.forPermission` | Known names get metadata; unknown names get a readable suffix and lock. Not a validation API. |
+
+All externally intended public types are listed above; classes with internal constructors are returned/created by the library. `defaultPermissionOverview`, `PermissionRequestCoordinator`, status/recipe decision helpers, and private rendering composables are not consumer APIs. `NarrationPermissionPage` and the other demo functions are not in the published library. Accompanist is an exported build dependency, not a replacement for this library's documented API.
+
+See [concepts](concepts.md) for thread, lifetime, resource ownership, reentrancy and disposal contracts, and [limitations](limitations.md) for security/platform boundaries. UI callbacks run in the UI event path; they do not offload slow work. The standalone screen has no permission `displayMode` parameter: filter your own status/description lists together.

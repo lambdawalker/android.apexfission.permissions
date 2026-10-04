@@ -23,6 +23,7 @@ export default defineConfig({
           { label: 'Runnable demos', slug: 'demos' },
           { label: 'Screen gallery', slug: 'gallery' },
           { label: 'Public API reference', slug: 'reference' },
+          { label: 'AI agent integration', slug: 'agents' },
           { label: 'Build, test, and release', slug: 'development' },
         ] },
       ],

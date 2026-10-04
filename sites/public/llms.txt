@@ -1,0 +1,19 @@
+# Apexfission Permissions
+
+> Android runtime permission explanations, Compose gates, callback helpers and staged platform recipes. Minimum Android API 24. This documentation follows main; the publication default is 0.2.0, not a claim about release availability.
+
+## Consumer documentation
+
+- [Agent entry point](https://lambdawalker.github.io/android.apexfission.permissions/agents/index.md)
+- [Complete quickstart](https://lambdawalker.github.io/android.apexfission.permissions/agents/quickstart.md)
+- [Public API and contracts](https://lambdawalker.github.io/android.apexfission.permissions/agents/api.md)
+- [Concepts and ownership](https://lambdawalker.github.io/android.apexfission.permissions/agents/concepts.md)
+- [Task recipes](https://lambdawalker.github.io/android.apexfission.permissions/agents/recipes.md)
+- [Limitations](https://lambdawalker.github.io/android.apexfission.permissions/agents/limitations.md)
+- [Troubleshooting](https://lambdawalker.github.io/android.apexfission.permissions/agents/troubleshooting.md)
+- [Migration](https://lambdawalker.github.io/android.apexfission.permissions/agents/migration.md)
+
+## Repository work
+
+- [Maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md)
+- [Source and compiled demos](https://github.com/lambdawalker/android.apexfission.permissions)

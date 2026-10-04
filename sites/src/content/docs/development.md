@@ -20,7 +20,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 
 ## Local checks
 
-Use a compatible Android SDK and JDK 17. From the repository root:
+Use Android SDK 37. Library Java source/target compatibility is 17 (the demo uses 11), but the checked-in Gradle daemon criteria request Java 25; CI installs Java 17 and relies on daemon toolchain resolution. See the canonical [maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md). From the repository root:
 
 ```bash
 ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug

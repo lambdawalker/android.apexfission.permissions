@@ -4,6 +4,8 @@ A Compose library for explaining and requesting a set of Android runtime permiss
 
 The [library site](https://lambdawalker.github.io/android.apexfission.permissions/) contains the full integration guides, public API declarations, platform recipes, runnable demo walkthroughs, screenshot gallery, and build/release steps. Its source lives in [`sites/`](sites/README.md); `docs/` holds repository documentation and the original screenshot fixtures.
 
+For AI-assisted integration, start at [docs/agents/index.md](docs/agents/index.md). Repository contributors should read [AGENTS.md](AGENTS.md).
+
 ## Screenshots
 
 | Bundle overview                                                                                               | Selected permission                                                                                  | Settings recovery                                                                                                                |
@@ -114,7 +116,7 @@ PermissionDescription(Manifest.permission.CAMERA) {
 }
 ```
 
-You can pass `heroImage = myBitmap` or `heroImage = myDrawable` in the same call. Keep an owned bitmap valid while its page is composed. See the [API declarations](agents/api-reference.md#ui-pages-and-carousel) for all overloads.
+You can pass `heroImage = myBitmap` or `heroImage = myDrawable` in the same call. Keep an owned bitmap valid while its page is composed. See the [API declarations](docs/agents/api.md#ui-pages-and-carousel) for all overloads.
 
 ### Replace the default page with your own Compose UI
 
@@ -244,7 +246,7 @@ when (val step = PermissionRecipes.foregroundLocation(this, LocationAccuracy.Pre
 }
 ```
 
-`PermissionRequester` is an Activity property; `useLocation` and `showLocationExplanation` are host functions. On Android 10 the background recipe requests background access **after** foreground is granted; on Android 11+ it points to Settings after a host-provided explanation. Notifications have a runtime prompt on Android 13+ with target SDK 33+. For user-selected photos or videos, use `rememberVisualMediaPicker { uri -> ... }` and launch it on a user gesture instead of requesting a storage permission. See the [complete platform recipes](agents/platform-recipes.md) for manifest setup, photo-picker code, and edge cases.
+`PermissionRequester` is an Activity property; `useLocation` and `showLocationExplanation` are host functions. On Android 10 the background recipe requests background access **after** foreground is granted; on Android 11+ it points to Settings after a host-provided explanation. Notifications have a runtime prompt on Android 13+ with target SDK 33+. For user-selected photos or videos, use `rememberVisualMediaPicker { uri -> ... }` and launch it on a user gesture instead of requesting a storage permission. See the [complete platform recipes](docs/agents/platform-recipes.md) for manifest setup, photo-picker code, and edge cases.
 
 The app's [platform recipes screen](app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt) runs each of these paths: approximate and precise location, staged background location, notifications, and photo/video selection. It displays the next recipe step, waits for a tap before requesting access, explains Settings and background steps with a decline option, and refreshes status after a request or return from Settings. Its manifest declares the permissions used by the demo. A real host should request background access only for an actual background feature. The [hero artwork demo](app/src/main/java/com/apexfission/android/permissions/demo/HeroArtworkDemo.kt) compares all `heroImage` formats. The [code-only demo](app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt) compares a host-owned launcher with `PermissionRequester`; the [site walkthrough](https://lambdawalker.github.io/android.apexfission.permissions/demos/) explains all four screens.
 
