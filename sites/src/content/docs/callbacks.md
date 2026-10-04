@@ -1,34 +1,65 @@
 ---
-title: Callbacks and recipes
-description: Request without the library UI or follow platform-specific steps.
+title: Callbacks without library UI
+description: Use an Activity-owned launcher, an infix grant check, and denial callbacks.
 ---
 
-## Library-owned Activity launcher
+For staged location, notifications, or user-selected media, see [platform-aware recipes](../recipes/) before using a generic permission batch.
 
-Create `PermissionRequester` as an Activity property before the Activity reaches `STARTED`. Call it after a user gesture:
+Use these APIs when the host owns the UI. Declare every permission in its app manifest. Both paths target ordinary runtime permissions; special app access and staged platform requests need another flow.
+
+## Library-owned launcher
+
+Construct `PermissionRequester` as an Activity property **before STARTED** and call it from a user action:
 
 ```kotlin
 class ScannerActivity : ComponentActivity() {
     private val permissions = PermissionRequester(this)
 
     private fun onScanClicked() = with(permissions) {
-        requestPermissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO) {
-            startScan()
-        } onDenied { missing ->
+        requestPermissions(
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+        ) {
+            startScan() // all granted, possibly synchronously
+        } onDenied { missing: List<String> ->
             showDeniedState(missing)
         }
+    }
+
+    private fun startScan() { /* protected work */ }
+    private fun showDeniedState(missing: List<String>) { /* host UI or settings */ }
+}
+```
+
+`requestPermissions(...) { onGranted }` creates a pending call; infix `onDenied` **attaches the callback and starts it**. The requester checks current grants, launches only distinct missing permissions, and rechecks after Android returns. Only one request can be outstanding. Never reuse a pending call. Callbacks live in memory; after Activity recreation or process death, recheck on the next user action.
+
+## Host-owned launcher
+
+`Context.runIfPermissionsGranted` is synchronous, with vararg and `List<String>` overloads. It never presents a dialog or retains the action. Example inside an Activity:
+
+```kotlin
+private val permissionLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestMultiplePermissions()
+) { grants ->
+    if (grants.isNotEmpty() && grants.values.all { it }) {
+        onFeatureClicked() // recheck current grants
+    } else {
+        showDeniedState()
+    }
+}
+
+private fun onFeatureClicked() {
+    runIfPermissionsGranted(
+        Manifest.permission.CAMERA,
+        Manifest.permission.RECORD_AUDIO,
+    ) {
+        startFeature()
+    } otherwise { missing ->
+        permissionLauncher.launch(missing.toTypedArray())
     }
 }
 ```
 
-The infix `onDenied` attaches the denial handler **and starts** the pending request. A result may be partial. One request can be outstanding, and in-memory callbacks are not retained across Activity recreation; recheck when the feature is entered again.
+`otherwise` receives distinct missing names from **that check**. Handle denial separately; do not retry from a denied result or the prompt may reopen repeatedly. When already granted, the action runs synchronously. Checking works with any valid `Context`, while requesting needs an Activity, Fragment, or Compose result launcher registered at the appropriate lifecycle point.
 
-## Check grants with your own launcher
-
-`Context.runIfPermissionsGranted(camera, audio) { useFeature() } otherwise { missing -> ... }` checks synchronously. It never presents a dialog. Register your Activity Result launcher in the host and request `missing.toTypedArray()` in `otherwise`; after the result, recheck grants before using the feature.
-
-## Platform-aware recipes
-
-`PermissionRecipes` returns the next host action for foreground location, background location, and notifications: `Ready`, `RequestRuntime`, `OpenAppSettings`, or `SystemControlledPrompt`. Call the recipe again after a request or a return from Settings. Background location is staged separately from foreground access. For user-selected photos and videos, `rememberVisualMediaPicker` launches the AndroidX photo picker without a storage permission.
-
-Special app access such as overlays or exact alarms is outside the generic runtime-permission batch. Read the [complete platform guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/agents/platform-recipes.md) and [code-only guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/agents/code-only.md) before integrating those flows.
+For the built-in screen see [Compose integration](../compose/). For a runnable version of both code-only paths, see the [callbacks demo](../demos/#code-only-requests).

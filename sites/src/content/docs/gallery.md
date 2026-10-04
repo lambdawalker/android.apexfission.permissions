@@ -15,4 +15,18 @@ These images come from the library's Compose screenshot tests. They show the exp
   <figure><img src="/android.apexfission.permissions/screenshots/segmented-reading-progress.png" alt="Segmented reading indicator with the current page in progress" loading="lazy" /><figcaption>Reading progress</figcaption></figure>
 </div>
 
-See [how the screenshots are generated](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/docs/screenshots/README.md).
+## How these images are made
+
+The committed PNGs are direct outputs of `PermissionBundleScreenshotTest` in `:permission`. They are copied into the site's `public/screenshots/` directory at build time, so the gallery and repository README display the same stable fixtures.
+
+| Image | Screenshot preview |
+| --- | --- |
+| `bundle-overview.png` | `firstPage` |
+| `permission-detail.png` | `secondPage` |
+| `settings-recovery.png` | `partialDenial` |
+| `single-permission-overview.png` | `singlePermissionOverview` |
+| `multiple-without-overview.png` | `multiplePermissionsNoOverview` |
+| `overflowing-icons.png` | `overflowOverview` |
+| `segmented-reading-progress.png` | `autoplayReadingProgress` |
+
+Refresh them with `./gradlew :permission:updateDebugScreenshotTest` or the [Render permission screens workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/render-permission-screens.yml). Copy the matching PNGs from `permission/src/screenshotTestDebug/reference/` or the workflow artifact to `docs/screenshots/`, review the gallery, and commit them with UI changes. These previews do not show Android's system permission dialogs; use the [device tests](../development/#device-tests) for grant and denial flows.

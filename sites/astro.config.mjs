@@ -16,11 +16,14 @@ export default defineConfig({
         { label: 'Start here', items: [
           { label: 'Install and request', slug: 'getting-started' },
           { label: 'Compose UI', slug: 'compose' },
-          { label: 'Callbacks and recipes', slug: 'callbacks' },
+          { label: 'Callbacks without library UI', slug: 'callbacks' },
+          { label: 'Platform recipes', slug: 'recipes' },
         ] },
         { label: 'Explore', items: [
+          { label: 'Runnable demos', slug: 'demos' },
           { label: 'Screen gallery', slug: 'gallery' },
-          { label: 'Source and API', slug: 'reference' },
+          { label: 'Public API reference', slug: 'reference' },
+          { label: 'Build, test, and release', slug: 'development' },
         ] },
       ],
     }),

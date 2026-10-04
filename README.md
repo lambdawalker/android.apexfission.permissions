@@ -2,7 +2,7 @@
 
 A Compose library for explaining and requesting a set of Android runtime permissions. The main `HandlePermissions` entry point requests the set together after one button tap. Android may show several system prompts and grant only some permissions.
 
-The [library site](https://lambdawalker.github.io/android.apexfission.permissions/) has a short path through installation, Compose examples, callback recipes, and a screenshot gallery. Its source lives in [`sites/`](sites/README.md); `docs/` holds repository documentation and the original screenshot fixtures.
+The [library site](https://lambdawalker.github.io/android.apexfission.permissions/) contains the full integration guides, public API declarations, platform recipes, runnable demo walkthroughs, screenshot gallery, and build/release steps. Its source lives in [`sites/`](sites/README.md); `docs/` holds repository documentation and the original screenshot fixtures.
 
 ## Screenshots
 
@@ -246,7 +246,7 @@ when (val step = PermissionRecipes.foregroundLocation(this, LocationAccuracy.Pre
 
 `PermissionRequester` is an Activity property; `useLocation` and `showLocationExplanation` are host functions. On Android 10 the background recipe requests background access **after** foreground is granted; on Android 11+ it points to Settings after a host-provided explanation. Notifications have a runtime prompt on Android 13+ with target SDK 33+. For user-selected photos or videos, use `rememberVisualMediaPicker { uri -> ... }` and launch it on a user gesture instead of requesting a storage permission. See the [complete platform recipes](agents/platform-recipes.md) for manifest setup, photo-picker code, and edge cases.
 
-The app's [platform recipes screen](app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt) runs each of these paths: approximate and precise location, staged background location, notifications, and photo/video selection. It displays the next recipe step, waits for a tap before requesting access, explains Settings and background steps with a decline option, and refreshes status after a request or return from Settings. Its manifest declares the permissions used by the demo. A real host should request background access only for an actual background feature.
+The app's [platform recipes screen](app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt) runs each of these paths: approximate and precise location, staged background location, notifications, and photo/video selection. It displays the next recipe step, waits for a tap before requesting access, explains Settings and background steps with a decline option, and refreshes status after a request or return from Settings. Its manifest declares the permissions used by the demo. A real host should request background access only for an actual background feature. The [hero artwork demo](app/src/main/java/com/apexfission/android/permissions/demo/HeroArtworkDemo.kt) compares all `heroImage` formats. The [code-only demo](app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt) compares a host-owned launcher with `PermissionRequester`; the [site walkthrough](https://lambdawalker.github.io/android.apexfission.permissions/demos/) explains all four screens.
 
 ## Code-only request with callbacks
 

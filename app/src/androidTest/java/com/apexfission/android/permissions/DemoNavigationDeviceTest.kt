@@ -10,7 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Launches both demo destinations in an Activity on the emulator. */
+/** Launches all demo destinations in an Activity on the emulator. */
 @RunWith(AndroidJUnit4::class)
 class DemoNavigationDeviceTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
@@ -31,5 +31,21 @@ class DemoNavigationDeviceTest {
         compose.onNodeWithText("Open carousel").performClick()
         compose.mainClock.advanceTimeByFrame()
         compose.onNodeWithText("Scan with camera and microphone").assertExists()
+    }
+
+    @Test fun launcherOpensCodeOnlyCallbacks() {
+        compose.onNodeWithText("Open callbacks").performScrollTo().performClick()
+        compose.onNodeWithText("Code-only requests").assertExists()
+        compose.onNodeWithText("Check with your own launcher").assertExists()
+        compose.onNodeWithText("Use the library requester").assertExists()
+        compose.activityRule.scenario.recreate()
+        compose.onNodeWithText("Code-only requests").assertExists()
+    }
+
+    @Test fun launcherOpensArtworkGallery() {
+        compose.onNodeWithText("Open artwork gallery").performScrollTo().performClick()
+        compose.onNodeWithText("Hero artwork gallery").assertExists()
+        compose.onNodeWithText("Bitmap hero").performScrollTo().assertExists()
+        compose.onNodeWithText("Drawable resource hero").performScrollTo().assertExists()
     }
 }

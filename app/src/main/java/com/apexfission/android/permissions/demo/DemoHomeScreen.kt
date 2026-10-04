@@ -10,6 +10,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -22,14 +24,20 @@ import androidx.compose.ui.unit.dp
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
 
 @Composable
-fun DemoHomeScreen(onCarousel: () -> Unit, onRecipes: () -> Unit, modifier: Modifier = Modifier) {
+fun DemoHomeScreen(
+    onCarousel: () -> Unit,
+    onRecipes: () -> Unit,
+    onCallbacks: () -> Unit,
+    onArtwork: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Text("Permission demos", style = MaterialTheme.typography.headlineLarge)
         Text(
-            "Explore the ready-made permission screen or try individual Android permission recipes.",
+            "Explore the Compose screen, Android permission recipes, and code-only callbacks.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         DemoCard("Permission carousel", "Camera access with optional microphone narration.",
@@ -39,6 +47,14 @@ fun DemoHomeScreen(onCarousel: () -> Unit, onRecipes: () -> Unit, modifier: Modi
         DemoCard("Platform recipes", "Location, background access, notifications, and photo selection.",
             "Open recipes", onRecipes) {
             Icon(Icons.Default.Tune, contentDescription = null)
+        }
+        DemoCard("Code-only callbacks", "Compare an Activity-owned launcher with the library requester.",
+            "Open callbacks", onCallbacks) {
+            Icon(Icons.Default.Lock, contentDescription = null)
+        }
+        DemoCard("Hero artwork", "Inspect vector, bitmap, drawable resource, and Drawable heroes.",
+            "Open artwork gallery", onArtwork) {
+            Icon(Icons.Default.Image, contentDescription = null)
         }
     }
 }
@@ -61,5 +77,5 @@ private fun DemoCard(
 @Preview(showBackground = true)
 @Composable
 private fun DemoHomePreview() {
-    AndroidpermissionsTheme { DemoHomeScreen({}, {}) }
+    AndroidpermissionsTheme { DemoHomeScreen({}, {}, {}, {}) }
 }
