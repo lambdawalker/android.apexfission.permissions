@@ -25,7 +25,7 @@ Autoplay is opt-in. A user gesture must latch it off even if `MissingOnly` rebui
 ## Verification
 
 ```bash
-./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :permission:generatePomFileForMavenPublication :app:assembleDebug
+./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug
 ```
 
 Unit tests are in `permission/src/test/`; visual fixtures are in `permission/src/screenshotTest/`. [Render permission screens](.github/workflows/render-permission-screens.yml) runs them in GitHub Actions and uploads PNGs. The [README gallery](README.md#screenshots) uses committed PNGs; follow the [screenshot mapping and refresh steps](docs/screenshots/README.md) whenever the UI changes. Screenshots do not test system dialogs. For launcher changes, test grant, partial denial, settings recovery, and Activity recreation on a device or emulator.
@@ -42,10 +42,14 @@ Edit `docs/templates/IMPORT.md.template`, then run `./gradlew generateImportDocs
 
 The checked-in build uses compileSdk 37, minSdk 24, Gradle 9.6.0, AGP 9.4.1 and Kotlin Compose plugin 2.2.10. Library Java source/target compatibility is 17 (the demo uses 11); `gradle/gradle-daemon-jvm.properties` separately requests a Java 25 daemon. CI installs Java 17 and relies on Gradle daemon toolchain resolution. Install the Android SDK and configure `ANDROID_HOME` or an untracked `local.properties`. Do not silently downgrade versions to fit a local environment.
 
-Run `./gradlew :permission:lintDebug :app:lintDebug` for Android lint. No dedicated formatter or API binary-compatibility gate is configured; do not claim those checks ran. For documentation-only work run the site build and inspect links. Android behavior changes also require the unit, build, screenshot and relevant device checks above. Report environmental blockers explicitly.
+Run `./gradlew :permission:lintDebug :app:lintDebug` for Android lint. No dedicated formatter or API binary-compatibility gate is configured; do not claim those checks ran. For documentation-only work run `cd sites && npm ci && npm run check`. For UI changes run `npm run screenshots:render` and `npm run screenshots:check` from `sites/`; accept reviewed image changes only with `npm run screenshots:update`. Android behavior changes also require the unit, build, screenshot and relevant device checks above. Report environmental blockers explicitly.
 
 Public APIs are in the `requester`, `ui`, and `recipe` packages listed above. Kotlin `internal` helpers, private composables and app demo functions are implementation details. Preserve package names, signatures, defaults, enum values and observable callback timing unless an intentional breaking change is requested. Update KDoc, the canonical [API reference](docs/agents/api.md), relevant recipes, migration guidance, demo and tests together. Keep Android permissions in the host manifest; never equate a local history heuristic with platform certainty.
 
 Do not edit `build/`, `sites/dist/`, `sites/.astro/`, generated site assets, or screenshot reference PNGs by hand. Refresh screenshots with the documented Gradle workflow. Dependency lockfiles and the Gradle wrapper should change only with intentional toolchain/dependency updates. Never commit `local.properties`, signing keys, passwords or downloaded SDK files.
 
 `docs/agents/` is canonical consumer guidance; `agents/` and `AI_INTEGRATION_GUIDE.md` preserve old entry links. The site publishes these Markdown files from source during its build. Keep `llms.txt` concise. This is a standalone library: no external architecture repository is designated here. Do not invent a dependency on an unrelated system-design repository.
+
+## Documentation source ownership
+
+The human API reference, concepts, limitations, troubleshooting, migration, task recipes and first request are generated from `docs/agents/`. Do not edit their generated `sites/src/content/docs/` copies. Quickstart code comes from `CameraQuickstartActivity.kt`; run `node sites/scripts/sync-examples.mjs --write` after intentional edits. `sites/README.md` maps all source ownership and validation commands. `docs/screenshots/manifest.json` records curated captures; normal CI validates rather than accepts images.

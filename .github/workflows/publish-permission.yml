@@ -51,6 +51,20 @@ jobs:
           python3 -m unittest discover -s scripts/tests -v
           ./gradlew verifyImportDocs
           ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug "-PreleaseVersion=$RELEASE_VERSION" --stacktrace
+      - uses: actions/setup-node@v4
+        if: inputs.resume_version == ''
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: sites/package-lock.json
+      - name: Verify site and screenshots at the exact release source
+        if: inputs.resume_version == ''
+        working-directory: sites
+        run: |
+          npm ci
+          npm run check
+          npm run screenshots:render
+          npm run screenshots:check
       - name: Reserve release attempt before contacting Central
         if: inputs.resume_version == ''
         env:

@@ -5,3 +5,12 @@ public/screenshots/
 public/agents/
 public/IMPORT.md
 src/content/docs/installation.md
+
+.generated-doc-pages.json
+src/content/docs/reference.md
+src/content/docs/getting-started.md
+src/content/docs/concepts.md
+src/content/docs/limitations.md
+src/content/docs/troubleshooting.md
+src/content/docs/migration.md
+src/content/docs/task-recipes.md

@@ -1,15 +1,37 @@
 name: Render permission screens
 
 on:
-  push:
+  pull_request:
     paths:
       - '.github/workflows/render-permission-screens.yml'
       - 'permission/**'
       - 'app/**'
       - 'gradle/**'
       - 'gradle.properties'
+      - 'build.gradle.kts'
       - 'settings.gradle.kts'
+      - 'docs/screenshots/**'
+      - 'sites/scripts/**'
+      - 'sites/package*.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/render-permission-screens.yml'
+      - 'permission/**'
+      - 'app/**'
+      - 'gradle/**'
+      - 'gradle.properties'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'docs/screenshots/**'
+      - 'sites/scripts/**'
+      - 'sites/package*.json'
   workflow_dispatch:
+    inputs:
+      candidates_only:
+        description: 'Render review candidates without requiring them to match accepted documentation images'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,17 +41,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: sites/package-lock.json
+      - run: npm ci
+        working-directory: sites
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Render Compose previews
-        run: ./gradlew :permission:testDebugUnitTest :permission:updateDebugScreenshotTest :permission:generatePomFileForMavenPublication :app:assembleDebug --stacktrace
-      - name: Upload PNGs
+      - name: Compile demos and run unit tests
+        run: ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug --stacktrace
+      - name: Render candidates and record provenance
+        run: npm run screenshots:render
+        working-directory: sites
+      - name: Compare candidates with accepted documentation images
+        if: inputs.candidates_only != true
+        run: npm run screenshots:check
+        working-directory: sites
+      - name: Upload candidates and comparison evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: permission-screen-images
-          path: permission/src/screenshotTestDebug/reference/**/*.png
-          if-no-files-found: warn
+          path: |
+            permission/src/screenshotTestDebug/reference/
+            build/documentation-screenshots/
+          if-no-files-found: error

@@ -1,6 +1,6 @@
 # Compose integration
 
-Use `HandlePermissions` for an explanation screen and protected content. Import public types from `com.apexfission.android.permission`. Requests begin only after a user tap. Android may show multiple prompts or grant only part of the batch.
+Use `HandlePermissions` for an explanation screen and protected content. Import public types from the `requester`, `ui`, and `recipe` subpackages of `com.apexfission.android.permission`. Requests begin only after a user tap. Android may show multiple prompts or grant only part of the batch.
 
 ## Setup
 
@@ -102,7 +102,7 @@ private fun NarrationPermissionPage(title: String, body: String) {
 }
 ```
 
-Add the standard Compose layout, shape, material, icon, and `dp` imports. The [runnable demo and preview](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) use a fuller version; [the README example](../../README.md#replace-the-default-page-with-your-own-compose-ui) offers another starting point. For signatures and defaults of all public types, see [Public API declarations](api.md).
+Add the standard Compose layout, shape, material, icon, and `dp` imports. The [runnable demo and preview](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) use a fuller version; the complete quickstart in [quickstart.md](quickstart.md) provides host setup. For signatures and defaults of all public types, see [Public API declarations](api.md).
 
 Use a nonempty list with unique, nonblank Android permission names. The batch request runs only while required access is missing. If every required permission is already granted, `content` is shown immediately, including when an optional permission is missing.
 
@@ -130,9 +130,9 @@ See the [segmented progress preview](../screenshots/segmented-reading-progress.p
 
 `PermissionDisplayMode.All` includes granted pages with green check badges. `MissingOnly` hides granted pages/icons. Both evaluate the **full original list** and request missing permissions together while the explanation is shown. Only required entries gate protected content. After a partial grant that leaves required access missing, the explanation remains; when all remaining permissions are inferred to lack a prompt, the action offers app settings.
 
-`PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` accepts `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [README example](../../README.md#request-a-group) and [runnable carousel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
+`PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` accepts `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [complete quickstart](quickstart.md) and [runnable carousel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
 
-See the [selected permission](../screenshots/permission-detail.png), [settings recovery](../screenshots/settings-recovery.png), and [overflowing icon strip](../screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [README gallery](../../README.md#screenshots). They are static Compose previews, not system permission dialogs.
+See the [selected permission](../screenshots/permission-detail.png), [settings recovery](../screenshots/settings-recovery.png), and [overflowing icon strip](../screenshots/overflowing-icons.png) previews for the other main UI states. The [human gallery](https://lambdawalker.github.io/android.apexfission.permissions/gallery/) includes all seven reviewed images. They are static Compose previews, not system permission dialogs.
 
 ## Other UI entry points
 

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "file": "bundle-overview.png",
+      "preview": "firstPage",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 393,
+        "height_dp": 852,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Bundle overview for camera and microphone",
+      "source_commit": "d7f8c9e5a4b62cc26196e3bb59a4aba5f0d017dd",
+      "input_sha256": null,
+      "sha256": "dccc5449018335cb32c7f67648c63dff9bfa0a0831d273d9a611879de1da70c1",
+      "provenance": "Historical workflow 36343189239 at d7f8c9e. Preserved existing image; input hash not recorded by the original capture."
+    },
+    {
+      "file": "permission-detail.png",
+      "preview": "secondPage",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 393,
+        "height_dp": 852,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Selected camera permission page",
+      "source_commit": "d7f8c9e5a4b62cc26196e3bb59a4aba5f0d017dd",
+      "input_sha256": null,
+      "sha256": "07189e3a72678817b15a5576679d7dff32f1dace9bfa66f0793a5ba84ae9103b",
+      "provenance": "Historical workflow 36343189239 at d7f8c9e. Preserved existing image; input hash not recorded by the original capture."
+    },
+    {
+      "file": "settings-recovery.png",
+      "preview": "partialDenial",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 393,
+        "height_dp": 852,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Partially granted access with a Settings recovery action",
+      "source_commit": "d7f8c9e5a4b62cc26196e3bb59a4aba5f0d017dd",
+      "input_sha256": null,
+      "sha256": "22e2806417c44e340af4daa418cb78291fe2d67cf131c085552e247a3a0be13c",
+      "provenance": "Historical workflow 36343189239 at d7f8c9e. Preserved existing image; input hash not recorded by the original capture."
+    },
+    {
+      "file": "single-permission-overview.png",
+      "preview": "singlePermissionOverview",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 393,
+        "height_dp": 852,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Overview before a single permission",
+      "source_commit": "d7f8c9e5a4b62cc26196e3bb59a4aba5f0d017dd",
+      "input_sha256": null,
+      "sha256": "f67072895d8ed771286c94253f6a490526f99043b7832a7412e7a4c8475a2119",
+      "provenance": "Historical workflow 36343189239 at d7f8c9e. Preserved existing image; input hash not recorded by the original capture."
+    },
+    {
+      "file": "multiple-without-overview.png",
+      "preview": "multiplePermissionsNoOverview",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 393,
+        "height_dp": 852,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Multiple permissions with the overview hidden",
+      "source_commit": "d7f8c9e5a4b62cc26196e3bb59a4aba5f0d017dd",
+      "input_sha256": null,
+      "sha256": "247f127961dc54975f8f678c8947ec09decccbcfb97e05df36967b131232bad4",
+      "provenance": "Historical workflow 36343189239 at d7f8c9e. Preserved existing image; input hash not recorded by the original capture."
+    },
+    {
+      "file": "overflowing-icons.png",
+      "preview": "overflowOverview",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 320,
+        "height_dp": 720,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Scrollable icon strip with eight permissions",
+      "source_commit": "d7f8c9e5a4b62cc26196e3bb59a4aba5f0d017dd",
+      "input_sha256": null,
+      "sha256": "1f2014bbcf541b6154cfd9f76074935b5a6fa019e36176de8369aa8756366259",
+      "provenance": "Historical workflow 36343189239 at d7f8c9e. Preserved existing image; input hash not recorded by the original capture."
+    },
+    {
+      "file": "segmented-reading-progress.png",
+      "preview": "autoplayReadingProgress",
+      "capture_kind": "component-preview",
+      "fixture": "permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt",
+      "configuration": {
+        "width_dp": 393,
+        "height_dp": 852,
+        "theme": "light",
+        "locale": "renderer-default"
+      },
+      "alt": "Segmented reading indicator on the camera page",
+      "source_commit": "12ca98c0a5ce75cdd607d52408bce25526cfd23b",
+      "input_sha256": null,
+      "sha256": "3af1d7c5665e3305abd3d2c506c765dff96edc7edbaf81b75db0e9ba524080ad",
+      "provenance": "Historical workflow 36380029091 at 12ca98c0a5ce75cdd607d52408bce25526cfd23b. Preserved original image; input hash was not recorded."
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Apexfission Permissions',
+      components: { Banner: './src/components/VersionBanner.astro' },
       description: 'Android runtime permissions, explained with Compose.',
       favicon: '/favicon.svg',
       customCss: ['./src/styles/brand.css'],
@@ -24,6 +25,11 @@ export default defineConfig({
           { label: 'Runnable demos', slug: 'demos' },
           { label: 'Screen gallery', slug: 'gallery' },
           { label: 'Public API reference', slug: 'reference' },
+          { label: 'Concepts and ownership', slug: 'concepts' },
+          { label: 'Task recipes', slug: 'task-recipes' },
+          { label: 'Limitations', slug: 'limitations' },
+          { label: 'Troubleshooting', slug: 'troubleshooting' },
+          { label: 'Migration', slug: 'migration' },
           { label: 'AI agent integration', slug: 'agents' },
           { label: 'Build, test, and release', slug: 'development' },
         ] },

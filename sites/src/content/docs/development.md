@@ -12,7 +12,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 | `permission/src/main/java/com/apexfission/android/permission/ui` | Page definitions, carousel, icon strip, visual defaults, timing helper. |
 | `permission/src/main/java/com/apexfission/android/permission/requester` | Compose gate, grant snapshot, code-only request and check helpers, recovery message. |
 | `permission/src/main/java/com/apexfission/android/permission/recipe` | Permission statuses, location and notification steps, photo picker. |
-| `app/src/main/java/.../demo` | Four runnable demo screens hosted by a single `MainActivity`. |
+| `app/src/main/java/.../demo` | Four feature screens plus the complete quickstart Activity, launched from `MainActivity`. |
 | `permission/src/test` and `permission/src/screenshotTest` | JVM decision tests and Compose visual fixtures. |
 | `app/src/androidTest` | Device-level navigation, grant, denial, and Settings recovery tests. |
 | `docs/screenshots` | Committed previews used by the README and gallery. |
@@ -24,12 +24,12 @@ Use Android SDK 37. Library Java source/target compatibility is 17 (the demo use
 
 ```bash
 ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug
-./gradlew :permission:updateDebugScreenshotTest
+cd sites && npm run screenshots:render && npm run screenshots:check && cd ..
 ./gradlew :app:connectedDebugAndroidTest # requires an attached emulator/device
-cd sites && npm ci && npm run build
+cd sites && npm ci && npm run check
 ```
 
-The screenshot update task refreshes fixtures; review changes before committing. The [screen gallery](../gallery/) is generated from Compose screenshot tests, not Android system dialogs. The [Render permission screens workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/render-permission-screens.yml) runs the library checks and uploads screenshots.
+Install site dependencies with `cd sites && npm ci` before the screenshot commands. Rendering creates candidates; the check compares them with accepted images. After visual review, intentionally export them with `npm run screenshots:update` from `sites/`. CI never accepts changed images automatically. The [screen gallery](../gallery/) is generated from Compose screenshot tests, not Android system dialogs. The [Render permission screens workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/render-permission-screens.yml) runs the library checks and uploads screenshots.
 
 ## Device tests
 
@@ -43,4 +43,8 @@ See the [release and recovery guide](https://github.com/lambdawalker/android.ape
 
 ## Documentation site deployment
 
-The [Library site workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/deploy-library-site.yml) builds on site or screenshot changes in pull requests. A relevant push to `main` builds and deploys; `workflow_dispatch` is available for a manual run. GitHub Pages must be configured with **GitHub Actions** as its build source. The site is served under `/android.apexfission.permissions/`; the `github-pages` environment is separate from `maven-central`. Build locally with `cd sites && npm ci && npm run build`. Keep site pages, public KDocs, and the [public API reference](../reference/) aligned when an API changes.
+The [Library site workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/deploy-library-site.yml) builds on site or screenshot changes in pull requests. A relevant push to `main` builds and deploys; `workflow_dispatch` is available for a manual run. GitHub Pages must be configured with **GitHub Actions** as its build source. The site is served under `/android.apexfission.permissions/`; the `github-pages` environment is separate from `maven-central`. Build locally with `cd sites && npm ci && npm run check`. The [site maintenance guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/sites/README.md) identifies editable sources. The API reference, concepts, limitations, troubleshooting, migration, task recipes, and first request are generated from canonical Markdown. Edit those sources, not generated site pages. Keep them aligned with public KDocs.
+
+## Documentation and release checks
+
+`npm run check` validates the publisher, quickstart extraction, image manifest, production site, links, anchors, and raw Markdown endpoints. Relevant pull requests run these checks. Screenshot-input changes also render candidates and compare pixels. Before ordinary artifact upload, release preflight checks the site and freshly rendered screenshots at the selected source SHA. Recovery does not repeat this work or upload the package again. A site deployment can be retried independently.
