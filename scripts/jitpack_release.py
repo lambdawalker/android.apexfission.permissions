@@ -43,7 +43,8 @@ def verify(record, fetch_bytes):
     if status in ('none', 'queued', 'pending', 'building', 'running'):
         raise NotReady(f'JitPack build is not ready: {status}')
     if status != 'ok':
-        raise ValueError(f'JitPack build failed or returned an unknown status: {status!r}')
+        raise ValueError(f'JitPack build failed or returned an unknown status: {status!r}. '
+                         f'Build log: {base.rsplit("/", 1)[0]}/build.log')
     if provenance.get('commit') != record['source']:
         raise ValueError('JitPack build is not successful at the reserved source commit')
     # Some API versions expose these identity fields; reject contradictions.
