@@ -14,4 +14,8 @@
     <string name="permission_recovery_uncertain">Android pourrait ne plus afficher la demande d’autorisation. Si elle n’apparaît pas, vous pouvez activer l’accès dans les paramètres de l’application.</string>
     <string name="permission_done">Continuer</string>
     <string name="permission_not_now">Pas maintenant</string>
+    <string name="permission_optional">Accès facultatif</string>
+    <string name="permission_auto_advance_progress">Progression de lecture de la page</string>
+    <string name="permission_auto_advance_pause">Suspendre le défilement automatique des pages</string>
+    <string name="permission_auto_advance_resume">Reprendre le défilement automatique des pages</string>
 </resources>

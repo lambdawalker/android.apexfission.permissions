@@ -14,4 +14,8 @@
     <string name="permission_recovery_uncertain">Es posible que Android no muestre otra solicitud de permiso. Si no aparece, puedes habilitar el acceso en la configuración de la aplicación.</string>
     <string name="permission_done">Continuar</string>
     <string name="permission_not_now">Ahora no</string>
+    <string name="permission_optional">Acceso opcional</string>
+    <string name="permission_auto_advance_progress">Progreso de lectura de la página</string>
+    <string name="permission_auto_advance_pause">Pausar el avance automático de páginas</string>
+    <string name="permission_auto_advance_resume">Reanudar el avance automático de páginas</string>
 </resources>
