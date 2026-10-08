@@ -3,8 +3,16 @@ name: Publish permission library
 on:
   workflow_dispatch:
     inputs:
-      resume_version:
-        description: 'Recovery only: finalize a pending version already published on Central (never uploads again)'
+      repository:
+        description: 'Destination repository (uses its matching GitHub environment)'
+        type: choice
+        required: true
+        default: maven-central
+        # BEGIN GENERATED REPOSITORIES
+        options: ["maven-central", "jitpack"]
+        # END GENERATED REPOSITORIES
+      version:
+        description: 'Optional X.Y.Z. Blank: reuse unchanged module version, otherwise next patch.'
         required: false
         default: ''
         type: string
@@ -12,100 +20,12 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: publish-permission
-  cancel-in-progress: false
-
 jobs:
   publish:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    environment: maven-central
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Select next version or recover pending publication
-        id: release
-        env:
-          RESUME_VERSION: ${{ inputs.resume_version }}
-        run: python3 scripts/release.py prepare --resume "$RESUME_VERSION"
-      - name: Check out exact release source
-        env:
-          SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: git checkout --detach "$SOURCE_SHA"
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-      - uses: gradle/actions/setup-gradle@v4
-      - name: Test, verify documentation, and assemble
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
-        run: |
-          python3 -m unittest discover -s scripts/tests -v
-          ./gradlew verifyImportDocs
-          ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug "-PreleaseVersion=$RELEASE_VERSION" --stacktrace
-      - uses: actions/setup-node@v4
-        if: inputs.resume_version == ''
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: sites/package-lock.json
-      - name: Verify site and screenshots at the exact release source
-        if: inputs.resume_version == ''
-        working-directory: sites
-        run: |
-          npm ci
-          npm run check
-          npm run screenshots:render
-          npm run screenshots:check
-      - name: Reserve release attempt before contacting Central
-        if: inputs.resume_version == ''
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
-          SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: |
-          git tag "release-pending/$RELEASE_VERSION" "$SOURCE_SHA"
-          git push origin "refs/tags/release-pending/$RELEASE_VERSION"
-      - name: Publish and release signed artifact on Maven Central
-        if: inputs.resume_version == ''
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_IN_MEMORY_KEY_PASSWORD }}
-        run: |
-          for name in ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword ORG_GRADLE_PROJECT_signingInMemoryKey; do
-            if [[ -z "${!name}" ]]; then
-              echo "Missing release credential: $name" >&2
-              exit 1
-            fi
-          done
-          ./gradlew :permission:publishAndReleaseToMavenCentral "-PreleaseVersion=$RELEASE_VERSION" --stacktrace
-      - name: Confirm public Maven artifact availability
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
-        run: python3 scripts/release.py wait --version "$RELEASE_VERSION"
-      - name: Generate installation documentation for confirmed release
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
-        run: |
-          ./gradlew generateImportDocs "-PreleaseVersion=$RELEASE_VERSION"
-          ./gradlew verifyImportDocs "-PreleaseVersion=$RELEASE_VERSION"
-      - name: Atomically update docs and tag the artifact source
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
-          SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: bash scripts/finalize-release.sh
-      - name: Recovery guidance
-        if: failure()
-        run: |
-          echo 'No later release can proceed while a release-pending/* tag remains.'
-          echo 'Inspect Central Portal before retrying. See docs/releases.md for recovery.'
+    uses: ./.github/workflows/publish-library.yml
+    secrets: inherit
+    with:
+      repository: ${{ inputs.repository }}
+      module: permission
+      version: ${{ inputs.version }}

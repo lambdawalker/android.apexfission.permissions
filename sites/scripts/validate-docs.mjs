@@ -19,6 +19,7 @@ function inspect(text, html) {
   if (html) {
     function walk(node) {
       for (const {name,value} of node.attrs ?? []) {
+        if (node.tagName === 'option' && name === 'value' && value.startsWith(base + '/')) links.push(value);
         if (name === 'id') ids.add(value);
         if (['href','src'].includes(name) && !(node.tagName === 'link' && node.attrs.some(a => a.name === 'rel' && a.value === 'canonical'))) links.push(value);
       }
@@ -29,6 +30,7 @@ function inspect(text, html) {
     const tree = parser().parse(text), slugger = new GithubSlugger();
     const plain = node => node.value ?? (node.children ?? []).map(plain).join('');
     visit(tree, node => {
+      if (node.type === 'html') for (const match of node.value.matchAll(/\bid="([^"]+)"/g)) ids.add(match[1]);
       if (node.type === 'heading') ids.add(slugger.slug(plain(node)));
       if (['link','image','definition'].includes(node.type)) links.push(node.url);
     });

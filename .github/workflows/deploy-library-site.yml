@@ -8,6 +8,11 @@ on:
       - 'sites/**'
       - 'docs/screenshots/**'
       - 'docs/agents/**'
+      - 'docs/es/**'
+      - 'docs/releases/**'
+      - 'scripts/documentation_history.py'
+      - 'scripts/import_docs.py'
+      - 'publishing/legacy-installation.json'
       - '.github/workflows/deploy-library-site.yml'
   push:
     branches: [main]
@@ -17,9 +22,14 @@ on:
       - 'sites/**'
       - 'docs/screenshots/**'
       - 'docs/agents/**'
+      - 'docs/es/**'
+      - 'docs/releases/**'
+      - 'scripts/documentation_history.py'
+      - 'scripts/import_docs.py'
+      - 'publishing/legacy-installation.json'
       - '.github/workflows/deploy-library-site.yml'
   workflow_run:
-    workflows: [Publish permission library]
+    workflows: [Publish permission library, Finalize permission release]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -28,15 +38,21 @@ permissions:
   contents: read
 
 concurrency:
-  group: library-site-${{ github.ref }}
+  group: library-site-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
   cancel-in-progress: true
 
 jobs:
   build:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: (github.event_name != 'workflow_run' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main')) || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -47,6 +63,11 @@ jobs:
         run: |
           npm ci
           npm run check
+      - name: Reject stale deployment source
+        if: github.event_name != 'pull_request'
+        run: |
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
       - name: Configure Pages
         if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5

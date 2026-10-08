@@ -1,6 +1,7 @@
-name: Verify release tooling
+name: Verify release tooling (no publication)
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches: [main]
@@ -8,37 +9,55 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [permission]
+    env:
+      RELEASE_MODULE: ${{ matrix.module }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Test release policy and check generated docs
+      - run: python3 -m pip install -r scripts/requirements-publishing.txt
+      - run: python3 scripts/publishing_config.py check
+      - name: Test release policy and deterministic documentation
         run: |
           python3 -m unittest discover -s scripts/tests -v
-          python3 scripts/release.py verify
+          python3 scripts/module_release.py verify
           bash -n scripts/finalize-release.sh
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: |
+            17
+            25
       - uses: gradle/actions/setup-gradle@v4
-      - name: Verify Gradle integration and publication metadata
+      - name: Verify Gradle build and local publication without credentials
         run: |
-          ./gradlew verifyImportDocs generateImportDocs
-          git diff --exit-code -- IMPORT.md
-          ./gradlew :permission:generatePomFileForMavenPublication -PreleaseVersion=9.8.7
-          python3 - <<'PY'
-          import sys
-          from pathlib import Path
-          sys.path.insert(0, 'scripts')
-          import release
-          group, artifact = release.coordinates()
-          poms = list(Path('permission/build/publications').glob('*/pom-default.xml'))
-          assert poms, 'No Maven publication POM generated'
-          for pom in poms:
-              release.verify_pom(pom.read_bytes(), group, artifact, '9.8.7')
-          PY
+          ./gradlew generateImportDocs verifyImportDocs :permission:testDebugUnitTest :permission:lintRelease :permission:assembleRelease :app:assembleDebug :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
+          git diff --exit-code -- IMPORT.md docs/releases/
+          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
+      - name: Verify JitPack coordinates and unsigned artifacts without publishing
+        env:
+          RELEASE_REPOSITORY: jitpack
+        run: |
+          ./gradlew ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
+          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
+      - name: Upload demo APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: permission-demo-${{ matrix.module }}
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

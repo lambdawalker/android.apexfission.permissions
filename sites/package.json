@@ -7,7 +7,7 @@
     "build": "npm run sync && npm run screenshots:manifest && astro build && node scripts/validate-docs.mjs",
     "preview": "astro preview",
     "test": "node --test scripts/tests/*.test.mjs",
-    "sync": "node scripts/sync-examples.mjs && node scripts/sync-screenshots.mjs",
+    "sync": "node scripts/sync-examples.mjs && node scripts/sync-screenshots.mjs && node scripts/sync-versioned.mjs",
     "check": "npm test && npm run build",
     "screenshots:check": "node scripts/screenshots.mjs check",
     "screenshots:update": "node scripts/screenshots.mjs update",

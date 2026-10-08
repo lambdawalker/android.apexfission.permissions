@@ -20,3 +20,15 @@ test('checks HTML anchors and raw Markdown navigation, including reference links
     assert.deepEqual(await validateSite(root),[]);
   } finally { await rm(root,{recursive:true,force:true}); }
 });
+
+test('validates version and language option routes and explicit Markdown anchors',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'doc-options-'));
+ try{
+  await mkdir(join(root,'es/permission/1.2.3'),{recursive:true});
+  await writeFile(join(root,'index.html'),'<select><option value="/android.apexfission.permissions/es/permission/1.2.3/">Español</option></select><a href="guide.md#english-anchor">Raw</a>');
+  await writeFile(join(root,'guide.md'),'# Guía\n\n<a id="english-anchor"></a>\n\n## Encabezado\n');
+  assert.equal((await validateSite(root)).length,1);
+  await writeFile(join(root,'es/permission/1.2.3/index.html'),'<h1>Versión</h1>');
+  assert.deepEqual(await validateSite(root),[]);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

@@ -1,71 +1,83 @@
-"""Release policy and deterministic import docs; Python standard library only."""
+"""Signed Android release policy, durable attempt journal, and deterministic docs.
+
+Standard library only. Network failures are never treated as an empty registry.
+"""
 import argparse
+import hashlib
+import io
+import json
 import os
 from pathlib import Path
 import re
 import subprocess
 import time
+import tomllib
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SEMVER = r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'
 CENTRAL = 'https://repo.maven.apache.org/maven2'
+SEMVER = r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'
+SUFFIXES = ('.pom', '.aar', '-sources.jar', '-javadoc.jar', '.module')
 
 
-def version_key(version):
-    if not re.fullmatch(SEMVER, version):
-        raise ValueError(f'Expected stable X.Y.Z version, got {version!r}')
-    return tuple(map(int, version.split('.')))
+def version_key(value):
+    if not re.fullmatch(SEMVER, value):
+        raise ValueError(f'Expected stable X.Y.Z, got {value!r}')
+    return tuple(map(int, value.split('.')))
 
 
-def next_version(tags, published):
-    releases = [tag[1:] for tag in tags if re.fullmatch('v' + SEMVER, tag)]
-    stable = [v for v in published if re.fullmatch(SEMVER, v)]
+def next_version(tags, published, initial=''):
+    tagged = {t[1:] for t in tags if re.fullmatch('v' + SEMVER, t)}
+    stable = {v for v in published if re.fullmatch(SEMVER, v)}
+    if tagged - stable:
+        raise ValueError(f'Tags not published on Central: {sorted(tagged - stable)}')
+    if initial:
+        version_key(initial)
+        if stable or tagged:
+            raise ValueError('initial_version is only permitted with no stable release history')
+        return initial
     if not stable:
-        raise ValueError('No published stable version; bootstrap must be reviewed manually')
+        raise ValueError('First release requires explicit initial_version (for example 0.1.0)')
     latest = max(stable, key=version_key)
-    if releases:
-        tagged = max(releases, key=version_key)
-        if tagged not in stable:
-            raise ValueError(f'Tag v{tagged} is not published on Central')
-        if version_key(latest) > version_key(tagged):
-            raise ValueError('Central is ahead of release tags; reconcile provenance before publishing')
-        latest = tagged
+    if tagged and max(tagged, key=version_key) != latest:
+        raise ValueError('Central is ahead of tags; reconcile source provenance')
     major, minor, patch = version_key(latest)
     return f'{major}.{minor}.{patch + 1}'
 
 
-def document_version(document):
-    match = re.search(r'<!-- release-version: (\S+) -->', document)
-    if not match:
-        raise ValueError('IMPORT.md has no release-version marker; supply -PreleaseVersion')
-    version_key(match[1])
-    return match[1]
-
-
-def render(template, group, artifact, version):
-    version_key(version)
-    for key, value in dict(VERSION=version, GROUP_ID=group, ARTIFACT_ID=artifact).items():
-        template = template.replace('{{' + key + '}}', value)
-    if re.search(r'\{\{.*?\}\}', template):
-        raise ValueError('Unknown template placeholder')
-    return template
-
-
 def coordinates():
-    properties = {}
+    values = {}
     for line in (ROOT / 'gradle.properties').read_text().splitlines():
         if '=' in line and not line.lstrip().startswith('#'):
-            key, value = line.split('=', 1)
-            properties[key.strip()] = value.strip()
-    return properties['GROUP'], properties['POM_ARTIFACT_ID']
+            k, v = line.split('=', 1)
+            values[k.strip()] = v.strip()
+    group, artifact = values['GROUP'], values['POM_ARTIFACT_ID']
+    if not re.fullmatch(r'[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+', group):
+        raise ValueError('Invalid groupId')
+    if not re.fullmatch(r'[A-Za-z0-9_.-]+', artifact):
+        raise ValueError('Invalid artifactId')
+    return group, artifact
 
 
-def fetch(url):
-    with urllib.request.urlopen(url, timeout=30) as response:
-        return response.read()
+def fetch(url, missing=False, attempts=3):
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(url, timeout=20) as response:
+                return response.read()
+        except urllib.error.HTTPError as error:
+            if error.code == 404 and missing:
+                return None
+            if error.code != 429 and error.code < 500:
+                raise
+            if attempt == attempts - 1:
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == attempts - 1:
+                raise
+        time.sleep(2 ** attempt)
 
 
 def artifact_base(group, artifact):
@@ -73,107 +85,91 @@ def artifact_base(group, artifact):
 
 
 def published_versions(group, artifact):
-    root = ET.fromstring(fetch(artifact_base(group, artifact) + '/maven-metadata.xml'))
-    return [node.text for node in root.findall('./versioning/versions/version')]
+    data = fetch(artifact_base(group, artifact) + '/maven-metadata.xml', missing=True)
+    if data is None:
+        return []
+    xml = ET.fromstring(data)
+    if xml.tag != 'metadata' or xml.findtext('groupId') != group or xml.findtext('artifactId') != artifact:
+        raise ValueError('Invalid Central metadata identity')
+    versions = xml.findall('./versioning/versions/version')
+    if not versions or any(not node.text for node in versions):
+        raise ValueError('Malformed/empty Central metadata')
+    return [node.text for node in versions]
 
 
 def verify_pom(data, group, artifact, version):
-    root = ET.fromstring(data)
-    # Maven POMs normally use a default namespace.
-    for node in root.iter():
+    xml = ET.fromstring(data)
+    for node in xml.iter():
         node.tag = node.tag.split('}')[-1]
-    actual = tuple(root.findtext(key) for key in ('groupId', 'artifactId', 'version'))
-    if actual != (group, artifact, version):
-        raise ValueError(f'Published POM coordinates do not match: {actual}')
+    if tuple(xml.findtext(k) for k in ('groupId', 'artifactId', 'version')) != (group, artifact, version):
+        raise ValueError('POM coordinates/version mismatch')
+    if xml.findtext('packaging') != 'aar':
+        raise ValueError('Publication must be an Android AAR')
+    for path in ('name', 'description', 'url', 'licenses/license/name', 'licenses/license/url',
+                 'developers/developer/id', 'developers/developer/name', 'scm/url', 'scm/connection'):
+        if not xml.findtext(path):
+            raise ValueError(f'Missing POM metadata: {path}')
+    dependencies = xml.findall('dependencies/dependency')
+    catalog = tomllib.loads((ROOT / 'gradle/libs.versions.toml').read_text())
+    expected_dependencies = [('com.google.accompanist', 'accompanist-permissions', catalog['versions']['accompanistPermissions'])]
+    for expected in expected_dependencies:
+        if not any(tuple(n.findtext(k) for k in ('groupId', 'artifactId', 'version')) == expected
+                   and n.findtext('scope', 'compile') == 'compile' for n in dependencies):
+            raise ValueError(f'Public dependency must be exported with compile scope: {expected}')
+    if any(n.findtext('artifactId') == 'unspecified' or n.findtext('version') == 'unspecified'
+           for n in dependencies):
+        raise ValueError('Unresolved project dependency in POM')
 
 
-def git(*args):
-    return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
+def verify_artifact(data, suffix, group, artifact, version):
+    if suffix == '.pom':
+        verify_pom(data, group, artifact, version)
+    elif suffix == '.module':
+        module = json.loads(data)
+        if tuple(module.get('component', {}).get(k) for k in ('group', 'module', 'version')) != (group, artifact, version):
+            raise ValueError('Gradle module coordinates mismatch')
+        variants = module.get('variants', [])
+        api = [v for v in variants if v.get('attributes', {}).get('org.gradle.usage') == 'java-api']
+        if not api:
+            raise ValueError('Gradle metadata lacks an API consumption variant')
+        catalog = tomllib.loads((ROOT / 'gradle/libs.versions.toml').read_text())
+        expected = catalog['versions']['accompanistPermissions']
+        for variant in api:
+            deps = [d for d in variant.get('dependencies', []) if (d.get('group'), d.get('module')) == ('com.google.accompanist', 'accompanist-permissions')]
+            if len(deps) != 1 or deps[0].get('version') != {'requires': expected}:
+                raise ValueError('Gradle metadata must export the pinned public permission dependency')
 
-
-def prepare(resume):
-    tags = git('tag', '--list').splitlines()
-    pending = [tag for tag in tags if tag.startswith('release-pending/')]
-    if resume:
-        version_key(resume)
-        if pending != [f'release-pending/{resume}']:
-            raise ValueError('Recovery requires exactly the matching pending release reference')
-        if f'v{resume}' in tags:
-            raise ValueError('Release tag already exists; inspect the completed release')
-        source = git('rev-parse', f'refs/tags/release-pending/{resume}^{{commit}}')
-        version = resume
     else:
-        if pending:
-            raise ValueError(f'Unresolved release attempt: {pending}; inspect Central and use resume_version')
-        group, artifact = coordinates()
-        version = next_version(tags, published_versions(group, artifact))
-        source = git('rev-parse', 'HEAD')
-        # Prevent publishing identical code again (documentation-only releases still allowed).
-        if any(git('rev-parse', f'refs/tags/{tag}^{{commit}}') == source
-               for tag in tags if re.fullmatch('v' + SEMVER, tag)):
-            raise ValueError('This source commit already has a release tag')
-    if subprocess.run(['git', 'merge-base', '--is-ancestor', source, 'origin/main'], cwd=ROOT).returncode:
-        raise ValueError('Release source must belong to main history')
-    output = f'version={version}\nsource={source}\n'
-    print(output, end='')
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
-        stream.write(output)
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            if archive.testzip():
+                raise ValueError('Corrupt JAR')
+            names = archive.namelist()
+            if suffix == '.aar':
+                if 'AndroidManifest.xml' not in names or 'classes.jar' not in names:
+                    raise ValueError('AAR is missing manifest or classes.jar')
+                with zipfile.ZipFile(io.BytesIO(archive.read('classes.jar'))) as classes_jar:
+                    classes = [n for n in classes_jar.namelist()
+                               if n.endswith('.class') and n.startswith('com/apexfission/android/permission/')]
+                    if not classes or any(classes_jar.read(n)[:4] != b'\xca\xfe\xba\xbe' or
+                                          int.from_bytes(classes_jar.read(n)[6:8], 'big') != 61 for n in classes):
+                        raise ValueError('Missing library classes or unexpected JVM bytecode target')
+            elif suffix == '-sources.jar' and not any(n.endswith('.kt') for n in names):
+                raise ValueError('Sources JAR has no Kotlin source')
+            elif suffix == '-javadoc.jar' and not any(n.endswith(('.md', '.html')) for n in names):
+                raise ValueError('Documentation JAR has no documentation')
 
 
-def wait_for_publication(version, timeout):
-    version_key(version)
-    group, artifact = coordinates()
-    base = f'{artifact_base(group, artifact)}/{version}/{artifact}-{version}'
-    deadline = time.monotonic() + timeout
-    while True:
-        try:
-            verify_pom(fetch(base + '.pom'), group, artifact, version)
-            # Confirm the usable artifact, not just an uploaded or staged POM.
-            with urllib.request.urlopen(base + '.aar', timeout=30) as response:
-                if not response.read(1):
-                    raise ValueError('Published AAR is empty')
-            print(f'Confirmed {group}:{artifact}:{version} on Maven Central')
-            return
-        except urllib.error.HTTPError as error:
-            if error.code != 404 and error.code != 429 and error.code < 500:
-                raise
-            if time.monotonic() >= deadline:
-                raise TimeoutError('Publication not confirmed; pending reference retained') from error
-        except (urllib.error.URLError, TimeoutError) as error:
-            if time.monotonic() >= deadline:
-                raise TimeoutError('Central unreachable; pending reference retained') from error
-        time.sleep(20)
+def outputs(values):
+    text = ''.join(f'{k}={v}\n' for k, v in values.items())
+    print(text, end='')
+    if os.environ.get('GITHUB_OUTPUT'):
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+            stream.write(text)
+    return values
 
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    commands = parser.add_subparsers(dest='command', required=True)
-    for command in ('generate', 'verify'):
-        sub = commands.add_parser(command)
-        sub.add_argument('--version', default='')
-        sub.add_argument('--group')
-        sub.add_argument('--artifact')
-    sub = commands.add_parser('prepare')
-    sub.add_argument('--resume', default='')
-    sub = commands.add_parser('wait')
-    sub.add_argument('--version', required=True)
-    sub.add_argument('--timeout', type=int, default=2400)
-    args = parser.parse_args()
-    if args.command == 'prepare':
-        prepare(args.resume)
-    elif args.command == 'wait':
-        wait_for_publication(args.version, args.timeout)
-    else:
-        output = ROOT / 'IMPORT.md'
-        version = args.version or document_version(output.read_text())
-        group, artifact = coordinates()
-        expected = render((ROOT / 'docs/templates/IMPORT.md.template').read_text(),
-                          args.group or group, args.artifact or artifact, version)
-        if args.command == 'generate':
-            output.write_text(expected, encoding='utf-8', newline='\n')
-        elif output.read_text() != expected:
-            raise ValueError('IMPORT.md is stale; run ./gradlew generateImportDocs and commit the diff')
-
-
-if __name__ == '__main__':
-    main()
+def zip_contents(data):
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        if len(archive.namelist()) != len(set(archive.namelist())):
+            raise ValueError('Duplicate archive entries')
+        return {name: hashlib.sha256(archive.read(name)).hexdigest() for name in archive.namelist()
+                if not name.endswith('/') and name != 'META-INF/MANIFEST.MF'}

@@ -19,3 +19,11 @@
 
 - [Maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md)
 - [Source and compiled demos](https://github.com/lambdawalker/android.apexfission.permissions)
+
+## Version and language discovery
+
+- [English release catalog](https://lambdawalker.github.io/android.apexfission.permissions/en/)
+- [Catálogo en español](https://lambdawalker.github.io/android.apexfission.permissions/es/)
+- [Machine-readable scopes, provenance and guides](https://lambdawalker.github.io/android.apexfission.permissions/versions.json)
+
+Each scope supplies raw Markdown at /<language>/permission/<version>/raw/index.md. Development guides may contain unreleased API. Archived guides only appear for confirmed releases with verified immutable source and documentation identities.
