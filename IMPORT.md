@@ -3,9 +3,15 @@
 
 This is the authoritative latest confirmed installation reference. Choose one destination and one dependency syntax. Pending uploads and tags are not proof of availability.
 
-## permission
+## permission: android.apexfission.permissions
 
-Confirmed legacy Central version: **0.2.1**. The original release source is unknown; no matching versioned guides or JitPack build are claimed.
+Confirmed version: **0.2.3**. Source: [1ff75b82dfc656a957cee3198195d22708b0490b](https://github.com/lambdawalker/android.apexfission.permissions/commit/1ff75b82dfc656a957cee3198195d22708b0490b).
+
+Choose **one** destination below and **one** dependency syntax. Each destination provides this same release; do not add duplicate dependencies.
+
+### jitpack
+
+Repository: **jitpack**.
 
 #### Gradle Kotlin DSL
 
@@ -16,6 +22,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 ```
@@ -24,7 +31,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.apexfission.androi:permission:0.2.1")
+    implementation("com.github.lambdawalker:android.apexfission.permissions:permission~v0.2.3")
 }
 ```
 
@@ -37,6 +44,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
@@ -45,7 +53,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.apexfission.androi:permission:0.2.1'
+    implementation 'com.github.lambdawalker:android.apexfission.permissions:permission~v0.2.3'
 }
 ```
 
@@ -55,7 +63,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-permission = { module = "com.apexfission.androi:permission", version = "0.2.1" }
+permission = { module = "com.github.lambdawalker:android.apexfission.permissions", version = "permission~v0.2.3" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -80,12 +88,16 @@ Add these repositories and dependency to `pom.xml`:
     <id>central</id>
     <url>https://repo.maven.apache.org/maven2</url>
   </repository>
+  <repository>
+    <id>confirmed-2</id>
+    <url>https://jitpack.io</url>
+  </repository>
 </repositories>
 <dependencies>
   <dependency>
-    <groupId>com.apexfission.androi</groupId>
-    <artifactId>permission</artifactId>
-    <version>0.2.1</version>
+    <groupId>com.github.lambdawalker</groupId>
+    <artifactId>android.apexfission.permissions</artifactId>
+    <version>permission~v0.2.3</version>
     <type>aar</type>
   </dependency>
 </dependencies>

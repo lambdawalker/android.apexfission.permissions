@@ -1,0 +1,49 @@
+{
+  "artifact": "android.apexfission.permissions",
+  "consumer_version": "permission~v0.2.3",
+  "content_sha256": {
+    "-javadoc.jar": {
+      "LICENSE": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+      "docs/api.md": "22f8e88efca4fb52d0795c97137a6b7f7008345dee06d2727aca3adfe45c134f",
+      "docs/code-only.md": "0d244cff066b39ea31957723e39aca0dc29027edfa42384014d7c4175066321b",
+      "docs/compose.md": "65c8be11550b99b3e8601974c25186ce19f2cee7af80dfe2117563af1255ef3d",
+      "docs/concepts.md": "c628d3a1b18df511b3dc684a9a0ce1de55af485c6337d425148c00efbab3771e",
+      "docs/index.md": "949f8636af2c5efbcdaf5ac45df025d38e36907eba6d00f32d755f1642ca8333",
+      "docs/limitations.md": "09e054da5c350a68356bfc4fab7ac21e8142f91a0ea1229eb044dc59eda7949f",
+      "docs/migration.md": "718e262799f34ec6012ee9904b179ddc194eac8cc99858206f9bb206c60907e6",
+      "docs/platform-recipes.md": "54c65f1a2447927c78b71a703a93cedab95005c1584854be771fe76b494f7424",
+      "docs/quickstart.md": "e4cb084d9f9643f9eed19fc8e4b7e9f7f551a0ecc2055edc4c84ecd13875b969",
+      "docs/recipes.md": "84bbf1e91a590b41b48c9eedf68dcd4c423cab5d78b2a0528f91b3c2f8b624a7",
+      "docs/troubleshooting.md": "e0606d1b60b7d2bd8d5a6403329690add596c0c68d3089ac1587ad5741743233"
+    },
+    "-sources.jar": {
+      "com/apexfission/android/permission/recipe/PermissionRecipes.kt": "154117ef57307350fb31a5a86b6796a35bb233461eaf04702308a4726dca671f",
+      "com/apexfission/android/permission/recipe/PermissionState.kt": "3e1f319c84750285cc5e5979c2e7c8a098e2fa51fe751d206669f9bd89c2db40",
+      "com/apexfission/android/permission/recipe/VisualMediaPicker.kt": "46a3b8a3253f5cb2081aea711e776423cbb798bde95589c2cc5e51e6ff92f5c2",
+      "com/apexfission/android/permission/requester/PermissionCheck.kt": "cc0050b08844486a562c443a967392543c35c8ae7223198765b5833f54ed13a9",
+      "com/apexfission/android/permission/requester/PermissionGrants.kt": "77852cda76731e7472ac6a455e85229d82d555ab3f73d90b9ed610371a1f495e",
+      "com/apexfission/android/permission/requester/PermissionHandler.kt": "1e76272a64c0fb8302ca63383444bac61e7e924b372067ddce8512d18adb2a45",
+      "com/apexfission/android/permission/requester/PermissionRecovery.kt": "e7bb26160e4c61716a5654b8ed1f77663d556f35102bab560321af0d75680f58",
+      "com/apexfission/android/permission/requester/PermissionRequester.kt": "ddfc1e0e9f0e07fe0217217381ad1f6549b682e210c8ee0b91427ceb5687f015",
+      "com/apexfission/android/permission/ui/PermissionAutoAdvance.kt": "021471bbe598375fbd676e745a8a50dd66a9cdadb31f1e84a4d105bf146386ed",
+      "com/apexfission/android/permission/ui/PermissionBundleScreen.kt": "8ea267bc950932bd6b4ea765a364925a9047b013779d364a1b955cdfb05251b2",
+      "com/apexfission/android/permission/ui/PermissionDescription.kt": "9a71a01edd41be49729b383e2b6f936fac96e6a04112afd23a63353fc1982630",
+      "com/apexfission/android/permission/ui/PermissionVisualDefaults.kt": "3cf89cd4a5c1fb5c0a7143876e3ca643407cead4946555cbb194be71cf00189d"
+    }
+  },
+  "group": "com.github.lambdawalker",
+  "module": "permission",
+  "phase": "confirmed-public",
+  "repository": "jitpack",
+  "repository_url": "https://jitpack.io",
+  "sha256": {
+    "-javadoc.jar": "ecdc3ed0e22524fa3f843db437c40ad136d03c0eb4f0daf97f13d3827b429c4c",
+    "-sources.jar": "f7c35dcaa60238b0184a629731ddf405db3f8f2dd77e00410d8fdcb5720c8949",
+    ".aar": "925906cc3d643551420b6dc1e9c43bb07305288cd27a02517bae1ae8f4e251f8",
+    ".module": "4999c58cca110794c1b77bf2c04e4bc1eda4b3269b021e00ffe6c9252567c76f",
+    ".pom": "d85da110d100b56c94cd6e211de2d1382e6688278b4756daaaa6ca47588c9cd6"
+  },
+  "source": "1ff75b82dfc656a957cee3198195d22708b0490b",
+  "version": "0.2.3",
+  "workflow_run": "37799351986"
+}
