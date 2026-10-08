@@ -1,30 +1,15 @@
-<!--
-GENERATED FILE. Do not edit directly.
-Source: docs/templates/IMPORT.md.template
-Regenerate with: ./gradlew generateImportDocs
-For a confirmed publication: ./gradlew generateImportDocs -PreleaseVersion=X.Y.Z
--->
-<!-- release-version: 0.2.1 -->
-
+<!-- GENERATED FILE. Source: docs/templates/IMPORT.md.template. Run ./gradlew generateImportDocs. -->
 # Install Apexfission Permissions
 
-Current published version: **0.2.1**
+This is the authoritative latest confirmed installation reference. Choose one destination and one dependency syntax. Pending uploads and tags are not proof of availability.
 
-Maven coordinates: `com.apexfission.androi:permission:0.2.1`.
-The group spelling is intentional; copy it exactly.
+## permission
 
-This file is the authoritative installation and released-version reference for
-humans and AI agents. Read it when answering dependency, Maven coordinate, or
-current-version questions. Do not infer the published version from source code.
+Confirmed legacy Central version: **0.2.1**. The original release source is unknown; no matching versioned guides or JitPack build are claimed.
 
-Requires Android minSdk 24 and a Compose-enabled Android project. Declare requested
-permissions in the host app manifest. The repository demo uses the local project
-dependency; it does not download this Maven artifact.
+#### Gradle Kotlin DSL
 
-## Gradle Kotlin DSL
-
-Add `mavenCentral()` to `dependencyResolutionManagement.repositories` in
-`settings.gradle.kts`, alongside your existing repositories:
+In `settings.gradle.kts`:
 
 ```kotlin
 dependencyResolutionManagement {
@@ -43,10 +28,20 @@ dependencies {
 }
 ```
 
-## Gradle Groovy DSL
+#### Gradle Groovy DSL
 
-Configure `google()` and `mavenCentral()` in your settings repositories. In the
-app's `build.gradle`:
+In `settings.gradle`:
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+In the app's `build.gradle`:
 
 ```groovy
 dependencies {
@@ -54,39 +49,50 @@ dependencies {
 }
 ```
 
-## Gradle version catalog
+#### Version catalog
 
-In `gradle/libs.versions.toml`:
+Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
-[versions]
-apexfission-permissions = "0.2.1"
-
 [libraries]
-apexfission-permissions = { module = "com.apexfission.androi:permission", version.ref = "apexfission-permissions" }
+permission = { module = "com.apexfission.androi:permission", version = "0.2.1" }
 ```
 
-In the app's `build.gradle.kts`:
+Then use this instead of the direct dependency in the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation(libs.apexfission.permissions)
+    implementation(libs.permission)
 }
 ```
 
-## Maven XML
+#### Maven
 
-This is an Android AAR, not a plain JVM JAR. Gradle with the Android plugin is the
-supported Android build path; Maven consumers must provide Android AAR support.
+Add these repositories and dependency to `pom.xml`:
 
 ```xml
-<dependency>
+<repositories>
+  <repository>
+    <id>google</id>
+    <url>https://dl.google.com/dl/android/maven2</url>
+  </repository>
+  <repository>
+    <id>central</id>
+    <url>https://repo.maven.apache.org/maven2</url>
+  </repository>
+</repositories>
+<dependencies>
+  <dependency>
     <groupId>com.apexfission.androi</groupId>
     <artifactId>permission</artifactId>
     <version>0.2.1</version>
     <type>aar</type>
-</dependency>
+  </dependency>
+</dependencies>
 ```
 
-For Kotlin imports, manifest setup, and usage, see the
-[quickstart](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/docs/agents/quickstart.md).
+## Requirements
+
+Android minSdk 24 and a Compose-enabled Android project. Declare requested permissions in the host manifest. The library targets JVM 17; the checked-in Gradle daemon uses Java 25. The demo uses the local project dependency.
+
+See [quickstart](docs/agents/quickstart.md), [release guide](docs/releases.md), and the website's exact-version archive for matching historical guides. Never guess a released version or coordinates.

@@ -1,20 +1,27 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
+import org.gradle.api.publish.PublishingExtension
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.screenshot)
-    id("com.vanniktech.maven.publish") version "0.37.0"
+    id("com.vanniktech.maven.publish")
 }
 
+val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.permissions"
 
 mavenPublishing {
     coordinates(
-        providers.gradleProperty("GROUP").get(),
-        providers.gradleProperty("POM_ARTIFACT_ID").get(),
-        providers.gradleProperty("releaseVersion").orElse("0.0.0-SNAPSHOT").get(),
+        if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
+        if (jitpackBuild.get()) "android.apexfission.permissions" else providers.gradleProperty("POM_ARTIFACT_ID").get(),
+        if (jitpackBuild.get()) "permission~v${project.version}" else project.version.toString(),
     )
-    publishToMavenCentral()
-    signAllPublications()
+    configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
+    if (!jitpackBuild.get()) publishToMavenCentral()
+    if (!jitpackBuild.get() && providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
 
     pom {
         name.set("Apexfission Android Permissions")
@@ -44,19 +51,6 @@ mavenPublishing {
             url.set(projectUrl)
             connection.set("scm:git:$projectUrl.git")
             developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.permissions.git")
-        }
-    }
-}
-
-// Development builds need no released version; Central publishing always does.
-val explicitReleaseVersion = providers.gradleProperty("releaseVersion")
-tasks.configureEach {
-    if (name.contains("MavenCentral") && name.startsWith("publish")) {
-        val versionToPublish = explicitReleaseVersion.orNull
-        doFirst {
-            require(versionToPublish?.matches(
-                Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)")
-            ) == true) { "Central publication requires -PreleaseVersion=X.Y.Z" }
         }
     }
 }
@@ -99,4 +93,25 @@ dependencies {
     screenshotTestImplementation(platform(libs.androidx.compose.bom))
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+}
+
+// Text documentation is included in the same immutable source identity as the AAR.
+tasks.withType<com.vanniktech.maven.publish.tasks.JavadocJar>().configureEach {
+    from(rootProject.file("docs/agents")) { include("**/*.md"); into("docs") }
+    from(rootProject.file("LICENSE"))
+}
+tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+extensions.configure<PublishingExtension> {
+    repositories.maven {
+        name = "verification"
+        url = rootProject.layout.buildDirectory.dir("verification-repository").get().asFile.toURI()
+    }
+}
+tasks.configureEach {
+    if (name.contains("MavenCentral", ignoreCase = true)) {
+        dependsOn(rootProject.tasks.named("verifyPublicationReservation"))
+    }
 }

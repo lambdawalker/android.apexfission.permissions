@@ -14,3 +14,11 @@ src/content/docs/limitations.md
 src/content/docs/troubleshooting.md
 src/content/docs/migration.md
 src/content/docs/task-recipes.md
+
+public/en/
+public/es/
+public/versions.json
+src/content/docs/en/
+src/content/docs/es/
+src/versions.json
+src/build.json

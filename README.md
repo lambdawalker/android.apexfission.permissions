@@ -4,7 +4,7 @@ Explain and request Android runtime permissions with a Compose gate, custom page
 
 **[Human documentation](https://lambdawalker.github.io/android.apexfission.permissions/)** · **[Agent entry point](docs/agents/index.md)** · **[Installation](IMPORT.md)** · **[Runnable demos](https://lambdawalker.github.io/android.apexfission.permissions/demos/)**
 
-These source guides describe `main` and may contain APIs newer than the published artifact. Read [IMPORT.md](IMPORT.md) for confirmed coordinates and the published version. Contributor instructions are in [AGENTS.md](AGENTS.md).
+These source guides describe `main` and may contain APIs newer than the published artifact. Read [IMPORT.md](IMPORT.md) for confirmed coordinates and which repository holds the latest version. The documentation site provides English and Spanish guides, with a version selector for development and source-pinned releases as they are published. Historical Central version `0.2.1` has confirmed installation instructions but no verified source snapshot. Contributor instructions are in [AGENTS.md](AGENTS.md).
 
 ## Screenshots
 
@@ -47,6 +47,12 @@ Use an Activity-owned `PermissionRequester` when your app supplies its own UI. R
 ## Code-only permission check
 
 `runIfPermissionsGranted` performs a synchronous snapshot check. The host owns request launch and recovery. See the [callback guide](https://lambdawalker.github.io/android.apexfission.permissions/callbacks/) and [API contracts](https://lambdawalker.github.io/android.apexfission.permissions/reference/).
+
+## Publishing and documentation
+
+Use **Publish permission library** in GitHub Actions to select Maven Central or JitPack. Both destinations share the library’s version history: unchanged release inputs reuse the original version and source, while changed inputs advance the patch version. Installation documentation lists only confirmed publications. See the [release and recovery guide](docs/releases.md) before publishing or retrying an interrupted run.
+
+English consumer guides live in `docs/agents/`; Spanish translations live in `docs/es/`. Release documentation is reconstructed from recorded source references. Missing or stale translations fall back visibly to English for that same version. The site rebuilds after successful publication, and its manual workflow can retry documentation independently.
 
 ## Screenshots and checks
 

@@ -1,97 +1,85 @@
-# Release and installation documentation
+# Publishing Permissions
 
-[IMPORT.md](../IMPORT.md) is the authoritative current published version and
-installation reference. It is generated from
-[docs/templates/IMPORT.md.template](templates/IMPORT.md.template). Usage guides
-link to it; do not maintain independent versioned dependency declarations.
+[IMPORT.md](../IMPORT.md) is the authoritative latest confirmed installation reference. The exact-version website archive provides historical coordinates and matching guides. Never infer availability from a tag, proposed version, or successful local build.
 
-## Ownership and local work
+## Identity and migration
 
-- Stable `vX.Y.Z` Git tags record release history and identify the source actually
-  built. The next release increments the highest semantic version's patch number;
-  it does not depend on workflow run numbers or tag creation dates.
-- `GROUP` and `POM_ARTIFACT_ID` in `gradle.properties` feed the sole Maven module,
-  `:permission`, and the documentation renderer. The demo keeps its local project dependency.
-- `-PreleaseVersion=X.Y.Z` supplies the version to the Maven publication. Builds
-  without it use a development snapshot; Central tasks require an explicit stable
-  version. The old `permissionVersion` override is removed.
-- Edit the Markdown template, then run `./gradlew generateImportDocs verifyImportDocs`.
-  Without an override, generation reads the recorded version in `IMPORT.md`, so
-  editing prose does not announce an unpublished release. Python 3 is required.
-- After confirming an actual publication, the explicit form is
-  `./gradlew generateImportDocs -PreleaseVersion=X.Y.Z`. Do not use a proposed
-  next version in committed docs before publication succeeds.
-- CI runs the renderer's unit/integration tests and `verifyImportDocs`, regenerates
-  the file to check determinism, and checks the Gradle-generated POM version.
-  The verification task detects template/coordinate drift without consulting
-  Central. The release workflow additionally checks actual Central availability.
+The single `permission` library retains Central coordinates `com.apexfission.androi:permission`. The spelling is intentional. The app is never published. `publishing/repositories.yml` is the destination registry; run `python3 scripts/publishing_config.py generate` after editing it, then commit its generated properties and workflow dropdowns.
 
-There were no release tags when this system was introduced. The initial generated
-file was seeded from Maven Central's public metadata and artifact, not the old
-build fallback. Until the first stable tag exists, the workflow bootstraps from
-Central's highest stable published version. It does not invent historical tags
-whose source provenance is unknown. Afterward tags control progression; Central
-being ahead of tags or missing a tagged version stops the workflow for investigation.
-Prerelease tags are ignored. This workflow intentionally supports patch releases;
-major/minor release policy must be explicitly extended before using it for those.
+Central and JitPack share one semantic version and original source identity. An unchanged release reuses the highest reserved version and its original commit, even when the release branch advances with generated documentation, website or translation changes. Changed library sources, packaged English documentation, dependencies, shared build inputs or release protocol advance the global patch. An explicit higher stable version permits intentional major/minor releases. Versions use numeric ordering; `0.2.10` follows `0.2.9`.
 
-## Publish
+Canonical tags are `permission/vX.Y.Z`. Older `vX.Y.Z` and destination-scoped tags remain immutable provenance inputs; conflicting sources for one version block publication. Pending identities also participate in allocation across destinations. Never move a tag to change a build.
 
-1. Ensure the namespace shown in IMPORT.md is verified in Central Portal.
-2. In the GitHub `maven-central` environment configure `MAVEN_CENTRAL_USERNAME`,
-   `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`, and, if encrypted,
-   `SIGNING_IN_MEMORY_KEY_PASSWORD`. Use a Portal user token and an armored GPG
-   private key. Keep keys out of Git.
-3. Run **Publish permission library** on `main`, leaving `resume_version` empty.
-   No version input is needed for an ordinary release.
+The pre-existing installation reference confirms Central **0.2.1**, but there are no source tags or source-proven release records for it. `publishing/legacy-installation.json` preserves those installation facts with `source: null`; it is deliberately outside archive and journal discovery. No historical source, hash, versioned guide, or JitPack availability is invented. The first source-proven release is at least **0.2.2**, including when JitPack is selected first. Live Central metadata ahead of the allocated identity blocks publication for reconciliation. Legacy `release-pending/X.Y.Z` attempts must be reconciled using their original workflow and Portal evidence before migration; they block new releases at both destinations.
 
-The serialized workflow checks out current `main` with full history/tags, selects
-and records the source SHA, runs unit/build checks, then pushes a
-`release-pending/X.Y.Z` reference **before** attempting publication. That reference
-is an attempt journal, not a released-version tag. It blocks another release if
-Central succeeds but the runner loses its response, times out, or cannot update Git.
+## Owner setup
 
-The workflow runs `:permission:publishAndReleaseToMavenCentral` with the selected
-`releaseVersion`. Unlike the previous staging-only task, this requests automatic
-publication. It then waits up to 40 minutes for the matching public POM and AAR.
-Only after confirmation does it generate/verify IMPORT.md. It commits only that
-file if changed, using the Actions bot identity. One atomic push advances main,
-creates `vX.Y.Z` at the original artifact source SHA, and removes the pending tag.
-A concurrent main update or protected-branch refusal fails without force-pushing.
-Installation/build input changes during publication also stop finalization for review.
+Existing Central credentials stay in the **maven-central** GitHub environment:
 
-The workflow needs `contents: write`; repository rules must permit the bot's docs
-commit and tag writes. It does not get branch-protection bypass credentials.
-A successful publish workflow triggers the Pages workflow with `workflow_run`,
-since commits made with `GITHUB_TOKEN` do not trigger normal push workflows. Pages
-renders and serves IMPORT.md directly from its committed source during site build.
+- `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`: Central Portal user token credentials.
+- `SIGNING_IN_MEMORY_KEY`: complete armored private signing key, including newlines.
+- `SIGNING_IN_MEMORY_KEY_PASSWORD`: passphrase when the key is encrypted.
 
-## Failure and recovery
+The existing Central endpoint is the default; no new endpoint or credential is needed. Keep the namespace verified in Central Portal.
 
-A failed upload, rejected Central validation, timeout, or failed docs generation
-never advances committed IMPORT.md. A pending tag intentionally remains. Never
-blindly rerun an upload: Maven coordinates are immutable and a lost response does
-not prove publication failed.
+Create the empty **jitpack** environment for public builds; optional protection rules are a maintainer choice. Public JitPack requires no token, password, signing key, or custom endpoint. Credentials are absent from its build job.
 
-- **Central has published the pending version:** run the workflow again with
-  `resume_version` set to that version. It checks out the pending source commit,
-  skips uploading, confirms its public POM/AAR, and retries docs/tag finalization.
-  Check the original deployment/source association in Portal before recovery;
-  availability alone cannot prove who uploaded an artifact.
-- **Central is still validating/publishing:** wait or resolve the deployment in
-  Portal, then use recovery. Do not delete the pending tag while a deployment can
-  still become public.
-- **Central definitively rejected the attempt or no upload occurred:** drop any
-  remaining deployment and verify no publication is possible. A maintainer can
-  then delete exactly the failed attempt reference with
-  `git push origin :refs/tags/release-pending/X.Y.Z` and start a fresh workflow.
-  This is deliberately a manual decision, not automatic cleanup.
-- **Git updates rejected:** fix the permission/rule problem, then recover without
-  uploading again. If installation inputs changed on main, reconcile them with
-  the published source before recovery; the workflow will not overwrite them.
-- **Existing release tag or Central ahead of tags:** investigate the previous
-  run/deployment. Never move an existing release tag or assign old artifacts to
-  an unverified source commit.
+Create **delayed-docs** with a **15-minute wait timer**, no secrets, and no required reviewers if automatic continuation is desired. Merely referencing this environment in YAML does not configure its timer. GitHub plan and repository visibility determine timer availability; verify the repository's current support in Settings. Permit `main` under deployment restrictions. The wait job holds no release lock or active runner during the environment gate.
 
-Successful runs tag the artifact source, not the later documentation commit.
-Do not treat a Git tag or a staged deployment alone as proof of publication.
+Allow the Actions bot the necessary contents/tag writes and normal protected-branch publication process. No bypass token is introduced. Settings, timers, credentials, Central access, and the first live JitPack build have **not** been inspected or configured by these local changes.
+
+## Ordinary release
+
+1. Run **Publish permission library** on `main`.
+2. Select `maven-central` or `jitpack`; leave `version` empty for reuse/next patch.
+3. Review job output for the semantic version, exact source SHA, destination and eventual confirmation.
+
+The jobs share `maven-central-permission` concurrency with both finalization paths, without nested locks. An already-confirmed destination/version is a no-op. Preparation validates source history and public metadata before upload. Local validation tests the library, demo, documentation and screenshot fixtures, and validates an unsigned complete publication in `build/verification-repository`.
+
+Central reserves the canonical source tag plus an annotated `release-pending/permission/X.Y.Z` journal atomically before remote upload. The journal records source, coordinates, all expected artifact SHA-256 hashes and workflow run. The Gradle upload guard creates `release-uploading/permission/X.Y.Z` before allowing `publishAndReleaseToMavenCentral`; a second invocation is rejected. The deployment log is retained for Portal investigation. Successful upload runs the external environment delay, then public verification polls up to 40 minutes in a separate finalizer with a 50-minute timeout.
+
+JitPack reserves `release-pending/jitpack/permission/X.Y.Z` and the same canonical tag, then requests the public artifact to initiate a provider build. `jitpack.yml` calls `scripts/jitpack_build.py`, which accepts only a canonical stable tag resolving to HEAD and checks the provider commit. It installs only `:permission:publishToMavenLocal`, unsigned. Gradle rejects app/sibling and remote-upload task selection. The Java 25 daemon and Java 17 library bytecode policy are preserved.
+
+JitPack consumers use `com.github.lambdawalker:android.apexfission.permissions:permission~vX.Y.Z`, not Central's artifact or raw semantic version. This is the selected single-publication layout and must be confirmed in the first live build. No JitPack version is advertised before confirmation.
+
+## Confirmation and documentation
+
+Central requires matching POM, AAR, sources, documentation and Gradle metadata, expected hashes and detached signatures. JitPack requires successful provider status at the exact full reserved commit, correct public coordinates, valid AAR/JVM target and public dependency, required sources/documentation, and any available Gradle metadata. Source and documentation archive-entry hashes must match the reservation; independently rebuilt ZIP hashes are recorded only after remote verification, not assumed equal to local ZIPs. Queued/building states, missing artifacts, rate limits and transient failures retry within the budget; contradictory provenance and failed builds stop.
+
+Provider-reported provenance is trusted within that service's limits; public availability alone does not prove who performed a Central upload. Keep Portal deployment logs and association with the reserved source. Source tags remain immutable in this repository, but that is not a claim of immediate external JitPack artifact immutability or retention. Inspect current provider policy and the build log before recovery; never force a rebuild or delete a provider build automatically.
+
+Only confirmation advances `docs/releases/permission.json` or `docs/releases/jitpack/permission.json`. Finalization preserves each confirmation in `docs/releases/history/permission/X.Y.Z.json` before regenerating IMPORT. Same-version destination catch-up adds only matching source identities. Archive entries retain their immutable documentation revision independently of later translations or destination availability. Legacy unknown-source 0.2.1 has no fabricated archive.
+
+Edit `docs/templates/IMPORT.md.template`; run `./gradlew generateImportDocs verifyImportDocs` or `python3 scripts/module_release.py generate` and `verify`. There is no version override that can announce an unconfirmed release. IMPORT selects the highest confirmed version and only destinations confirming that exact source/version. History generation excludes archive files from latest-pointer and allocation discovery.
+
+Finalization fetches current `main`, preserves unrelated concurrent changes and newer build inputs, and stops if its executing release protocol/renderer changed. One atomic push commits intended metadata/IMPORT/archive changes and removes matching attempt markers. The canonical tag identifies the original artifact source, not the later docs commit. It never force-pushes or moves tags.
+
+The Pages workflow watches the successful trusted top-level publication and recovery workflows, checks out latest release-branch metadata, rebuilds all cataloged versions and deploys under its existing Pages policy. `GITHUB_TOKEN` bot commits alone cannot be assumed to start ordinary push workflows. Manual documentation-only retry remains available and cannot publish a package.
+
+## Recovery
+
+Run **Finalize permission release** on `main`, choosing the original destination, `permission`, and reserved semantic version. This action allocates no identity and performs no Maven upload. It rechecks state under the same lock, verifies original public artifacts and retries bookkeeping. Manual recovery can complete during the environment wait; the delayed automatic finalizer then safely becomes a no-op. Requests for older completed releases do not replace newer documentation.
+
+For JitPack, reading an uncached artifact may request the same tagged provider build. Recovery does not invoke force-rebuild/delete APIs or move the source tag. Inspect `https://jitpack.io/#lambdawalker/android.apexfission.permissions` and the selected tag's build log.
+
+- Validation failure before reservation: fix inputs and rerun; no remote attempt was made.
+- Unknown upload outcome, timeouts or runner loss: retain pending/uploading tags, inspect Portal/build logs, then finalize the same version. Never blindly re-upload immutable coordinates.
+- Still processing or partial artifact visibility: retain reservations, allow propagation, and retry finalization. A subset never counts as complete; there is no automatic public-artifact rollback.
+- Definitive rejection: first prove the deployment/build cannot become public and reconcile every intended artifact. Only then may a maintainer remove exactly the failed attempt references. Canonical source tags remain immutable and remain version-allocation inputs.
+- Render, tag, push or branch-protection failure: resolve the specific blocker, then finalize without upload. The atomic push prevents partially committed bookkeeping.
+- Source/tag conflicts or changed release protocol: reconcile the recorded immutable identity and executing tooling; do not delete history to bypass validation.
+
+## Offline verification
+
+```bash
+python3 -m pip install -r scripts/requirements-publishing.txt
+python3 -m unittest discover -s scripts/tests -v
+python3 scripts/publishing_config.py check
+python3 scripts/module_release.py verify
+python3 scripts/documentation_history.py verify
+bash -n scripts/finalize-release.sh
+./gradlew :permission:testDebugUnitTest :permission:publishAllPublicationsToVerificationRepository -PreleaseModule=permission -PreleaseVersion=9.8.7
+RELEASE_REPOSITORY=jitpack ./gradlew :permission:publishAllPublicationsToVerificationRepository -PjitpackBuild=true -PreleaseModule=permission -PreleaseVersion=9.8.7
+```
+
+The verification workflow checks both selected-module destination layouts without signing or remote upload. Local fixture and temporary-Git tests cover ordering, source reuse, changed inputs, pending conflicts, archive catch-up, provider provenance, partial artifacts, timeout, durable upload guards, concurrent finalization and repeated recovery. Full Android/Gradle checks require the pinned toolchain, network dependencies and Android SDK. Local validation is not evidence of a live publication or Pages deployment.

@@ -1,0 +1,16 @@
+# Elige una receta por tarea
+
+Usa las demostraciones ejecutables completas como fuente del código de integración; las guías específicas enlazadas explican las decisiones y precauciones. Las funciones de demostración son código de la aplicación, no símbolos exportados por la biblioteca. La CI de Android compila `:app`; las pruebas en dispositivos ejercitan rutas seleccionadas, no todos los casos siguientes.
+
+| Situación | API y motivo | Ejemplo completo | Comportamiento esperado o precaución |
+| --- | --- | --- | --- |
+| Cámara obligatoria, narración opcional | `HandlePermissions` con `required = false` | [Demostración del carrusel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) | El acceso obligatorio desbloquea el contenido; la denegación opcional desactiva la narración |
+| Explicación personalizada, vista general y avance automático | Lambdas de página, `PermissionOverview`, demora de lectura | [Demostración del carrusel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) | La biblioteca conserva las acciones; el avance automático se pausa con la interacción |
+| Interfaz y lanzador de permisos propios | `runIfPermissionsGranted` | [Demostración solo con código](../../app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt) | Volver a comprobar tras el resultado, informar de la denegación sin volver a iniciar |
+| Interfaz propia, lanzador de la biblioteca | `PermissionRequester` | [Registro en la Activity](../../app/src/main/java/com/apexfission/android/permissions/MainActivity.kt) y [demostración solo con código](../../app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt) | `onDenied` inicia la solicitud; una sola llamada pendiente |
+| Ubicación por etapas, recuperación de notificaciones | `PermissionRecipes` | [Demostración de plataforma](../../app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt) | Explicar cada paso siguiente y actualizar tras el resultado o Ajustes |
+| Seleccionar foto o vídeo | `rememberVisualMediaPicker` | [Demostración de plataforma](../../app/src/main/java/com/apexfission/android/permissions/demo/PlatformRecipesDemo.kt) | URI o null; sin permiso amplio de medios |
+| Imagen principal Bitmap, Drawable, vector o recurso | Sobrecargas de `DefaultPermissionPage` | [Demostración de imágenes](../../app/src/main/java/com/apexfission/android/permissions/demo/HeroArtworkDemo.kt) | La aplicación controla la duración de la imagen; el icono de la tira es independiente |
+| Proporcionar estados sin lanzador Android | `PermissionBundleScreen` | [Casos de capturas de pantalla](../../permission/src/screenshotTest/kotlin/com/apexfission/android/permission/PermissionBundleScreenshotTest.kt) | Solo renderiza; la aplicación implementa las acciones y el acceso condicionado únicamente por los permisos obligatorios |
+
+Instrucciones detalladas: [Compose](compose.md), [funciones auxiliares de callbacks](code-only.md), [flujos de plataforma](platform-recipes.md). Todos los ejemplos usan permisos declarados en el [manifiesto de la demostración](../../app/src/main/AndroidManifest.xml). Copia solo los permisos necesarios para tu función.

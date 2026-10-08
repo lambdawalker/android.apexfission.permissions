@@ -1,6 +1,6 @@
 # README screenshots
 
-The original six PNGs in this directory are direct copies from the `permission-screen-images` artifact of the [passing screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/36343189239) at commit `d7f8c9e`. `segmented-reading-progress.png` comes from the [segmented progress workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/36380029091). No images were manually composed or edited.
+The original six PNGs in this directory were direct copies from the `permission-screen-images` artifact of the [passing screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/36343189239) at commit `d7f8c9e`. `segmented-reading-progress.png` comes from the [segmented progress workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/36380029091). The current set was reviewed and refreshed from the [PR #21 screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/37775282210) at commit `5f1780b`; only `settings-recovery.png` changed pixels, adding the existing cautious recovery message. The manifest retains the capture provenance. No images were manually composed or edited.
 
 | File | `PermissionBundleScreenshotTest` preview |
 | --- | --- |

@@ -36,7 +36,7 @@ Run `./gradlew :app:connectedDebugAndroidTest` with an emulator or device attach
 
 [IMPORT.md](IMPORT.md) is authoritative for the current published version, Maven coordinates, and Gradle Kotlin DSL, Groovy, Maven, and version-catalog installation. Read it when answering installation, importing, dependency, coordinate, or latest-version questions. Do not infer, guess, or hard-code the library version.
 
-Edit `docs/templates/IMPORT.md.template`, then run `./gradlew generateImportDocs verifyImportDocs`; never edit the generated file directly. Normal regeneration preserves its confirmed release version. Publishing alone advances it after Central confirmation. Run `python3 -m unittest discover -s scripts/tests -v` when changing release tooling. The [release guide](docs/releases.md) covers version progression, setup, provenance, and recovery. Never commit signing material.
+Edit `docs/templates/IMPORT.md.template`, then run `./gradlew generateImportDocs verifyImportDocs`; never edit the generated file directly. Normal regeneration preserves its confirmed release version. Publishing alone advances it after confirmation from the selected provider (Maven Central or JitPack). Preserve the existing Central coordinates, including the intentional `com.apexfission.androi` spelling. Never mark a queued JitPack build or an upload attempt as published. Install release-tooling dependencies with `python3 -m pip install -r scripts/requirements-publishing.txt`, then run `python3 -m unittest discover -s scripts/tests -v` when changing release tooling. The [release guide](docs/releases.md) covers version progression, setup, provenance, and recovery. Never commit signing material.
 
 ## Toolchain and change policy
 
@@ -53,3 +53,11 @@ Do not edit `build/`, `sites/dist/`, `sites/.astro/`, generated site assets, or 
 ## Documentation source ownership
 
 The human API reference, concepts, limitations, troubleshooting, migration, task recipes and first request are generated from `docs/agents/`. Do not edit their generated `sites/src/content/docs/` copies. Quickstart code comes from `CameraQuickstartActivity.kt`; run `node sites/scripts/sync-examples.mjs --write` after intentional edits. `sites/README.md` maps all source ownership and validation commands. `docs/screenshots/manifest.json` records curated captures; normal CI validates rather than accepts images.
+
+## Versioned and translated documentation
+
+Canonical English remains in `docs/agents/`; Spanish is in `docs/es/`. Keep code samples, identifiers, defaults, and API semantics identical across languages. Translation freshness is recorded per page using the English source hash. Update that hash only after reviewing the translation; otherwise the site must display the matching version’s English page with a fallback notice.
+
+Confirmed releases retain per-version publication records under `docs/releases/history/`. Do not overwrite historical source identity or invent source provenance for the legacy Central `0.2.1` publication. Latest `IMPORT.md` and historical installation pages have different roles: latest shows providers holding the newest confirmed version; a historical page uses only that version’s confirmed destinations. Never treat history records as pending publication journals.
+
+Render historical guides from retained Git references as data, using current rendering code. Keep source and documentation provenance explicit, preserve scoped links and raw Markdown, and never pin an unmerged local commit as durable release documentation. Read `sites/README.md` and `docs/releases.md` for the build and recovery commands.
