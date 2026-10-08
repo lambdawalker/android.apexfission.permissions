@@ -76,6 +76,29 @@ class ReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'content differs'):jp.verify(r,read)
         del files[base+'-sources.jar']
         with self.assertRaises(jp.NotReady):jp.verify(r,read)
+    def test_jitpack_missing_pom_reports_failed_build_instead_of_timeout(self):
+        r,files=self.fixture()
+        del files[jp.artifact_base(r)+'.pom']
+        files[jp.API_BASE+'/'+r['consumer_version']]=json.dumps({'status':'Error','commit':r['source']}).encode()
+        def read(url,missing=False):
+            if url in files:return files[url]
+            if missing:return None
+            raise urllib.error.HTTPError(url,404,'Not Found',None,None)
+        with patch.dict(m.os.environ,{'RELEASE_REPOSITORY':'jitpack'}),patch.object(m,'fetch',side_effect=read),patch.object(m,'read_record',return_value=r),patch.object(m,'git',return_value=r['source']):
+            with self.assertRaisesRegex(ValueError,'JitPack build failed'):
+                m.confirm('permission','0.2.2',timeout=0)
+
+    def test_jitpack_missing_pom_still_retries_queued_build(self):
+        r,files=self.fixture()
+        del files[jp.artifact_base(r)+'.pom']
+        files[jp.API_BASE+'/'+r['consumer_version']]=json.dumps({'status':'queued'}).encode()
+        def read(url,missing=False):
+            if url in files:return files[url]
+            if missing:return None
+            raise urllib.error.HTTPError(url,404,'Not Found',None,None)
+        with patch.dict(m.os.environ,{'RELEASE_REPOSITORY':'jitpack'}),patch.object(m,'fetch',side_effect=read):
+            with self.assertRaises(jp.NotReady):m.verify_public(r)
+
     def test_timeout_keeps_journal_and_docs(self):
         r=record();r['phase']='reserved-before-upload'
         with patch.object(m,'read_record',return_value=r),patch.object(m,'git',return_value=r['source']),patch.object(m,'verify_public',side_effect=urllib.error.URLError('missing')):

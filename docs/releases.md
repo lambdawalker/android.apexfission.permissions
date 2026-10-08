@@ -38,7 +38,7 @@ The jobs share `maven-central-permission` concurrency with both finalization pat
 
 Central reserves the canonical source tag plus an annotated `release-pending/permission/X.Y.Z` journal atomically before remote upload. The journal records source, coordinates, all expected artifact SHA-256 hashes and workflow run. The Gradle upload guard creates `release-uploading/permission/X.Y.Z` before allowing `publishAndReleaseToMavenCentral`; a second invocation is rejected. The deployment log is retained for Portal investigation. Successful upload runs the external environment delay, then public verification polls up to 40 minutes in a separate finalizer with a 50-minute timeout.
 
-JitPack reserves `release-pending/jitpack/permission/X.Y.Z` and the same canonical tag, then requests the public artifact to initiate a provider build. `jitpack.yml` calls `scripts/jitpack_build.py`, which accepts only a canonical stable tag resolving to HEAD and checks the provider commit. It installs only `:permission:publishToMavenLocal`, unsigned. Gradle rejects app/sibling and remote-upload task selection. The Java 25 daemon and Java 17 library bytecode policy are preserved.
+JitPack reserves `release-pending/jitpack/permission/X.Y.Z` and the same canonical tag, then requests the public artifact to initiate a provider build. `jitpack.yml` calls `scripts/jitpack_build.py`, which accepts only a canonical stable tag resolving to HEAD and checks the provider commit. It installs only `:permission:publishToMavenLocal`, unsigned. Gradle rejects app/sibling and remote-upload task selection. The Java 25 daemon and Java 17 library bytecode policy are preserved. JitPack bootstraps with Java 17, then explicitly installs and selects Temurin `25.0.2-tem` through SDKMAN before running Gradle. The `jdk` list is not a toolchain installation matrix; listing both versions did not install Java 25. Keep the SDKMAN selection aligned with `gradle/gradle-daemon-jvm.properties`. This avoids relying on its remote Foojay download URL in the JitPack build image.
 
 JitPack consumers use `com.github.lambdawalker:android.apexfission.permissions:permission~vX.Y.Z`, not Central's artifact or raw semantic version. This is the selected single-publication layout and must be confirmed in the first live build. No JitPack version is advertised before confirmation.
 
@@ -68,6 +68,17 @@ For JitPack, reading an uncached artifact may request the same tagged provider b
 - Definitive rejection: first prove the deployment/build cannot become public and reconcile every intended artifact. Only then may a maintainer remove exactly the failed attempt references. Canonical source tags remain immutable and remain version-allocation inputs.
 - Render, tag, push or branch-protection failure: resolve the specific blocker, then finalize without upload. The atomic push prevents partially committed bookkeeping.
 - Source/tag conflicts or changed release protocol: reconcile the recorded immutable identity and executing tooling; do not delete history to bypass validation.
+
+### Java 25 provisioning failure in JitPack 0.2.2
+
+The first JitPack attempt for `permission/v0.2.2` at `7dd797f342365e90dc5adac5e52d73352901fc62` failed before Gradle could build or publish: JitPack selected Java 17 and the Java 25 Foojay download returned HTTP 400. The publication workflow later timed out on the missing POM. The corrected verifier checks provider status even when that initial POM is absent and reports a failed build with its log URL.
+
+The SDKMAN fix changes release inputs. Rerunning the old Actions run or finalizing `0.2.2` cannot apply it because those operations use the immutable old source. After merging the fix:
+
+1. Retain the failed Actions run and JitPack build log. Confirm JitPack still reports failure and no `0.2.2` artifacts were published; a pending or unknown outcome must stay reserved.
+2. A maintainer may then remove only `release-pending/jitpack/permission/0.2.2`, following the definitive-rejection policy above. Preserve `permission/v0.2.2` and its source identity. This change does not automatically remove any release references.
+3. Run **Publish permission library** on updated `main`, selecting `jitpack` and leaving `version` blank. With the existing history, changed build inputs select `0.2.3`; review the selected version before proceeding if other releases have since occurred.
+4. Let the new build confirm public artifacts before advertising JitPack installation coordinates. Do not mark the failed `0.2.2` attempt as published.
 
 ## Offline verification
 

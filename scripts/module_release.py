@@ -260,7 +260,9 @@ def guard(module,version):
 def verify_public(r):
     if repository()=='jitpack':
         # Requesting the artifact starts JitPack's build; API lookup alone does not.
-        fetch(jitpack_release.artifact_base(r)+'.pom')
+        # A failed build has no POM. Still inspect provider status so a terminal
+        # failure is reported instead of spending the whole propagation timeout.
+        fetch(jitpack_release.artifact_base(r)+'.pom',missing=True)
         return jitpack_release.verify(r,fetch)
     base=f'{artifact_base(r["group"],r["artifact"])}/{r["version"]}/{r["artifact"]}-{r["version"]}'
     for suffix in common.SUFFIXES:
