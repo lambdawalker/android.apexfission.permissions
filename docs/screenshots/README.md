@@ -1,6 +1,6 @@
 # README screenshots
 
-The original six PNGs in this directory were direct copies from the `permission-screen-images` artifact of the [passing screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/36343189239) at commit `d7f8c9e`. `segmented-reading-progress.png` comes from the [segmented progress workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/36380029091). The current set was reviewed and refreshed from the [PR #21 screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/37775282210) at commit `5f1780b`; only `settings-recovery.png` changed pixels, adding the existing cautious recovery message. The manifest retains the capture provenance. No images were manually composed or edited.
+The seven accepted PNGs were rendered by the [screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/40774456236) at commit `a3638a937244d05b13cdb0810360ac8037530544`, downloaded from its `permission-screen-images` artifact (`12854851431`), visually reviewed, and accepted with `screenshots:update`. The capture input hash matches the current library, fixture, and toolchain inputs. The manifest records the original capture environment and workflow provenance. No images were manually composed or edited.
 
 | File | `PermissionBundleScreenshotTest` preview |
 | --- | --- |
@@ -12,7 +12,7 @@ The original six PNGs in this directory were direct copies from the `permission-
 | `overflowing-icons.png` | `overflowOverview` |
 | `segmented-reading-progress.png` | `autoplayReadingProgress` |
 
-The accepted gallery predates the layout change in `77233fd`. That commit accidentally replaced `single-permission-overview.png` with the `singleMissingPermission` image without updating the manifest. The overview asset has been restored byte-for-byte from the accepted baseline (SHA-256 `f67072895d8ed771286c94253f6a490526f99043b7832a7412e7a4c8475a2119`), preserving its existing provenance. This restoration is not a new render. Refresh all mapped captures through the workflow below to reflect current spacing, and review a separately mapped no-overview capture before adding it to the gallery. Do not relabel the overview scenario as the no-overview scenario.
+These captures include the layout spacing change from `77233fd`. `single-permission-overview.png` correctly maps to `singlePermissionOverview` (two pages, including the overview). A no-overview single permission is a separate scenario; do not replace or relabel the overview image to represent it.
 
 Use the automated commands below to refresh images after UI changes. Static previews do not capture Android system prompts.
 
