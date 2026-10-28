@@ -10,7 +10,7 @@ Central and JitPack share one semantic version and original source identity. An 
 
 Canonical tags are `permission/vX.Y.Z`. Older `vX.Y.Z` and destination-scoped tags remain immutable provenance inputs; conflicting sources for one version block publication. Pending identities also participate in allocation across destinations. Never move a tag to change a build.
 
-The pre-existing installation reference confirms Central **0.2.1**, but there are no source tags or source-proven release records for it. `publishing/legacy-installation.json` preserves those installation facts with `source: null`; it is deliberately outside archive and journal discovery. No historical source, hash, versioned guide, or JitPack availability is invented. The first source-proven release is at least **0.2.2**, including when JitPack is selected first. Live Central metadata ahead of the allocated identity blocks publication for reconciliation. Legacy `release-pending/X.Y.Z` attempts must be reconciled using their original workflow and Portal evidence before migration; they block new releases at both destinations.
+The pre-existing installation reference confirms Central **0.2.1**, but there are no source tags or source-proven release records for it. `publishing/legacy-installation.json` preserves those installation facts with `source: null`; it is deliberately outside archive and journal discovery. No historical source, hash, versioned guide, or JitPack availability is invented. The archive now records the source-proven JitPack **0.2.3** release in [its confirmation record](releases/history/permission/0.2.3.json); the failed 0.2.2 attempt is not a confirmed publication. Live Central metadata ahead of the allocated identity blocks publication for reconciliation. Legacy `release-pending/X.Y.Z` attempts must be reconciled using their original workflow and Portal evidence before migration; they block new releases at both destinations.
 
 ## Owner setup
 
@@ -26,7 +26,7 @@ Create the empty **jitpack** environment for public builds; optional protection 
 
 Create **delayed-docs** with a **15-minute wait timer**, no secrets, and no required reviewers if automatic continuation is desired. Merely referencing this environment in YAML does not configure its timer. GitHub plan and repository visibility determine timer availability; verify the repository's current support in Settings. Permit `main` under deployment restrictions. The wait job holds no release lock or active runner during the environment gate.
 
-Allow the Actions bot the necessary contents/tag writes and normal protected-branch publication process. No bypass token is introduced. Settings, timers, credentials, Central access, and the first live JitPack build have **not** been inspected or configured by these local changes.
+Allow the Actions bot the necessary contents/tag writes and normal protected-branch publication process. No bypass token is introduced. The [0.2.3 confirmation record](releases/history/permission/0.2.3.json) records a successful public JitPack publication. It does not verify current environment settings, timers, credentials, or Central access; check those separately before publishing.
 
 ## Ordinary release
 
@@ -40,7 +40,7 @@ Central reserves the canonical source tag plus an annotated `release-pending/per
 
 JitPack reserves `release-pending/jitpack/permission/X.Y.Z` and the same canonical tag, then requests the public artifact to initiate a provider build. `jitpack.yml` calls `scripts/jitpack_build.py`, which accepts only a canonical stable tag resolving to HEAD and checks the provider commit. It installs only `:permission:publishToMavenLocal`, unsigned. Gradle rejects app/sibling and remote-upload task selection. The Java 25 daemon and Java 17 library bytecode policy are preserved. JitPack bootstraps with Java 17, then explicitly installs and selects Temurin `25.0.2-tem` through SDKMAN before running Gradle. The `jdk` list is not a toolchain installation matrix; listing both versions did not install Java 25. Keep the SDKMAN selection aligned with `gradle/gradle-daemon-jvm.properties`. This avoids relying on its remote Foojay download URL in the JitPack build image.
 
-JitPack consumers use `com.github.lambdawalker:android.apexfission.permissions:permission~vX.Y.Z`, not Central's artifact or raw semantic version. This is the selected single-publication layout and must be confirmed in the first live build. No JitPack version is advertised before confirmation.
+JitPack consumers use `com.github.lambdawalker:android.apexfission.permissions:permission~vX.Y.Z`, not Central's artifact or raw semantic version. This single-publication layout is confirmed for 0.2.3 in the [publication record](releases/history/permission/0.2.3.json). Continue to verify each release before advertising it; [IMPORT.md](../IMPORT.md) selects the latest confirmed installation.
 
 ## Confirmation and documentation
 
@@ -73,7 +73,7 @@ For JitPack, reading an uncached artifact may request the same tagged provider b
 
 The first JitPack attempt for `permission/v0.2.2` at `7dd797f342365e90dc5adac5e52d73352901fc62` failed before Gradle could build or publish: JitPack selected Java 17 and the Java 25 Foojay download returned HTTP 400. The publication workflow later timed out on the missing POM. The corrected verifier checks provider status even when that initial POM is absent and reports a failed build with its log URL.
 
-The SDKMAN fix changes release inputs. Rerunning the old Actions run or finalizing `0.2.2` cannot apply it because those operations use the immutable old source. After merging the fix:
+The SDKMAN fix changed release inputs and the subsequent **0.2.3** publication is now confirmed in [the archive](releases/history/permission/0.2.3.json). Rerunning the old Actions run or finalizing `0.2.2` cannot apply the fix because those operations use the immutable old source. The recovery procedure below documents that transition; it is not a pending instruction to publish 0.2.3 again:
 
 1. Retain the failed Actions run and JitPack build log. Confirm JitPack still reports failure and no `0.2.2` artifacts were published; a pending or unknown outcome must stay reserved.
 2. A maintainer may then remove only `release-pending/jitpack/permission/0.2.2`, following the definitive-rejection policy above. Preserve `permission/v0.2.2` and its source identity. This change does not automatically remove any release references.
