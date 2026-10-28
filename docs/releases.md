@@ -28,6 +28,14 @@ Create **delayed-docs** with a **15-minute wait timer**, no secrets, and no requ
 
 Allow the Actions bot the necessary contents/tag writes and normal protected-branch publication process. No bypass token is introduced. The [0.2.3 confirmation record](releases/history/permission/0.2.3.json) records a successful public JitPack publication. It does not verify current environment settings, timers, credentials, or Central access; check those separately before publishing.
 
+## GitHub Actions runtimes
+
+Workflows use action releases whose JavaScript manifests declare Node.js 24, including the nested upload action in the Pages artifact helper. `actions/deploy-pages@v5` and `reactivecircus/android-emulator-runner@v2` already use Node.js 24. The separate `setup-node` input `node-version: '24'` selects Node for site commands; it does not change the runtime of checkout, Python, Java, or other actions. GitHub-hosted Ubuntu runners provide the required action runtime.
+
+Gradle setup uses `cache-provider: basic` to retain GitHub Actions-backed caching with v6. Publication jobs still disable Gradle caching and explicitly disable setup-node's automatic package-manager cache. Java, Python, Android SDK, and Gradle toolchain versions are independent of this action-runtime migration.
+
+Start a new workflow run from updated `main` after merging workflow changes. Re-running an old run retains its original workflow revision and can retain the Node.js 20 warning. A fresh publication run still follows the normal release identity and confirmation rules below; do not publish solely to test this migration. Use **Verify release tooling (no publication)** for validation.
+
 ## Ordinary release
 
 1. Run **Publish permission library** on `main`.
