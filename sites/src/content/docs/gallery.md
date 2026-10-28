@@ -29,4 +29,6 @@ The committed PNGs are direct outputs of `PermissionBundleScreenshotTest` in `:p
 | `overflowing-icons.png` | `overflowOverview` |
 | `segmented-reading-progress.png` | `autoplayReadingProgress` |
 
-Refresh them with `./gradlew :permission:updateDebugScreenshotTest` or the [Render permission screens workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/render-permission-screens.yml). Copy the matching PNGs from `permission/src/screenshotTestDebug/reference/` or the workflow artifact to `docs/screenshots/`, review the gallery, and commit them with UI changes. These previews do not show Android's system permission dialogs; use the [device tests](../development/#device-tests) for grant and denial flows.
+The [capture manifest](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/docs/screenshots/manifest.json) records the scenario mapping, dimensions, hashes, and provenance. Historical images are labelled with their original capture evidence; they are not claimed to be fresh renders.
+
+From `sites/`, run `npm run screenshots:render` followed by `npm run screenshots:check`. Inspect candidate images before intentionally accepting them with `npm run screenshots:update`. The check compares decoded pixels and never updates accepted images. See [build and validation](../development/) for commands and CI behavior. These previews do not show Android system dialogs; use [device tests](../development/#device-tests) for grant and denial flows.

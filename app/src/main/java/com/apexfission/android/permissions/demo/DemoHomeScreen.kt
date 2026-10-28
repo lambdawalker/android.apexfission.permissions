@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,7 @@ fun DemoHomeScreen(
     onSingle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -41,6 +44,10 @@ fun DemoHomeScreen(
             "Explore the Compose screen, Android permission recipes, and code-only callbacks.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        DemoCard("Complete quickstart", "Run the exact first-request example from the documentation.",
+            "Open quickstart", { context.startActivity(Intent(context, CameraQuickstartActivity::class.java)) }) {
+            Icon(Icons.Default.PhotoCamera, contentDescription = null)
+        }
         DemoCard("Permission carousel", "Camera access with optional microphone narration.",
             "Open carousel", onCarousel) {
             Icon(Icons.Default.PhotoCamera, contentDescription = null)

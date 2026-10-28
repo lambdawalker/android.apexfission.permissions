@@ -1,0 +1,10 @@
+{
+  "module": "permission",
+  "version": "0.2.1",
+  "group": "com.apexfission.androi",
+  "artifact": "permission",
+  "repository": "maven-central",
+  "repository_url": "https://repo.maven.apache.org/maven2",
+  "source": null,
+  "evidence": "Pre-existing IMPORT.md and release runbook record Central confirmation; no source tag exists."
+}

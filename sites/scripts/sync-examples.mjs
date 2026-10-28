@@ -1,0 +1,11 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+const root = new URL('../../', import.meta.url);
+const source = await readFile(new URL('app/src/main/java/com/apexfission/android/permissions/demo/CameraQuickstartActivity.kt',root),'utf8');
+const path = new URL('docs/agents/quickstart.md',root);
+const text = await readFile(path,'utf8');
+const pattern = /<!-- quickstart:start -->[\s\S]*?<!-- quickstart:end -->/;
+if (!pattern.test(text)) throw new Error('Missing quickstart extraction markers');
+const expected = text.replace(pattern, `<!-- quickstart:start -->\n\`\`\`kotlin\n${source.trimEnd()}\n\`\`\`\n<!-- quickstart:end -->`);
+if (process.argv.includes('--write')) await writeFile(path,expected);
+else if (text !== expected) throw new Error(`Quickstart drift: run node ${fileURLToPath(import.meta.url)} --write`);

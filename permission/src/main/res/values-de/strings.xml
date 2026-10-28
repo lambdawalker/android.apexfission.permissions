@@ -14,4 +14,8 @@
     <string name="permission_recovery_uncertain">Android zeigt möglicherweise keine weitere Berechtigungsanfrage an. Falls sie nicht erscheint, kannst du den Zugriff in den App-Einstellungen aktivieren.</string>
     <string name="permission_done">Weiter</string>
     <string name="permission_not_now">Jetzt nicht</string>
+    <string name="permission_optional">Optionaler Zugriff</string>
+    <string name="permission_auto_advance_progress">Lesefortschritt der Seite</string>
+    <string name="permission_auto_advance_pause">Automatischen Seitenwechsel pausieren</string>
+    <string name="permission_auto_advance_resume">Automatischen Seitenwechsel fortsetzen</string>
 </resources>

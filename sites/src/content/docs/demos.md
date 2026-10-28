@@ -3,7 +3,7 @@ title: Runnable demos
 description: Explore the Compose carousel, platform recipes, and two code-only request styles.
 ---
 
-The `:app` module is a single-Activity sample with four destinations. Run it from Android Studio or `./gradlew :app:installDebug`, then choose a card on the home screen. It declares camera, microphone, coarse and fine location, background location, and notifications in its manifest. Each Android permission prompt belongs to the device and appears only after a user action.
+The `:app` module is a sample with four feature destinations and a separate complete quickstart Activity. Run it from Android Studio or `./gradlew :app:installDebug`, then choose a card on the home screen. It declares camera, microphone, coarse and fine location, background location, and notifications in its manifest. Each Android permission prompt belongs to the device and appears only after a user action.
 
 | Screen | What to try | Library concepts | Full code |
 | --- | --- | --- | --- |
@@ -31,3 +31,7 @@ The callbacks screen offers two actions. One checks camera access with `runIfPer
 This static screen puts four `DefaultPermissionPage` cards in a scrollable column. It passes a Material `ImageVector`, a host-created `Bitmap`, an Android drawable resource ID, and a `GradientDrawable` instance through the same `heroImage` argument. The first keeps its Material tint; the others fit inside the hero frame with their original colors. The page's `heroImage` does not replace `PermissionDescription.icon`, which supplies the small icon in the carousel strip. See [Compose page options](../compose/#choose-a-page-layout) and [all overloads](../reference/#ui-pages-and-carousel).
 
 The carousel, recipes, and callbacks demos use actual Android permission requests; the artwork gallery is a static comparison. For screenshots of the library-owned Compose explanation states, see the [gallery](../gallery/). The [device tests](../development/#device-tests) exercise real denial and recovery behavior on emulators.
+
+## Complete first request
+
+Install with `./gradlew :app:installDebug`, launch the app, and choose **Open quickstart**. This opens `CameraQuickstartActivity`, whose entire source is extracted into [First request](../getting-started/). Try missing camera access, grant, denial, and existing access; the Activity displays the current grant and deliberately does not start camera hardware. [Full Activity source](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/app/src/main/java/com/apexfission/android/permissions/demo/CameraQuickstartActivity.kt).

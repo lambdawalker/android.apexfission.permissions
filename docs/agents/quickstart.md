@@ -10,27 +10,37 @@ Declare this outside `<application>` in the host manifest:
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-Add this Activity to the host manifest, or use the body in your existing Activity:
+Add this Activity to the host manifest, adapting its package to your application:
 
+```xml
+<activity android:name="com.apexfission.android.permissions.demo.CameraQuickstartActivity" android:exported="false" />
+```
+
+The following complete source is extracted from the demo app. The host applies safe drawing insets exactly once:
+
+<!-- quickstart:start -->
 ```kotlin
-package example.permissions
+package com.apexfission.android.permissions.demo
 
 import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.ui.Modifier
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import com.apexfission.android.permission.requester.HandlePermissions
 import com.apexfission.android.permission.ui.DefaultPermissionPage
 import com.apexfission.android.permission.ui.PermissionDescription
 
-class CameraActivity : ComponentActivity() {
+class CameraQuickstartActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
                 HandlePermissions(
+                    modifier = Modifier.safeDrawingPadding(),
                     permissions = listOf(
                         PermissionDescription(Manifest.permission.CAMERA) {
                             DefaultPermissionPage(
@@ -50,7 +60,8 @@ class CameraActivity : ComponentActivity() {
     }
 }
 ```
+<!-- quickstart:end -->
 
 Expected: a missing camera grant shows an explanation; the button requests access. Granting camera composes the text. Existing access shows the text immediately. Denial keeps the explanation/recovery flow. The example deliberately does not start camera hardware from a composable body: bind resources with your camera library's lifecycle mechanism.
 
-This compact example is maintained prose, not a separately compiled fixture. The [carousel demo](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) exercises the same APIs and is compiled by the Android CI workflows. Follow [recipes](recipes.md) for optional access, custom pages and staged permissions.
+This example is extracted from [CameraQuickstartActivity.kt](../../app/src/main/java/com/apexfission/android/permissions/demo/CameraQuickstartActivity.kt), compiled with `:app:assembleDebug`. Run `./gradlew :app:installDebug`, open the app, and choose **Open quickstart**. The [carousel demo](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) adds optional access and customization. Follow [recipes](recipes.md) for optional access, custom pages and staged permissions.
