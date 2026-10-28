@@ -28,6 +28,10 @@ For multiple permissions, optional access, Settings recovery, and customization,
 
 Each description accepts a complete composable page. Use `DefaultPermissionPage` for a ready-made layout or provide your own UI. See [page selection and complete examples](https://lambdawalker.github.io/android.apexfission.permissions/compose/#choose-a-page-layout) and the [carousel demo source](app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt).
 
+### Single permission without navigation icons
+
+On current `main`, one visible permission with `Automatic` or `Hide` omits the icon strip. `Show` adds an overview and keeps the strip. Try **Open single demo** in the sample app; see [its source](app/src/main/java/com/apexfission/android/permissions/demo/SinglePermissionDemo.kt). This behavior was added after the source published as 0.2.4; see [migration](docs/agents/migration.md).
+
 ### Optional timed carousel
 
 Autoplay is opt-in, with per-page reading delays and pause/resume behavior. See [timed carousel](https://lambdawalker.github.io/android.apexfission.permissions/compose/#timed-carousel).

@@ -2,6 +2,8 @@
 
 Lee [IMPORT.md](../../IMPORT.md) para conocer la versión publicada actual. No se ha establecido una correspondencia histórica entre versiones y commits para los cambios siguientes; no deduzcas una primera versión Maven precisa a partir del orden de los commits. Los commits siguientes documentan cambios del código fuente, no afirmaciones sobre lanzamientos.
 
+El cambio de la tira de iconos para una sola página en `77233fd` y `SinglePermissionDemo` son posteriores al código fijado para la versión confirmada 0.2.4 (`154aa61`). Esa versión todavía muestra la tira con una sola página. No cambió ninguna firma de API: en el código nuevo, `Automatic` o `Hide` omite la tira con un permiso visible, mientras que `Show` la conserva al añadir la vista general. Usa el selector de versión para consultar la guía correspondiente al artefacto.
+
 | Patrón anterior | Sustitución actual | Cambio del código fuente |
 | --- | --- | --- |
 | `CameraPermissionState` y API de compatibilidad exclusiva para cámara | `HandlePermissions` con una descripción de cámara | `254432f` eliminó la compatibilidad de cámara |

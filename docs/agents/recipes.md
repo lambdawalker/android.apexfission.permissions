@@ -4,6 +4,7 @@ Use the complete executable demos as the source of integration code; the linked 
 
 | Situation | API and why | Complete example | Expected behavior / caveat |
 | --- | --- | --- | --- |
+| Single camera request without navigation icons | `HandlePermissions` with `overviewMode = PermissionOverviewMode.Hide` | [Single-permission demo](../../app/src/main/java/com/apexfission/android/permissions/demo/SinglePermissionDemo.kt) | One visible page hides the icon strip on current source; already-granted camera shows content immediately. Added after 0.2.4. |
 | Required camera, optional narration | `HandlePermissions` plus `required = false` | [Carousel demo](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) | Required access unlocks content; optional denial disables narration |
 | Custom explanation, overview and autoplay | Page lambdas, `PermissionOverview`, reading delay | [Carousel demo](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) | Library retains actions; autoplay pauses on interaction |
 | Your own UI and permission launcher | `runIfPermissionsGranted` | [Code-only demo](../../app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt) | Recheck after result, report denial without relaunching |

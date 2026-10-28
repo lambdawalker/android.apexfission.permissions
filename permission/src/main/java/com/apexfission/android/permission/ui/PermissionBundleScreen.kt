@@ -301,7 +301,8 @@ internal fun iconScrollOffsetDp(count: Int, selectedIndex: Int): Int = if (selec
 /**
  * One action requests all runtime permissions. A generic or host-supplied overview may precede the
  * permission pages. The carousel owns each full page. A fixed, horizontally
- * scrolling icon selector sits above the action button and centers the selected icon. On the
+ * scrolling icon selector is shown only when there is more than one page, counting the overview.
+ * It sits above the action button and centers the selected icon. On the
  * overview, the whole icon set is centered with overflow on both sides. Android can show
  * multiple dialogs and return partial grants.
  *

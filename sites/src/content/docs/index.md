@@ -31,7 +31,7 @@ hero:
   <div>
     <p class="site-eyebrow">A single action, clear expectations</p>
     <h3>Explain first. Ask when they choose.</h3>
-    <p>The overview and each permission page can use host-supplied content. The icon strip stays in place while the carousel changes; the request starts only after a tap. Android may still show several system prompts and may grant only part of a batch.</p>
+    <p>The overview and each permission page can use host-supplied content. For multiple visible pages, the icon strip stays in place while the carousel changes; a single page omits it; the request starts only after a tap. Android may still show several system prompts and may grant only part of a batch.</p>
     <p><a href="./getting-started/">Add it to your app →</a></p>
   </div>
   <img src="/android.apexfission.permissions/screenshots/bundle-overview.png" alt="Compose permission overview with camera and microphone access" width="300" height="620" loading="lazy" />

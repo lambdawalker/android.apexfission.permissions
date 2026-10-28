@@ -2,6 +2,8 @@
 
 Read [IMPORT.md](../../IMPORT.md) for the current published version. Historical release-to-commit mapping for the changes below has not been established; do not infer a precise first Maven version from commit order. The commits below are evidence of source changes, not release claims.
 
+The single-page icon-strip change in `77233fd` and `SinglePermissionDemo` are newer than the source pinned for confirmed release 0.2.4 (`154aa61`). That release still renders the strip for a single page. No API signature changed: on newer source, `Automatic` or `Hide` omits the strip with one visible permission, while `Show` retains it by adding the overview. Use the version selector for artifact-matched guidance.
+
 | Old pattern | Current replacement | Source change |
 | --- | --- | --- |
 | `CameraPermissionState` and camera-only compatibility API | `HandlePermissions` with one camera description | `254432f` removed camera compatibility |

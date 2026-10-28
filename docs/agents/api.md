@@ -124,6 +124,8 @@ enum class ReadingPace(val wordsPerMinute: Int) {
 fun estimateReadingDelayMillis(text: String, pace: ReadingPace = ReadingPace.Slow): Long
 ```
 
+The icon strip appears only when the visible page count, including any overview, exceeds one. A single permission with `Automatic` or `Hide` has no strip; `Show` retains it by adding a second page.
+
 `PermissionBundleScreen` only renders statuses and invokes host actions; use it when the host owns the launcher. Match status order to permission order. The reading helper counts whitespace-delimited words, adds two seconds, and clamps to 4–60 seconds. It cannot inspect arbitrary Compose content. Pass the same **visible copy** to the helper and to the page:
 
 ```kotlin

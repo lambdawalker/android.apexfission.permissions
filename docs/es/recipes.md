@@ -4,6 +4,7 @@ Usa las demostraciones ejecutables completas como fuente del código de integrac
 
 | Situación | API y motivo | Ejemplo completo | Comportamiento esperado o precaución |
 | --- | --- | --- | --- |
+| Solicitud de cámara sin iconos de navegación | `HandlePermissions` con `overviewMode = PermissionOverviewMode.Hide` | [Demostración de un solo permiso](../../app/src/main/java/com/apexfission/android/permissions/demo/SinglePermissionDemo.kt) | Una página visible oculta la tira en el código actual; si la cámara ya tiene permiso, muestra el contenido de inmediato. Añadido después de 0.2.4. |
 | Cámara obligatoria, narración opcional | `HandlePermissions` con `required = false` | [Demostración del carrusel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) | El acceso obligatorio desbloquea el contenido; la denegación opcional desactiva la narración |
 | Explicación personalizada, vista general y avance automático | Lambdas de página, `PermissionOverview`, demora de lectura | [Demostración del carrusel](../../app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) | La biblioteca conserva las acciones; el avance automático se pausa con la interacción |
 | Interfaz y lanzador de permisos propios | `runIfPermissionsGranted` | [Demostración solo con código](../../app/src/main/java/com/apexfission/android/permissions/demo/CodeOnlyDemo.kt) | Volver a comprobar tras el resultado, informar de la denegación sin volver a iniciar |

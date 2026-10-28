@@ -60,7 +60,7 @@ The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImag
 | Use | Page content |
 | --- | --- |
 | `DefaultPermissionPage` | A centered vector, bitmap, or drawable hero, heading, description, and optional `PermissionFeature` rows. Supply it inside `PermissionDescription { ... }` when this layout fits. |
-| Host composable | Your own full page layout. Use it when the feature calls for a distinct visual hierarchy; the library still draws the icon strip, segmented timer, request button, and recovery UI. |
+| Host composable | Your own full page layout. Use it when the feature calls for a distinct visual hierarchy; the library owns the icon strip (when there are multiple visible pages), segmented timer, request button, and recovery UI. |
 
 The demo's `NarrationPermissionPage` is a **host composable, not part of the library**. Its recording console, waveform, and left-aligned text are intentionally different from the centered default page. Pass it to the same `PermissionDescription` API:
 
@@ -121,6 +121,10 @@ Omitting `overview` supplies a generic lock-icon `DefaultPermissionPage` titled 
 | `Hide` | Start on the first permission even with several. | [Multiple permissions without overview](../screenshots/multiple-without-overview.png) |
 
 To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. `Show` also works with the default overview. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`. Changing the mode does not change which permissions the button requests.
+
+The icon strip is shown only when there is more than one visible page, counting the overview. One visible permission with `Automatic` or `Hide` has one page and no icon strip; `Show` adds an overview, making two pages and retaining the strip. Multiple visible permissions retain the strip even with `Hide`. With `MissingOnly`, granting all but one visible permission can therefore hide the strip. This changes navigation only: the page hero, request button, recovery actions, and required-permission gate still work.
+
+This behavior was added in source commit `77233fd`, after the source used for release 0.2.4. See [migration](migration.md) for the release distinction and the [single-permission demo](../../app/src/main/java/com/apexfission/android/permissions/demo/SinglePermissionDemo.kt) for a runnable example.
 
 ## Timed carousel
 

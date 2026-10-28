@@ -124,6 +124,8 @@ enum class ReadingPace(val wordsPerMinute: Int) {
 fun estimateReadingDelayMillis(text: String, pace: ReadingPace = ReadingPace.Slow): Long
 ```
 
+La tira de iconos aparece solo cuando hay más de una página visible, incluida la vista general si existe. Un permiso con `Automatic` o `Hide` no muestra la tira; `Show` la conserva al añadir una segunda página.
+
 `PermissionBundleScreen` solo renderiza estados e invoca acciones de la aplicación; úsala cuando la aplicación gestione el lanzador. El orden de los estados debe coincidir con el de los permisos. La función auxiliar de lectura cuenta palabras separadas por espacios en blanco, añade dos segundos y limita el resultado a 4–60 segundos. No puede inspeccionar contenido Compose arbitrario. Pasa el mismo **texto visible** a la función y a la página:
 
 ```kotlin
