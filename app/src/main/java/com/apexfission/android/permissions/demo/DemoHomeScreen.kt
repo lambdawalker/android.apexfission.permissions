@@ -29,6 +29,7 @@ fun DemoHomeScreen(
     onRecipes: () -> Unit,
     onCallbacks: () -> Unit,
     onArtwork: () -> Unit,
+    onSingle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -42,6 +43,10 @@ fun DemoHomeScreen(
         )
         DemoCard("Permission carousel", "Camera access with optional microphone narration.",
             "Open carousel", onCarousel) {
+            Icon(Icons.Default.PhotoCamera, contentDescription = null)
+        }
+        DemoCard("Single permission (no overview)", "Single permission request where the icon strip is hidden.",
+            "Open single demo", onSingle) {
             Icon(Icons.Default.PhotoCamera, contentDescription = null)
         }
         DemoCard("Platform recipes", "Location, background access, notifications, and photo selection.",
@@ -77,5 +82,5 @@ private fun DemoCard(
 @Preview(showBackground = true)
 @Composable
 private fun DemoHomePreview() {
-    AndroidpermissionsTheme { DemoHomeScreen({}, {}, {}, {}) }
+    AndroidpermissionsTheme { DemoHomeScreen({}, {}, {}, {}, {}) }
 }

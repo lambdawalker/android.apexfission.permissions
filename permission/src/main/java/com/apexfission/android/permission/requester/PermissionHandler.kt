@@ -1,9 +1,16 @@
 package com.apexfission.android.permission.requester
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,11 +20,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.edit
 import com.apexfission.android.permission.recipe.PermissionStatus
 import com.apexfission.android.permission.recipe.resolvePermissionStatus
+import com.apexfission.android.permission.ui.DefaultPermissionPage
 import com.apexfission.android.permission.ui.PermissionBundleScreen
 import com.apexfission.android.permission.ui.PermissionDescription
 import com.apexfission.android.permission.ui.PermissionDisplayMode
@@ -146,5 +156,76 @@ fun HandlePermissions(
                 modifier = modifier,
             )
         }
+    }
+}
+
+@Preview(name = "HandlePermissions - Granted Content", showBackground = true, widthDp = 393, heightDp = 852)
+@Composable
+private fun HandlePermissionsPreview() {
+    MaterialTheme {
+        HandlePermissions(
+            permissions = listOf(
+                PermissionDescription(
+                    permission = Manifest.permission.CAMERA,
+                    label = "Camera",
+                    icon = Icons.Default.PhotoCamera,
+                ) {
+                    DefaultPermissionPage(
+                        label = "Camera",
+                        heroImage = Icons.Default.PhotoCamera,
+                        title = "Scan a document",
+                        body = "We use the camera when you choose to scan a document."
+                    )
+                }
+            ),
+            onBack = {},
+            onNotNow = {},
+        ) { _ ->
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Protected Content (Camera Granted)",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+    }
+}
+
+@Preview(name = "HandlePermissions - Request State", showBackground = true, widthDp = 393, heightDp = 852)
+@Composable
+private fun HandlePermissionsRequestPreview() {
+    MaterialTheme {
+        PermissionBundleScreen(
+            permissions = listOf(
+                PermissionDescription(
+                    permission = Manifest.permission.CAMERA,
+                    label = "Camera",
+                    icon = Icons.Default.PhotoCamera,
+                ) {
+                    DefaultPermissionPage(
+                        label = "Camera",
+                        heroImage = Icons.Default.PhotoCamera,
+                        title = "Scan a document",
+                        body = "We use the camera when you choose to scan a document."
+                    )
+                }
+            ),
+            statuses = listOf(PermissionStatus.NotRequested),
+            onBack = {},
+            onNotNow = {},
+            onRequest = {},
+            onOpenSettings = {},
+            overview = PermissionOverview {
+                DefaultPermissionPage(
+                    label = "Permissions",
+                    heroImage = Icons.Default.PhotoCamera,
+                    title = "Enable camera access",
+                    body = "Review the access needed to scan documents."
+                )
+            }
+        )
     }
 }

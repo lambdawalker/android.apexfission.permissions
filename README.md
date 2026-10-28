@@ -148,7 +148,7 @@ fun NarrationPermissionPage(title: String, body: String) {
 
 Add the standard Compose layout, shape, Material 3, and `TextAlign` imports. The library still draws the persistent icon strip, progress indicator, recovery note, and batch action around this page. Keep the text used for `estimateReadingDelayMillis` in sync with the words you actually render. The custom page is Compose UI only; it does not request permission itself.
 
-The icon strip stays above the primary button while pages swipe. It scrolls to center the selected permission; on the overview, the whole icon set is centered, with extra icons clipped equally at either side of the screen. The button requests the permissions as one batch regardless of the carousel page.
+The icon strip stays above the primary button while pages swipe. It scrolls to center the selected permission; on the overview, the whole icon set is centered, with extra icons clipped equally at either side of the screen. The icon strip is automatically omitted when `pageCount <= 1` (such as when there is a single permission and the overview page is hidden). The button requests the permissions as one batch regardless of the carousel page.
 
 ### Optional timed carousel
 

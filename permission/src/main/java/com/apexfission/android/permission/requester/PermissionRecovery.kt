@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.apexfission.android.permission.R
 
 /**
@@ -19,4 +20,12 @@ fun DefaultPermissionRecovery(permissions: List<String>) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DefaultPermissionRecoveryPreview() {
+    MaterialTheme {
+        DefaultPermissionRecovery(listOf("android.permission.CAMERA"))
+    }
 }

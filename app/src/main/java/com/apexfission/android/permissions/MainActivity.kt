@@ -18,6 +18,7 @@ import com.apexfission.android.permissions.demo.CodeOnlyDemo
 import com.apexfission.android.permissions.demo.HeroArtworkDemo
 import com.apexfission.android.permissions.demo.PermissionCarouselDemo
 import com.apexfission.android.permissions.demo.PlatformRecipesDemo
+import com.apexfission.android.permissions.demo.SinglePermissionDemo
 import com.apexfission.android.permission.requester.PermissionRequester
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
 
@@ -40,11 +41,16 @@ class MainActivity : ComponentActivity() {
                             onRecipes = { destination = DemoDestination.Recipes },
                             onCallbacks = { destination = DemoDestination.Callbacks },
                             onArtwork = { destination = DemoDestination.Artwork },
+                            onSingle = { destination = DemoDestination.Single },
                             modifier = modifier,
                         )
                         DemoDestination.Carousel -> PermissionCarouselDemo(
                             // The library screen handles system bars itself. Scaffold's innerPadding
                             // would add the status-bar inset a second time.
+                            onBack = { destination = DemoDestination.Home },
+                            modifier = modifier,
+                        )
+                        DemoDestination.Single -> SinglePermissionDemo(
                             onBack = { destination = DemoDestination.Home },
                             modifier = modifier,
                         )
@@ -67,4 +73,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class DemoDestination { Home, Carousel, Recipes, Callbacks, Artwork }
+private enum class DemoDestination { Home, Carousel, Recipes, Callbacks, Artwork, Single }

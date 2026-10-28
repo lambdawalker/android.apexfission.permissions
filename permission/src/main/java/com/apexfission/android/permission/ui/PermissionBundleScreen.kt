@@ -417,7 +417,7 @@ fun PermissionBundleScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .padding(top = 12.dp, bottom = 16.dp),
+                    .padding(bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -505,11 +505,13 @@ fun PermissionBundleScreen(
                     recoveryContent(recoveryPermissions)
                 }
             }
-            PermissionIconStrip(permissions, statuses, if (hasOverview) current - 1 else current) { selected ->
-                stopAutoAdvance()
-                scope.launch { pager.animateScrollToPage(selected + if (hasOverview) 1 else 0) }
+            if (pageCount > 1) {
+                PermissionIconStrip(permissions, statuses, if (hasOverview) current - 1 else current) { selected ->
+                    stopAutoAdvance()
+                    scope.launch { pager.animateScrollToPage(selected + if (hasOverview) 1 else 0) }
+                }
+                Spacer(Modifier.height(12.dp))
             }
-            Spacer(Modifier.height(12.dp))
             Button(
                 onClick = {
                     stopAutoAdvance()
