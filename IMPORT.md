@@ -5,7 +5,7 @@ This is the authoritative latest confirmed installation reference. Choose one de
 
 ## permission: android.apexfission.permissions
 
-Confirmed version: **0.2.3**. Source: [1ff75b82dfc656a957cee3198195d22708b0490b](https://github.com/lambdawalker/android.apexfission.permissions/commit/1ff75b82dfc656a957cee3198195d22708b0490b).
+Confirmed version: **0.2.4**. Source: [154aa614cae81fda2e69c93665576b5226432f70](https://github.com/lambdawalker/android.apexfission.permissions/commit/154aa614cae81fda2e69c93665576b5226432f70).
 
 Choose **one** destination below and **one** dependency syntax. Each destination provides this same release; do not add duplicate dependencies.
 
@@ -31,7 +31,7 @@ In the app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.lambdawalker:android.apexfission.permissions:permission~v0.2.3")
+    implementation("com.github.lambdawalker:android.apexfission.permissions:permission~v0.2.4")
 }
 ```
 
@@ -53,7 +53,7 @@ In the app's `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'com.github.lambdawalker:android.apexfission.permissions:permission~v0.2.3'
+    implementation 'com.github.lambdawalker:android.apexfission.permissions:permission~v0.2.4'
 }
 ```
 
@@ -63,7 +63,7 @@ Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
 
 ```toml
 [libraries]
-permission = { module = "com.github.lambdawalker:android.apexfission.permissions", version = "permission~v0.2.3" }
+permission = { module = "com.github.lambdawalker:android.apexfission.permissions", version = "permission~v0.2.4" }
 ```
 
 Then use this instead of the direct dependency in the app's `build.gradle.kts`:
@@ -97,7 +97,7 @@ Add these repositories and dependency to `pom.xml`:
   <dependency>
     <groupId>com.github.lambdawalker</groupId>
     <artifactId>android.apexfission.permissions</artifactId>
-    <version>permission~v0.2.3</version>
+    <version>permission~v0.2.4</version>
     <type>aar</type>
   </dependency>
 </dependencies>
