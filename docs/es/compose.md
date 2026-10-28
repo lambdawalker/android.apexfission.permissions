@@ -60,7 +60,7 @@ La imagen principal de `DefaultPermissionPage` es independiente de la tira de ic
 | Uso | Contenido de la página |
 | --- | --- |
 | `DefaultPermissionPage` | Imagen principal centrada de tipo vector, bitmap o drawable, encabezado, descripción y filas opcionales `PermissionFeature`. Proporciónala dentro de `PermissionDescription { ... }` cuando esta disposición sea adecuada. |
-| Composable de la aplicación | Tu propia disposición de página completa. Úsala cuando la función necesite una jerarquía visual distinta; la biblioteca sigue dibujando la tira de iconos, el temporizador segmentado, el botón de solicitud y la interfaz de recuperación. |
+| Composable de la aplicación | Tu propia disposición de página completa. Úsala cuando la función necesite una jerarquía visual distinta; la biblioteca gestiona la tira de iconos (cuando hay varias páginas visibles), el temporizador segmentado, el botón de solicitud y la interfaz de recuperación. |
 
 `NarrationPermissionPage` de la demostración es un **composable de la aplicación, no parte de la biblioteca**. Su consola de grabación, forma de onda y texto alineado a la izquierda son deliberadamente distintos de la página predeterminada centrada. Pásalo a la misma API `PermissionDescription`:
 
@@ -121,6 +121,10 @@ Omitir `overview` proporciona una `DefaultPermissionPage` genérica con icono de
 | `Hide` | Empieza en el primer permiso incluso cuando hay varios. | [Varios permisos sin vista general](../screenshots/multiple-without-overview.png) |
 
 Para mostrar una introducción personalizada antes de un único permiso, pasa `overviewMode = PermissionOverviewMode.Show` y `overview = PermissionOverview { IntroPage() }`. `Show` también funciona con la vista general predeterminada. Para omitir la introducción de un conjunto, pasa `overviewMode = PermissionOverviewMode.Hide`. Cambiar el modo no cambia qué permisos solicita el botón.
+
+La tira de iconos se muestra solo cuando hay más de una página visible, contando la vista general. Un permiso visible con `Automatic` o `Hide` tiene una página y no muestra la tira; `Show` añade una vista general, por lo que hay dos páginas y se conserva la tira. Varios permisos visibles conservan la tira incluso con `Hide`. Con `MissingOnly`, conceder todos los permisos visibles salvo uno puede ocultar la tira. Esto solo cambia la navegación: la imagen principal, el botón de solicitud, las acciones de recuperación y el control de permisos obligatorios siguen funcionando.
+
+Este comportamiento se añadió en el commit `77233fd`, después del código usado para la versión 0.2.4. Consulta [migración](migration.md) para distinguir las versiones y la [demostración de un solo permiso](../../app/src/main/java/com/apexfission/android/permissions/demo/SinglePermissionDemo.kt) para un ejemplo ejecutable.
 
 ## Carrusel temporizado
 

@@ -12,6 +12,8 @@ The original six PNGs in this directory were direct copies from the `permission-
 | `overflowing-icons.png` | `overflowOverview` |
 | `segmented-reading-progress.png` | `autoplayReadingProgress` |
 
+The accepted gallery predates the layout change in `77233fd`. That commit accidentally replaced `single-permission-overview.png` with the `singleMissingPermission` image without updating the manifest. The overview asset has been restored byte-for-byte from the accepted baseline (SHA-256 `f67072895d8ed771286c94253f6a490526f99043b7832a7412e7a4c8475a2119`), preserving its existing provenance. This restoration is not a new render. Refresh all mapped captures through the workflow below to reflect current spacing, and review a separately mapped no-overview capture before adding it to the gallery. Do not relabel the overview scenario as the no-overview scenario.
+
 Use the automated commands below to refresh images after UI changes. Static previews do not capture Android system prompts.
 
 ## Automated mapping, comparison, and intentional updates

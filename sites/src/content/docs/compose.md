@@ -63,7 +63,7 @@ The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImag
 | Use | Page content |
 | --- | --- |
 | `DefaultPermissionPage` | A centered vector, bitmap, or drawable hero, heading, description, and optional `PermissionFeature` rows. Supply it inside `PermissionDescription { ... }` when this layout fits. |
-| Host composable | Your own full page layout. Use it when the feature calls for a distinct visual hierarchy; the library still draws the icon strip, segmented timer, request button, and recovery UI. |
+| Host composable | Your own full page layout. Use it when the feature calls for a distinct visual hierarchy; the library owns the icon strip (when there are multiple visible pages), segmented timer, request button, and recovery UI. |
 
 The demo's `NarrationPermissionPage` is a **host composable, not part of the library**. Its recording console, waveform, and left-aligned text are intentionally different from the centered default page. Pass it to the same `PermissionDescription` API:
 
@@ -125,6 +125,10 @@ Omitting `overview` supplies a generic lock-icon `DefaultPermissionPage` titled 
 
 To show a custom introduction before a single permission, pass `overviewMode = PermissionOverviewMode.Show` and `overview = PermissionOverview { IntroPage() }`. `Show` also works with the default overview. To skip the introduction for a bundle, pass `overviewMode = PermissionOverviewMode.Hide`. Changing the mode does not change which permissions the button requests.
 
+The icon strip is shown only when there is more than one visible page, counting the overview. One visible permission with `Automatic` or `Hide` has one page and no icon strip; `Show` adds an overview, making two pages and retaining the strip. Multiple visible permissions retain the strip even with `Hide`. With `MissingOnly`, granting all but one visible permission can therefore hide the strip. This changes navigation only: the page hero, request button, recovery actions, and required-permission gate still work.
+
+This behavior was added in source commit `77233fd`, after the source used for release 0.2.4. See [migration](../migration/) for the release distinction and the [single-permission demo](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/app/src/main/java/com/apexfission/android/permissions/demo/SinglePermissionDemo.kt) for a runnable example.
+
 ## Timed carousel
 
 `HandlePermissions(autoAdvance = true)` loops through the visible pages, returning to the first after the last page's timer finishes. The segmented progress bar above the header has one equal-width segment per visible page (including the overview, when shown). Earlier segments are full, the current segment fills during its reading time, and future segments are empty; all fill at the end of the final page and reset on wraparound. The button beside the page count pauses or resumes. User interaction pauses the timer and fades the bar until the reader resumes it; the page keeps its remaining reading time. A single visible page stays still. The default is `false`. The host supplies `autoAdvanceDelayMillis` on each `PermissionDescription` and, if present, on `PermissionOverview` (six seconds by default). Use `estimateReadingDelayMillis("$title $body", ReadingPace.Slow)` to derive a delay from the same copy shown in a custom page; see the [demo Activity](../demos/). The library cannot count text inside an arbitrary composable. `ReadingPace.Slow`, `Normal`, and `Fast` use 120, 180, and 230 words per minute. For image-heavy pages or languages without word separators, set the delay directly. Autoplay pauses when the host is not resumed and is disabled for touch exploration.
@@ -135,7 +139,7 @@ See the [segmented progress preview](/android.apexfission.permissions/screenshot
 
 `PermissionStatus.PermanentlyDenied` is only an inference from request history and the rationale signal. The default built-in note says Android **might** skip the prompt; never present the status as certain. `HandlePermissions` accepts `recoveryContent = { inferredPermissionNames -> ... }`, `settingsActionLabel`, and `onOpenSettings = { ... }`. The content appears when at least one permission is inferred blocked, even if the batch can still request another missing permission. The callback replaces the default app-details launch and should provide a user-driven Settings route. `PermissionBundleScreen` accepts the content and label hooks; its mandatory `onOpenSettings` controls the action. See the [recovery example below](#custom-recovery-example) and [runnable demo guide](../demos/).
 
-See the [selected permission](/android.apexfission.permissions/screenshots/permission-detail.png), [settings recovery](/android.apexfission.permissions/screenshots/settings-recovery.png), and [overflowing icon strip](/android.apexfission.permissions/screenshots/overflowing-icons.png) previews for the other main UI states. All six appear together in the [screen gallery](../gallery/). They are static Compose previews, not system permission dialogs.
+See the [selected permission](/android.apexfission.permissions/screenshots/permission-detail.png), [settings recovery](/android.apexfission.permissions/screenshots/settings-recovery.png), and [overflowing icon strip](/android.apexfission.permissions/screenshots/overflowing-icons.png) previews for the other main UI states. All seven appear together in the [screen gallery](../gallery/). They are static Compose previews, not system permission dialogs.
 
 ## Other UI entry points
 
