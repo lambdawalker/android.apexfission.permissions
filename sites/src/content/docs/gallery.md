@@ -15,7 +15,7 @@ These images come from the library's Compose screenshot tests. They show the exp
   <figure><img src="/android.apexfission.permissions/screenshots/segmented-reading-progress.png" alt="Segmented reading indicator with the current page in progress" loading="lazy" /><figcaption>Reading progress</figcaption></figure>
 </div>
 
-The accepted captures predate the single-page layout change in `77233fd`; spacing may differ from current development source. The single-permission image above intentionally shows `Show` (overview plus permission), not the new no-overview demo. Current source hides the icon strip when only one page is visible. See [the runnable single-permission demo](../demos/#single-permission); refreshed captures still need to be rendered and reviewed.
+These captures were refreshed from [workflow run 40774456236](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/40774456236) at `a3638a9`, including the current layout spacing. The single-permission image above shows `Show` (overview plus permission). A single page without an overview hides the icon strip; try [the runnable single-permission demo](../demos/#single-permission).
 
 ## How these images are made
 
