@@ -229,3 +229,51 @@ private fun HandlePermissionsRequestPreview() {
         )
     }
 }
+
+@Preview(name = "HandlePermissions - Multiple Permissions", showBackground = true, widthDp = 393, heightDp = 852)
+@Composable
+private fun HandlePermissionsMultiplePreview() {
+    MaterialTheme {
+        PermissionBundleScreen(
+            permissions = listOf(
+                PermissionDescription(
+                    permission = Manifest.permission.CAMERA,
+                    label = "Camera",
+                    icon = Icons.Default.PhotoCamera,
+                ) {
+                    DefaultPermissionPage(
+                        label = "Camera",
+                        heroImage = Icons.Default.PhotoCamera,
+                        title = "Scan a document",
+                        body = "We use the camera when you choose to scan a document."
+                    )
+                },
+                PermissionDescription(
+                    permission = Manifest.permission.RECORD_AUDIO,
+                    label = "Microphone",
+                    icon = Icons.Default.PhotoCamera,
+                ) {
+                    DefaultPermissionPage(
+                        label = "Microphone",
+                        heroImage = Icons.Default.PhotoCamera,
+                        title = "Record audio",
+                        body = "We use the microphone for voice notes."
+                    )
+                }
+            ),
+            statuses = listOf(PermissionStatus.NotRequested, PermissionStatus.NotRequested),
+            onBack = {},
+            onNotNow = {},
+            onRequest = {},
+            onOpenSettings = {},
+            overview = PermissionOverview {
+                DefaultPermissionPage(
+                    label = "Permissions",
+                    heroImage = Icons.Default.PhotoCamera,
+                    title = "Enable permissions",
+                    body = "Review the access needed for full features."
+                )
+            }
+        )
+    }
+}

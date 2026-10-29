@@ -39,7 +39,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -668,5 +670,33 @@ private fun DefaultHeroFrame(content: @Composable () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         content()
+    }
+}
+
+@Preview(name = "PermissionBundleScreen - Overview", showBackground = true, widthDp = 393, heightDp = 852)
+@Composable
+private fun PermissionBundleScreenPreview() {
+    MaterialTheme {
+        PermissionBundleScreen(
+            permissions = listOf(
+                PermissionDescription(
+                    permission = "android.permission.CAMERA",
+                    label = "Camera",
+                    icon = Icons.Default.PhotoCamera,
+                ) {
+                    DefaultPermissionPage(
+                        label = "Camera",
+                        heroImage = Icons.Default.PhotoCamera,
+                        title = "Scan a document",
+                        body = "We use the camera when you choose to scan a document."
+                    )
+                }
+            ),
+            statuses = listOf(PermissionStatus.NotRequested),
+            onBack = {},
+            onNotNow = {},
+            onRequest = {},
+            onOpenSettings = {},
+        )
     }
 }
