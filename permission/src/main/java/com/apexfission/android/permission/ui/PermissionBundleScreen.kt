@@ -32,7 +32,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -528,7 +527,7 @@ fun PermissionBundleScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
                     .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
+                shape = MaterialTheme.shapes.small,
             ) {
                 Text(
                     when (action) {
@@ -650,7 +649,7 @@ private fun PermissionIconStrip(
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFF16803A)
+                                Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -666,7 +665,7 @@ private fun DefaultHeroFrame(content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .size(width = 260.dp, height = 200.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f), RoundedCornerShape(28.dp)),
+            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f), MaterialTheme.shapes.extraLarge),
         contentAlignment = Alignment.Center,
     ) {
         content()
