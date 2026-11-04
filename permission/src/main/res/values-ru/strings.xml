@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">Разрешения</string>
+    <string name="permission_bundle_overview_title">Перед продолжением</string>
+    <string name="permission_bundle_overview_body">Для работы приложению нужны некоторые разрешения.</string>
+    <string name="permission_bundle_heading">Проверить разрешения</string>
+    <string name="permission_bundle_request">Запросить разрешения</string>
+    <string name="permission_bundle_retry">Запросить оставшиеся разрешения</string>
+    <string name="permission_bundle_granted">Уже предоставлено</string>
+    <string name="permission_optional">Необязательный доступ</string>
+    <string name="permission_back">Назад</string>
+    <string name="permission_progress">%1$d из %2$d</string>
+    <string name="permission_auto_advance_progress">Ход чтения страницы</string>
+    <string name="permission_auto_advance_pause">Приостановить автоматическую смену страниц</string>
+    <string name="permission_auto_advance_resume">Возобновить автоматическую смену страниц</string>
+    <string name="permission_generic_title">Разрешить доступ: %1$s</string>
+    <string name="permission_generic_body">Для этой функции нужен доступ: %1$s. Управлять этим разрешением можно в настройках устройства.</string>
+    <string name="permission_open_settings">Открыть настройки приложения</string>
+    <string name="permission_recovery_uncertain">Android может не показать повторный запрос разрешения. В таком случае доступ можно включить в настройках приложения.</string>
+    <string name="permission_done">Продолжить</string>
+    <string name="permission_not_now">Не сейчас</string>
+</resources>

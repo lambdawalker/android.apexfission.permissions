@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">權限</string>
+    <string name="permission_bundle_overview_title">繼續之前</string>
+    <string name="permission_bundle_overview_body">應用程式需要一些權限才能正常運作。</string>
+    <string name="permission_bundle_heading">查看權限</string>
+    <string name="permission_bundle_request">要求權限</string>
+    <string name="permission_bundle_retry">要求其餘權限</string>
+    <string name="permission_bundle_granted">已授予</string>
+    <string name="permission_optional">選用存取權限</string>
+    <string name="permission_back">返回</string>
+    <string name="permission_progress">第 %1$d 頁，共 %2$d 頁</string>
+    <string name="permission_auto_advance_progress">頁面閱讀進度</string>
+    <string name="permission_auto_advance_pause">暫停自動換頁</string>
+    <string name="permission_auto_advance_resume">繼續自動換頁</string>
+    <string name="permission_generic_title">允許存取%1$s</string>
+    <string name="permission_generic_body">此功能需要存取%1$s。您可以在裝置設定中管理此權限。</string>
+    <string name="permission_open_settings">開啟應用程式設定</string>
+    <string name="permission_recovery_uncertain">Android 可能不會再次顯示權限要求。如果沒有顯示，您可以在應用程式設定中啟用存取權限。</string>
+    <string name="permission_done">繼續</string>
+    <string name="permission_not_now">暫時不要</string>
+</resources>

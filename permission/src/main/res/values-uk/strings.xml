@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">Дозволи</string>
+    <string name="permission_bundle_overview_title">Перш ніж продовжити</string>
+    <string name="permission_bundle_overview_body">Для роботи застосунку потрібні деякі дозволи.</string>
+    <string name="permission_bundle_heading">Перевірити дозволи</string>
+    <string name="permission_bundle_request">Запросити дозволи</string>
+    <string name="permission_bundle_retry">Запросити решту дозволів</string>
+    <string name="permission_bundle_granted">Уже надано</string>
+    <string name="permission_optional">Необов’язковий доступ</string>
+    <string name="permission_back">Назад</string>
+    <string name="permission_progress">%1$d з %2$d</string>
+    <string name="permission_auto_advance_progress">Перебіг читання сторінки</string>
+    <string name="permission_auto_advance_pause">Призупинити автоматичну зміну сторінок</string>
+    <string name="permission_auto_advance_resume">Відновити автоматичну зміну сторінок</string>
+    <string name="permission_generic_title">Дозволити доступ: %1$s</string>
+    <string name="permission_generic_body">Для цієї функції потрібен доступ: %1$s. Керувати цим дозволом можна в налаштуваннях пристрою.</string>
+    <string name="permission_open_settings">Відкрити налаштування застосунку</string>
+    <string name="permission_recovery_uncertain">Android може не показати повторний запит дозволу. Якщо запит не з’явиться, доступ можна ввімкнути в налаштуваннях застосунку.</string>
+    <string name="permission_done">Продовжити</string>
+    <string name="permission_not_now">Не зараз</string>
+</resources>

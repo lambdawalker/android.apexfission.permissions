@@ -61,7 +61,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -81,7 +80,6 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -132,7 +130,6 @@ fun DefaultDescription(
     Text(
         title ?: stringResource(R.string.permission_generic_title, label),
         style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(16.dp))
@@ -151,7 +148,7 @@ fun DefaultDescription(
             ) {
                 Icon(icon ?: feature.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Column(Modifier.padding(start = 12.dp)) {
-                    Text(feature.title, fontWeight = FontWeight.SemiBold)
+                    Text(feature.title, style = MaterialTheme.typography.titleSmall)
                     Text(feature.subtitle, style = MaterialTheme.typography.bodySmall)
                 }
             }
@@ -485,7 +482,6 @@ fun PermissionBundleScreen(
                         Text(
                             stringResource(R.string.permission_bundle_granted),
                             color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
                         )
                     }
                     if (item != null && !item.required) {
@@ -525,8 +521,7 @@ fun PermissionBundleScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .height(56.dp),
+                    .padding(horizontal = 24.dp),
                 shape = MaterialTheme.shapes.small,
             ) {
                 Text(
@@ -539,13 +534,13 @@ fun PermissionBundleScreen(
                         BundleAction.Settings -> settingsActionLabel ?: stringResource(R.string.permission_open_settings)
                         BundleAction.Complete -> stringResource(R.string.permission_done)
                     },
-                    fontWeight = FontWeight.Bold,
                 )
             }
             TextButton(
                 onClick = { stopAutoAdvance(); onNotNow() }, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = 24.dp),
+                shape = MaterialTheme.shapes.small,
             ) {
                 Text(stringResource(R.string.permission_not_now))
             }

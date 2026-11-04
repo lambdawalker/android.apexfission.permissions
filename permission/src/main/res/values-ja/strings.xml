@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">権限</string>
+    <string name="permission_bundle_overview_title">続行する前に</string>
+    <string name="permission_bundle_overview_body">アプリを利用するには、いくつかの権限が必要です。</string>
+    <string name="permission_bundle_heading">権限を確認</string>
+    <string name="permission_bundle_request">権限をリクエスト</string>
+    <string name="permission_bundle_retry">残りの権限をリクエスト</string>
+    <string name="permission_bundle_granted">許可済み</string>
+    <string name="permission_optional">任意のアクセス</string>
+    <string name="permission_back">戻る</string>
+    <string name="permission_progress">%2$d ページ中 %1$d ページ</string>
+    <string name="permission_auto_advance_progress">ページの読書進行状況</string>
+    <string name="permission_auto_advance_pause">ページの自動切り替えを一時停止</string>
+    <string name="permission_auto_advance_resume">ページの自動切り替えを再開</string>
+    <string name="permission_generic_title">%1$s へのアクセスを許可</string>
+    <string name="permission_generic_body">この機能には %1$s へのアクセスが必要です。この権限はデバイスの設定で管理できます。</string>
+    <string name="permission_open_settings">アプリの設定を開く</string>
+    <string name="permission_recovery_uncertain">Android が権限の確認画面を再び表示しない場合があります。表示されない場合は、アプリの設定でアクセスを有効にできます。</string>
+    <string name="permission_done">続行</string>
+    <string name="permission_not_now">後で</string>
+</resources>

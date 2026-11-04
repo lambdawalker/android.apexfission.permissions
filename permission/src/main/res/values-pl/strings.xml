@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">Uprawnienia</string>
+    <string name="permission_bundle_overview_title">Zanim przejdziesz dalej</string>
+    <string name="permission_bundle_overview_body">Aplikacja potrzebuje kilku uprawnień do prawidłowego działania.</string>
+    <string name="permission_bundle_heading">Sprawdź uprawnienia</string>
+    <string name="permission_bundle_request">Poproś o uprawnienia</string>
+    <string name="permission_bundle_retry">Poproś o pozostałe uprawnienia</string>
+    <string name="permission_bundle_granted">Już przyznano</string>
+    <string name="permission_optional">Dostęp opcjonalny</string>
+    <string name="permission_back">Wstecz</string>
+    <string name="permission_progress">%1$d z %2$d</string>
+    <string name="permission_auto_advance_progress">Postęp czytania strony</string>
+    <string name="permission_auto_advance_pause">Wstrzymaj automatyczne przewijanie stron</string>
+    <string name="permission_auto_advance_resume">Wznów automatyczne przewijanie stron</string>
+    <string name="permission_generic_title">Zezwól na dostęp: %1$s</string>
+    <string name="permission_generic_body">Ta funkcja wymaga dostępu: %1$s. Możesz zarządzać tym uprawnieniem w ustawieniach urządzenia.</string>
+    <string name="permission_open_settings">Otwórz ustawienia aplikacji</string>
+    <string name="permission_recovery_uncertain">Android może nie wyświetlić kolejnej prośby o uprawnienie. Jeśli się nie pojawi, możesz włączyć dostęp w ustawieniach aplikacji.</string>
+    <string name="permission_done">Dalej</string>
+    <string name="permission_not_now">Nie teraz</string>
+</resources>

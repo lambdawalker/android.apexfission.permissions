@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">Autorizzazioni</string>
+    <string name="permission_bundle_overview_title">Prima di continuare</string>
+    <string name="permission_bundle_overview_body">L’app ha bisogno di alcune autorizzazioni per funzionare correttamente.</string>
+    <string name="permission_bundle_heading">Controlla le autorizzazioni</string>
+    <string name="permission_bundle_request">Richiedi autorizzazioni</string>
+    <string name="permission_bundle_retry">Richiedi le autorizzazioni rimanenti</string>
+    <string name="permission_bundle_granted">Già concessa</string>
+    <string name="permission_optional">Accesso facoltativo</string>
+    <string name="permission_back">Indietro</string>
+    <string name="permission_progress">%1$d di %2$d</string>
+    <string name="permission_auto_advance_progress">Avanzamento della lettura della pagina</string>
+    <string name="permission_auto_advance_pause">Sospendi le pagine automatiche</string>
+    <string name="permission_auto_advance_resume">Riprendi le pagine automatiche</string>
+    <string name="permission_generic_title">Consenti l’accesso a %1$s</string>
+    <string name="permission_generic_body">Questa funzione richiede l’accesso a %1$s. Puoi gestire questa autorizzazione nelle impostazioni del dispositivo.</string>
+    <string name="permission_open_settings">Apri le impostazioni dell’app</string>
+    <string name="permission_recovery_uncertain">Android potrebbe non mostrare un’altra richiesta di autorizzazione. In tal caso, puoi abilitare l’accesso nelle impostazioni dell’app.</string>
+    <string name="permission_done">Continua</string>
+    <string name="permission_not_now">Non ora</string>
+</resources>

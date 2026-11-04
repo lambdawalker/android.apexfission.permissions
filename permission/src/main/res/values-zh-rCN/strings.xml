@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">权限</string>
+    <string name="permission_bundle_overview_title">继续之前</string>
+    <string name="permission_bundle_overview_body">应用需要一些权限才能正常运行。</string>
+    <string name="permission_bundle_heading">查看权限</string>
+    <string name="permission_bundle_request">请求权限</string>
+    <string name="permission_bundle_retry">请求其余权限</string>
+    <string name="permission_bundle_granted">已授予</string>
+    <string name="permission_optional">可选访问权限</string>
+    <string name="permission_back">返回</string>
+    <string name="permission_progress">第 %1$d 页，共 %2$d 页</string>
+    <string name="permission_auto_advance_progress">页面阅读进度</string>
+    <string name="permission_auto_advance_pause">暂停自动翻页</string>
+    <string name="permission_auto_advance_resume">恢复自动翻页</string>
+    <string name="permission_generic_title">允许访问%1$s</string>
+    <string name="permission_generic_body">此功能需要访问%1$s。您可以在设备设置中管理此权限。</string>
+    <string name="permission_open_settings">打开应用设置</string>
+    <string name="permission_recovery_uncertain">Android 可能不会再次显示权限请求。如果没有显示，您可以在应用设置中启用访问权限。</string>
+    <string name="permission_done">继续</string>
+    <string name="permission_not_now">暂不</string>
+</resources>
