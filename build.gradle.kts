@@ -61,3 +61,8 @@ listOf("generateImportDocs" to "generate", "verifyImportDocs" to "verify").forEa
         commandLine("python3", "scripts/module_release.py", command)
     }
 }
+
+// When both tasks are requested, finish writing IMPORT.md before checking it.
+tasks.named("verifyImportDocs") {
+    mustRunAfter("generateImportDocs")
+}
