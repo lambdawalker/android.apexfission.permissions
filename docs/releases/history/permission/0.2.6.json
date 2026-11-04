@@ -1,0 +1,58 @@
+{
+  "destinations": {
+    "jitpack": {
+      "artifact": "android.apexfission.permissions",
+      "consumer_version": "permission~v0.2.6",
+      "content_sha256": {
+        "-javadoc.jar": {
+          "LICENSE": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+          "docs/api.md": "3ab55399ac7768cab16bd0658d19573a408d493cb2f637a26f38c5ce107c33c1",
+          "docs/code-only.md": "0d244cff066b39ea31957723e39aca0dc29027edfa42384014d7c4175066321b",
+          "docs/compose.md": "f36b959e59593d0fc17a7868b9e0f0a1ad426f74652f21f64d0caa3471c7cc27",
+          "docs/concepts.md": "c628d3a1b18df511b3dc684a9a0ce1de55af485c6337d425148c00efbab3771e",
+          "docs/index.md": "949f8636af2c5efbcdaf5ac45df025d38e36907eba6d00f32d755f1642ca8333",
+          "docs/limitations.md": "09e054da5c350a68356bfc4fab7ac21e8142f91a0ea1229eb044dc59eda7949f",
+          "docs/migration.md": "5416e27fd671ddc794406497c7e4d427fd28a03092b8823c41617caa4bba8d1d",
+          "docs/platform-recipes.md": "54c65f1a2447927c78b71a703a93cedab95005c1584854be771fe76b494f7424",
+          "docs/quickstart.md": "e4cb084d9f9643f9eed19fc8e4b7e9f7f551a0ecc2055edc4c84ecd13875b969",
+          "docs/recipes.md": "cb0304fd4bfd6f1ba4c45134b91fb6e0eb2408debbd8db442668e2d51e74036c",
+          "docs/troubleshooting.md": "12dd171e969f3a31adaa25332c63c501b2c45083197e0df1b8dc29fa7de53d21"
+        },
+        "-sources.jar": {
+          "com/apexfission/android/permission/recipe/PermissionRecipes.kt": "154117ef57307350fb31a5a86b6796a35bb233461eaf04702308a4726dca671f",
+          "com/apexfission/android/permission/recipe/PermissionState.kt": "3e1f319c84750285cc5e5979c2e7c8a098e2fa51fe751d206669f9bd89c2db40",
+          "com/apexfission/android/permission/recipe/VisualMediaPicker.kt": "46a3b8a3253f5cb2081aea711e776423cbb798bde95589c2cc5e51e6ff92f5c2",
+          "com/apexfission/android/permission/requester/PermissionCheck.kt": "cc0050b08844486a562c443a967392543c35c8ae7223198765b5833f54ed13a9",
+          "com/apexfission/android/permission/requester/PermissionGrants.kt": "77852cda76731e7472ac6a455e85229d82d555ab3f73d90b9ed610371a1f495e",
+          "com/apexfission/android/permission/requester/PermissionHandler.kt": "0c737c5120e95f27c23e55ec792248ab01d7dd4dfb5fc2457dfe5d504599ca8c",
+          "com/apexfission/android/permission/requester/PermissionRecovery.kt": "6d86fd572f7d291283b2d5110e6cca8f5225c9a69a775efbd8710b1e6ec11e97",
+          "com/apexfission/android/permission/requester/PermissionRequester.kt": "ddfc1e0e9f0e07fe0217217381ad1f6549b682e210c8ee0b91427ceb5687f015",
+          "com/apexfission/android/permission/ui/PermissionAutoAdvance.kt": "021471bbe598375fbd676e745a8a50dd66a9cdadb31f1e84a4d105bf146386ed",
+          "com/apexfission/android/permission/ui/PermissionBundleScreen.kt": "900203ea9e8a381d0098de7a2e347572d4b38e334a9dac608e643e936fdd3a03",
+          "com/apexfission/android/permission/ui/PermissionDescription.kt": "fe237722ff09e26be1cc332befb837e8e7a0168b1dbfd1aeb478e8db7f85f856",
+          "com/apexfission/android/permission/ui/PermissionVisualDefaults.kt": "01c7bf41dc9a5e8f73140f9fc14f36883883f51e2246ba38b6ef42fa5c540f8b"
+        }
+      },
+      "group": "com.github.lambdawalker",
+      "module": "permission",
+      "phase": "confirmed-public",
+      "repository": "jitpack",
+      "repository_url": "https://jitpack.io",
+      "sha256": {
+        "-javadoc.jar": "c418d876f6608107135c6f5c949e8e36f37f00d36d6f269593bf8eb53bdf568c",
+        "-sources.jar": "42d954436a63962c7890d0437c89dd6111bbabed272b71787f13f07da340cf7e",
+        ".aar": "63a30ba3473d3c011dfbdf9e391bfdb22cb106e4b363b645ea35aab427429a6c",
+        ".module": "2c21a31b2a096b0859d78bd37a3d52513ea990e230938641de3bccc85261c418",
+        ".pom": "3eddc6a0c51a4bc35b97dd74114d8a4357cba63b95b09ca7255192a73cc60a37"
+      },
+      "source": "393a3d8357798781c6a42a073f625170bc9d1c3a",
+      "version": "0.2.6",
+      "workflow_run": "41846682506"
+    }
+  },
+  "documentation_ref": "393a3d8357798781c6a42a073f625170bc9d1c3a",
+  "module": "permission",
+  "schema": 1,
+  "source": "393a3d8357798781c6a42a073f625170bc9d1c3a",
+  "version": "0.2.6"
+}
