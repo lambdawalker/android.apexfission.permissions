@@ -1,6 +1,8 @@
 package com.apexfission.android.permission.ui
 
 import android.Manifest
+import androidx.annotation.StringRes
+import com.apexfission.android.permission.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Contacts
@@ -26,8 +28,8 @@ data class PermissionVisual(val label: String, val icon: ImageVector)
 
 /**
  * Default metadata for common Android runtime permissions. These names describe access, not
- * the host app's feature. Supply [PermissionDescription.label] and/or [PermissionDescription.icon]
- * when feature-specific wording or another language is needed. Unknown strings use a readable
+ * the host app's feature. The built-in icon selector localizes omitted labels at render time. Supply
+ * [PermissionDescription.label] and/or [PermissionDescription.icon] for feature-specific wording. Unknown strings use a readable
  * name derived from the last segment and a lock icon.
  *
  * This registry only supplies presentation metadata; it does not determine whether a permission
@@ -84,6 +86,37 @@ object PermissionVisualDefaults {
         Manifest.permission.RECEIVE_MMS to messages,
         Manifest.permission.RECEIVE_WAP_PUSH to messages,
     )
+
+    private val labelResources = mapOf(
+        "Camera" to R.string.permission_label_camera,
+        "Microphone" to R.string.permission_label_microphone,
+        "Location" to R.string.permission_label_location,
+        "Contacts" to R.string.permission_label_contacts,
+        "Calendar" to R.string.permission_label_calendar,
+        "Photos" to R.string.permission_label_photos,
+        "Videos" to R.string.permission_label_videos,
+        "Audio files" to R.string.permission_label_audio_files,
+        "Nearby Bluetooth devices" to R.string.permission_label_nearby_bluetooth_devices,
+        "Phone" to R.string.permission_label_phone,
+        "Messages" to R.string.permission_label_messages,
+        "Precise location" to R.string.permission_label_precise_location,
+        "Approximate location" to R.string.permission_label_approximate_location,
+        "Background location" to R.string.permission_label_background_location,
+        "Notifications" to R.string.permission_label_notifications,
+        "Accounts" to R.string.permission_label_accounts,
+        "Selected photos and videos" to R.string.permission_label_selected_photos_and_videos,
+        "Photo locations" to R.string.permission_label_photo_locations,
+        "Files and media" to R.string.permission_label_files_and_media,
+        "Nearby Wi-Fi devices" to R.string.permission_label_nearby_wi_fi_devices,
+        "Body sensors" to R.string.permission_label_body_sensors,
+        "Background body sensors" to R.string.permission_label_background_body_sensors,
+        "Physical activity" to R.string.permission_label_physical_activity,
+        "Call log" to R.string.permission_label_call_log,
+    )
+
+    /** Resources are resolved by Compose at render time, never in this metadata registry. */
+    @StringRes
+    internal fun labelResource(permission: String): Int? = known[permission]?.label?.let(labelResources::get)
 
     /** Resolve metadata for [permission], falling back to a humanized name and lock icon. */
     fun forPermission(permission: String): PermissionVisual = known[permission] ?: PermissionVisual(

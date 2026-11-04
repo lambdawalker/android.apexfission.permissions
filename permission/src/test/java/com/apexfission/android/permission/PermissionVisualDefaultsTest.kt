@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import com.apexfission.android.permission.ui.PermissionDescription
 import com.apexfission.android.permission.ui.PermissionVisualDefaults
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PermissionVisualDefaultsTest {
@@ -34,6 +35,21 @@ class PermissionVisualDefaultsTest {
         val customIcon = PermissionDescription(Manifest.permission.CAMERA, icon = Icons.Default.Mic) {}
         assertEquals("Camera", customIcon.label)
         assertEquals(Icons.Default.Mic, customIcon.icon)
+    }
+
+    @Test fun omittedLabelsResolveKnownResourcesAtRenderTime() {
+        val description = PermissionDescription(Manifest.permission.CAMERA) {}
+        assertEquals("Camera", description.label)
+        assertEquals(R.string.permission_label_camera, description.defaultLabelResource)
+        assertEquals(R.string.permission_label_precise_location,
+            PermissionVisualDefaults.labelResource(Manifest.permission.ACCESS_FINE_LOCATION))
+    }
+
+    @Test fun explicitLabelsAreNeverReplacedEvenWhenTheyMatchEnglishDefaults() {
+        assertNull(PermissionDescription(Manifest.permission.CAMERA, label = "Camera") {}.defaultLabelResource)
+        assertNull(PermissionDescription(Manifest.permission.CAMERA, label = "") {}.defaultLabelResource)
+        assertNull(PermissionDescription("example.UNKNOWN") {}.defaultLabelResource)
+        assertNull(PermissionVisualDefaults.labelResource("example.UNKNOWN"))
     }
 
     @Test fun defaultsAreAvailableToCustomPages() {

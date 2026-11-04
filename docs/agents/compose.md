@@ -59,7 +59,7 @@ The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImag
 
 Wrap the gate in the host’s `MaterialTheme`. Built-in text uses its typography, colors come from its color scheme, both action buttons use `shapes.small`, and hero surfaces use `shapes.extraLarge`. Material controls retain their standard minimum sizing and touch targets; layout spacing, artwork sizes, circular status badges and the reading indicator are component geometry. MaterialTheme does not define a spacing or dimensions scale.
 
-Built-in navigation, action, overview and recovery strings follow the device locale in English, German, Spanish, French, Italian, Japanese, Korean, Polish, Portuguese, Russian, Ukrainian, Simplified Chinese and Traditional Chinese. `PermissionVisualDefaults` remains a non-composable English metadata registry; pass a localized `PermissionDescription.label` and localized page content from your host resources.
+Built-in navigation, action, overview and recovery strings follow the device locale in English, German, Spanish, French, Italian, Japanese, Korean, Polish, Portuguese, Russian, Ukrainian, Simplified Chinese and Traditional Chinese. Omitted known `PermissionDescription.label` values are localized by the icon selector at render time, including accessibility descriptions. Explicit host labels are used verbatim, even when they match an English default. `PermissionVisualDefaults` and the `label` property retain stable English metadata outside composition; supply localized page content from your host resources. Unknown permission labels retain their readable suffix fallback.
 
 ## Choose a page layout
 
