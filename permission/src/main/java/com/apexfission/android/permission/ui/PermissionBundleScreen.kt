@@ -607,13 +607,14 @@ private fun PermissionIconStrip(
         ) {
             Spacer(Modifier.width(edgeSpace))
             permissions.forEachIndexed { index, item ->
+                val label = item.defaultLabelResource?.let { stringResource(it) } ?: item.label
                 val selected = index == selectedIndex
                 val size by animateDpAsState(if (selected) 56.dp else 44.dp, label = "bundle icon size")
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
                         .size(56.dp)
-                        .semantics { contentDescription = item.label }
+                        .semantics { contentDescription = label }
                         .clickable { onSelect(index) },
                     contentAlignment = Alignment.Center,
                 ) {
