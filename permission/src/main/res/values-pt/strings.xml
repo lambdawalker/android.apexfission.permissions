@@ -1,0 +1,21 @@
+<resources>
+    <string name="permission_bundle_label">Permissões</string>
+    <string name="permission_bundle_overview_title">Antes de continuar</string>
+    <string name="permission_bundle_overview_body">A aplicação precisa de algumas permissões para funcionar corretamente.</string>
+    <string name="permission_bundle_heading">Rever permissões</string>
+    <string name="permission_bundle_request">Pedir permissões</string>
+    <string name="permission_bundle_retry">Pedir as permissões restantes</string>
+    <string name="permission_bundle_granted">Já concedida</string>
+    <string name="permission_optional">Acesso opcional</string>
+    <string name="permission_back">Voltar</string>
+    <string name="permission_progress">%1$d de %2$d</string>
+    <string name="permission_auto_advance_progress">Progresso de leitura da página</string>
+    <string name="permission_auto_advance_pause">Pausar a mudança automática de páginas</string>
+    <string name="permission_auto_advance_resume">Retomar a mudança automática de páginas</string>
+    <string name="permission_generic_title">Permitir acesso a %1$s</string>
+    <string name="permission_generic_body">Esta funcionalidade precisa de acesso a %1$s. Pode gerir esta permissão nas definições do dispositivo.</string>
+    <string name="permission_open_settings">Abrir definições da aplicação</string>
+    <string name="permission_recovery_uncertain">O Android pode não voltar a apresentar o pedido de permissão. Se isso acontecer, pode ativar o acesso nas definições da aplicação.</string>
+    <string name="permission_done">Continuar</string>
+    <string name="permission_not_now">Agora não</string>
+</resources>

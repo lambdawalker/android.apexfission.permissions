@@ -55,6 +55,12 @@ The trailing `PermissionDescription { ... }` lambda is the **required entire pag
 
 The `DefaultPermissionPage` hero is independent of the icon strip. Use `heroImage = Icons.Default.PhotoCamera` for a vector, `heroImage = R.drawable.scan_hero` for a raster or vector drawable resource, or pass an Android `Bitmap` or `Drawable` instance. Bitmap and drawable artwork fits inside the hero frame; preserve an owned bitmap until the page leaves composition. `PermissionDescription.icon` still controls the small icon in the strip. See [all overloads](api.md#ui-pages-and-carousel).
 
+## Host appearance and languages
+
+Wrap the gate in the host’s `MaterialTheme`. Built-in text uses its typography, colors come from its color scheme, both action buttons use `shapes.small`, and hero surfaces use `shapes.extraLarge`. Material controls retain their standard minimum sizing and touch targets; layout spacing, artwork sizes, circular status badges and the reading indicator are component geometry. MaterialTheme does not define a spacing or dimensions scale.
+
+Built-in navigation, action, overview and recovery strings follow the device locale in English, German, Spanish, French, Italian, Japanese, Korean, Polish, Portuguese, Russian, Ukrainian, Simplified Chinese and Traditional Chinese. `PermissionVisualDefaults` remains a non-composable English metadata registry; pass a localized `PermissionDescription.label` and localized page content from your host resources.
+
 ## Choose a page layout
 
 | Use | Page content |

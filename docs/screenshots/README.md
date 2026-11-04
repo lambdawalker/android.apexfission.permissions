@@ -1,6 +1,6 @@
 # README screenshots
 
-The seven accepted PNGs were rendered by the [screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/40774456236) at commit `a3638a937244d05b13cdb0810360ac8037530544`, downloaded from its `permission-screen-images` artifact (`12854851431`), visually reviewed, and accepted with `screenshots:update`. The capture input hash matches the current library, fixture, and toolchain inputs. The manifest records the original capture environment and workflow provenance. No images were manually composed or edited.
+The seven accepted PNGs were rendered by the [screenshot workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/runs/41760041843) for PR #27 head `1a214d40b6bbe320a9a6cf4812c14560d9e898d5`, downloaded from its `permission-screen-images` artifact (`13289263393`), visually reviewed, and accepted with `screenshots:update`. The capture records GitHub’s PR merge checkout `b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3`; its input hash `4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd` exactly matches the library, fixture and toolchain inputs. `screenshots:check` passed for all seven accepted images. The manifest retains the artifact’s capture environment. No images were manually composed or edited.
 
 | File | `PermissionBundleScreenshotTest` preview |
 | --- | --- |
@@ -12,7 +12,7 @@ The seven accepted PNGs were rendered by the [screenshot workflow](https://githu
 | `overflowing-icons.png` | `overflowOverview` |
 | `segmented-reading-progress.png` | `autoplayReadingProgress` |
 
-These captures include the layout spacing change from `77233fd`. `single-permission-overview.png` correctly maps to `singlePermissionOverview` (two pages, including the overview). A no-overview single permission is a separate scenario; do not replace or relabel the overview image to represent it.
+These captures include host Material shapes, typography and standard action sizing. `single-permission-overview.png` correctly maps to `singlePermissionOverview` (two pages, including the overview). A no-overview single permission is a separate scenario; do not replace or relabel the overview image to represent it.
 
 Use the automated commands below to refresh images after UI changes. Static previews do not capture Android system prompts.
 
