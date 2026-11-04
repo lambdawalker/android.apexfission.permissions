@@ -13,13 +13,13 @@
         "locale": "renderer-default"
       },
       "alt": "Bundle overview for camera and microphone",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "e5503e9d635e40d789793c68a4db8093dcd4efad7bbd6ac1af6eb7815b9792d8",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
@@ -37,13 +37,13 @@
         "locale": "renderer-default"
       },
       "alt": "Selected camera permission page",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "3f548f18c4572ad443ab515881e17f3713bec9b50b8761655600c3bbc336110e",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
@@ -61,13 +61,13 @@
         "locale": "renderer-default"
       },
       "alt": "Partially granted access with a Settings recovery action",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "a9c703d3be62dc00f09507c76a7d4f1d0fadc9d4c78c6be026dab1c9540a49b4",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
@@ -85,13 +85,13 @@
         "locale": "renderer-default"
       },
       "alt": "Overview before a single permission",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "c92bb894d9428d0392f5d38c26a7ee79c2b1da965765e0e66bed217930d8a063",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
@@ -109,13 +109,13 @@
         "locale": "renderer-default"
       },
       "alt": "Multiple permissions with the overview hidden",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "a244c06b24f5db3d91663473b7db470021004e01acf595304371f1eedf005abf",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
@@ -133,13 +133,13 @@
         "locale": "renderer-default"
       },
       "alt": "Scrollable icon strip with eight permissions",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "771b587760d4997648b1d0bdcf40cb2983d27d8a908660d9fe7da3faff9960ec",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
@@ -157,13 +157,13 @@
         "locale": "renderer-default"
       },
       "alt": "Segmented reading indicator on the camera page",
-      "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-      "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+      "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+      "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
       "sha256": "ab2beaa698a5b4efd8edb1035e0afb0feb6076855b172656e39d36f3bd0995bc",
       "provenance": "Locally rendered candidates accepted with screenshots:update; review images before committing.",
       "capture_environment": {
-        "source_commit": "b2937d0efaf1f2a4288aa0f4741d9d7199d8adc3",
-        "input_sha256": "4de5056114dff8ac6667afb2c9c56bde7545bb2511903ba22cfa6b1990a4f9fd",
+        "source_commit": "afc035d5b108915e93f6935a51a5270af2c88814",
+        "input_sha256": "77e413e9e4a296c925c1f73579cdaffcdc5d109407acde3c466421aa7be10bdf",
         "working_tree_dirty": true,
         "platform": "linux",
         "architecture": "x64"
