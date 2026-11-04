@@ -72,8 +72,21 @@ jobs:
           package-manager-cache: false
       - name: Validate documentation at immutable release source
         if: steps.release.outputs.skip != 'true'
-        working-directory: sites
+        env:
+          SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: |
+          set -euo pipefail
+          release_checkout="$PWD"
+          validation_root=$(mktemp -d "$RUNNER_TEMP/release-docs.XXXXXX")
+          validation_checkout="$validation_root/source"
+          cleanup() {
+            git -C "$release_checkout" worktree remove --force "$validation_checkout" || true
+            rmdir "$validation_root" || true
+          }
+          trap cleanup EXIT
+          # Rendering regenerates tracked reference files; isolate it from artifact provenance checks.
+          git worktree add --detach "$validation_checkout" "$SOURCE_SHA"
+          cd "$validation_checkout/sites"
           npm ci
           npm run check
           npm run screenshots:render
@@ -108,3 +121,4 @@ jobs:
         run: |
           echo 'Keep the canonical tag and destination journal. Inspect the JitPack build log.'
           echo 'Finalize permission release with repository=jitpack verifies the same source without allocating a new version.'
+
