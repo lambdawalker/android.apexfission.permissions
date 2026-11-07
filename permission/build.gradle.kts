@@ -10,6 +10,7 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
+val jitpackTagSuffix = if (providers.gradleProperty("jitpackScopedTag").orNull == "true") "-jitpack" else ""
 val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.permissions"
 
@@ -17,7 +18,7 @@ mavenPublishing {
     coordinates(
         if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
         if (jitpackBuild.get()) "android.apexfission.permissions" else providers.gradleProperty("POM_ARTIFACT_ID").get(),
-        if (jitpackBuild.get()) "permission~v${project.version}" else project.version.toString(),
+        if (jitpackBuild.get()) "permission~v${project.version}$jitpackTagSuffix" else project.version.toString(),
     )
     configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
     if (!jitpackBuild.get()) publishToMavenCentral()
