@@ -2,18 +2,6 @@ name: Library site
 
 on:
   pull_request:
-    paths:
-      - 'IMPORT.md'
-      - 'app/src/main/java/com/apexfission/android/permissions/demo/CameraQuickstartActivity.kt'
-      - 'sites/**'
-      - 'docs/screenshots/**'
-      - 'docs/agents/**'
-      - 'docs/es/**'
-      - 'docs/releases/**'
-      - 'scripts/documentation_history.py'
-      - 'scripts/import_docs.py'
-      - 'publishing/legacy-installation.json'
-      - '.github/workflows/deploy-library-site.yml'
   push:
     branches: [main]
     paths:
