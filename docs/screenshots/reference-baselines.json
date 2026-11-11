@@ -1,0 +1,26 @@
+{
+  "source_commit": "82685a0ff6f2cccc3eab6525c4bcf8228ea17fff",
+  "input_sha256": "b1fba117a6d6c25035b4134b8cfc49c7210d5b41df953a2af7fcb751e8c4ba38",
+  "working_tree_dirty": true,
+  "platform": "linux",
+  "architecture": "x64",
+  "workflow_run": "43061298567",
+  "artifact_id": "13873573232",
+  "provenance": "All 14 Gradle-rendered preview baselines visually reviewed from permission-screen-images; curated seven also pass screenshots:check.",
+  "sha256": {
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/allWithGrantedBadge_All with granted badge_6cb3b81d_0.png": "73e7c45a114c48d75aedff352dee93bb574ffb1ce55d39be59045dd7e436b8e4",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/autoplayReadingProgress_Autoplay reading progress_e3780a04_0.png": "ab2beaa698a5b4efd8edb1035e0afb0feb6076855b172656e39d36f3bd0995bc",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/customRecovery_Custom recovery_f768f2e3_0.png": "131e0a81b6f366e1f793f7fbc948b6a494903a4074d4601fbc9f1be340c61cd7",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/firstPage_Bundle overview_3844478e_0.png": "e5503e9d635e40d789793c68a4db8093dcd4efad7bbd6ac1af6eb7815b9792d8",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/grantedBadgeDark_Granted badge dark_f16c5ab3_0.png": "32d29db146f8cd07781bf50bf6ca22bad7b334a34530abb599556d3e34000c0c",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/missingOnlyOverview_Missing only overview_0c76f38e_0.png": "38bb5b99f612044ad08db8008ae056eb6ee3e55699ec76713315e51a5c7040e7",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/multiplePermissionsNoOverview_Multiple permissions no overview_ebca510c_0.png": "a244c06b24f5db3d91663473b7db470021004e01acf595304371f1eedf005abf",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/optionalMicrophone_Optional microphone_5a69716d_0.png": "bbbf8c426bae42442cfd941a1f76cad86e9bad7b4ec174ebbc11f739d0618a3d",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/overflowOverview_Bundle overflow overview_e52685da_0.png": "771b587760d4997648b1d0bdcf40cb2983d27d8a908660d9fe7da3faff9960ec",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/partialDenial_Bundle partial denial_e890c7b2_0.png": "a9c703d3be62dc00f09507c76a7d4f1d0fadc9d4c78c6be026dab1c9540a49b4",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/scrollableIcons_Bundle scrollable icons_d051cd37_0.png": "994606eb9c6346574a540eb9277f80c3a9ac6d54244c51a1afa261d98b6a1402",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/secondPage_Bundle camera page_999d0ad1_0.png": "3f548f18c4572ad443ab515881e17f3713bec9b50b8761655600c3bbc336110e",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/singleMissingPermission_Single missing permission_55594932_0.png": "67d0edc4ba62015690dd0ed853c1964791d36c15271f723df06da1bb66f33073",
+    "com/apexfission/android/permission/PermissionBundleScreenshotTest/singlePermissionOverview_Single permission overview_1535f052_0.png": "c92bb894d9428d0392f5d38c26a7ee79c2b1da965765e0e66bed217930d8a063"
+  }
+}
