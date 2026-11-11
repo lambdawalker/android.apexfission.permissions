@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">android.permissions</string>
+    <string name="demo_catalog_title">Permission demos</string>
+    <string name="demo_catalog_welcome">Explore the Compose screen, Android permission recipes, and code-only callbacks.</string>
+    <string name="demo_quickstart_title">Complete quickstart</string>
+    <string name="demo_quickstart_description">Run the exact first-request example from the documentation.</string>
+    <string name="demo_quickstart_action">Open quickstart</string>
+    <string name="demo_carousel_title">Permission carousel</string>
+    <string name="demo_carousel_description">Camera access with optional microphone narration.</string>
+    <string name="demo_carousel_action">Open carousel</string>
+    <string name="demo_single_title">Single permission (no overview)</string>
+    <string name="demo_single_description">Single permission request where the icon strip is hidden.</string>
+    <string name="demo_single_action">Open single demo</string>
+    <string name="demo_recipes_title">Platform recipes</string>
+    <string name="demo_recipes_description">Location, background access, notifications, and photo selection.</string>
+    <string name="demo_recipes_action">Open recipes</string>
+    <string name="demo_callbacks_title">Code-only callbacks</string>
+    <string name="demo_callbacks_description">Compare an Activity-owned launcher with the library requester.</string>
+    <string name="demo_callbacks_action">Open callbacks</string>
+    <string name="demo_artwork_title">Hero artwork</string>
+    <string name="demo_artwork_description">Inspect vector, bitmap, drawable resource, and Drawable heroes.</string>
+    <string name="demo_artwork_action">Open artwork gallery</string>
 </resources>
