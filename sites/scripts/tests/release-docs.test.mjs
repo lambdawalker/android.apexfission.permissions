@@ -24,9 +24,11 @@ test('the release exporter renders both providers at the same version', async ()
         mkdirSync(join(root, 'docs/releases/jitpack'), {recursive: true});
         mkdirSync(join(root, 'sites'));
         mkdirSync(join(root, 'scripts'));
-        for (const file of ['documentation_history.py', 'import_docs.py', 'release_identity.py']) {
+        for (const file of ['documentation_history.py']) {
             cpSync(join(repository, 'scripts', file), join(root, 'scripts', file));
         }
+        cpSync(join(repository, '.project'), join(root, '.project'), {recursive: true});
+        cpSync(join(repository, 'gradle.properties'), join(root, 'gradle.properties'));
         git('init', '-q');
         git('config', 'user.name', 'Test');
         git('config', 'user.email', 'test@example.invalid');

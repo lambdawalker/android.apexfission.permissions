@@ -1,29 +1,13 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SourcesJar
-import org.gradle.api.publish.PublishingExtension
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.screenshot)
-    id("com.vanniktech.maven.publish")
+    id("com.apexfission.android-repo-setup")
 }
 
-val jitpackTagSuffix = if (providers.gradleProperty("jitpackScopedTag").orNull == "true") "-jitpack" else ""
-val jitpackBuild = providers.gradleProperty("jitpackBuild").orElse("false").map { it.toBoolean() }
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.permissions"
 
 mavenPublishing {
-    coordinates(
-        if (jitpackBuild.get()) "com.github.lambdawalker" else providers.gradleProperty("GROUP").get(),
-        if (jitpackBuild.get()) "android.apexfission.permissions" else providers.gradleProperty("POM_ARTIFACT_ID").get(),
-        if (jitpackBuild.get()) "permission~v${project.version}$jitpackTagSuffix" else project.version.toString(),
-    )
-    configure(AndroidSingleVariantLibrary(variant = "release", javadocJar = JavadocJar.Empty(), sourcesJar = SourcesJar.Sources()))
-    if (!jitpackBuild.get()) publishToMavenCentral()
-    if (!jitpackBuild.get() && providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
-
     pom {
         name.set("Apexfission Android Permissions")
         description.set("Jetpack Compose screens, callback helpers, and platform-aware recipes for Android permissions.")
@@ -94,25 +78,4 @@ dependencies {
     screenshotTestImplementation(platform(libs.androidx.compose.bom))
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
-}
-
-// Text documentation is included in the same immutable source identity as the AAR.
-tasks.withType<com.vanniktech.maven.publish.tasks.JavadocJar>().configureEach {
-    from(rootProject.file("docs/agents")) { include("**/*.md"); into("docs") }
-    from(rootProject.file("LICENSE"))
-}
-tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
-extensions.configure<PublishingExtension> {
-    repositories.maven {
-        name = "verification"
-        url = rootProject.layout.buildDirectory.dir("verification-repository").get().asFile.toURI()
-    }
-}
-tasks.configureEach {
-    if (name.contains("MavenCentral", ignoreCase = true)) {
-        dependsOn(rootProject.tasks.named("verifyPublicationReservation"))
-    }
 }

@@ -1,112 +1,54 @@
 # Publishing Permissions
 
-[IMPORT.md](../IMPORT.md) is the authoritative latest confirmed installation reference. The exact-version website archive provides historical coordinates and matching guides. Never infer availability from a tag, proposed version, or successful local build.
+[IMPORT.md](../IMPORT.md) is the authoritative latest confirmed installation reference. Historical records under `docs/releases/history/` retain their original code, documentation, destination, and source-tag identities. A tag or an upload attempt alone is not a confirmed publication.
 
-## Identity and migration
+## Shared tooling
 
-The single `permission` library retains Central coordinates `com.apexfission.androi:permission`. The spelling is intentional. The app is never published. `publishing/repositories.yml` is the destination registry; run `python3 scripts/publishing_config.py generate` after editing it, then commit its generated properties and workflow dropdowns.
+This repository uses the same Gradle plugins and Rust CLI as [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Their source is [gradle.android-repo-setup](https://github.com/lambdawalker/gradle.android-repo-setup). The plugin version is pinned in `gradle/libs.versions.toml`; the CLI source revision is pinned by `tooling_ref` in `.project/setup/config.yaml`. The two pins are independent: the CLI needs the configurable verification/workflow support used here, while the published plugin supplies the existing Gradle publication conventions.
 
-Central and JitPack select versions independently. Unchanged inputs reuse the latest version and original commit for that destination. Changed inputs advance its patch version. Versions sort numerically.
+Install the configured CLI with `./setup.sh --help` on Linux/macOS or `./setup.ps1 --help` in PowerShell. Both require Cargo and install the exact configured tag or source commit. Run `android-repo-setup` for the interactive signing/environment wizard. Credentials and signing material belong in the appropriate GitHub environment; never commit them. The CLI uses `keytool` for APK keys and GnuPG for Maven signing.
 
-New immutable tags use `permission/vX.Y.Z-DESTINATION`. Historical tags retain their original source. Conflicting source records for one destination and version block publication.
+## Configuration and generated files
 
-The pre-existing installation reference confirms Central **0.2.1**, but there are no source tags or source-proven release records for it. `publishing/legacy-installation.json` preserves those installation facts with `source: null`; it is deliberately outside archive and journal discovery. No historical source, hash, versioned guide, or JitPack availability is invented. The archive now records the source-proven JitPack **0.2.3** release in [its confirmation record](releases/history/permission/0.2.3.json); the failed 0.2.2 attempt is not a confirmed publication. Live Central metadata ahead of the allocated identity blocks publication for reconciliation. Legacy `release-pending/X.Y.Z` attempts must be reconciled using their original workflow and Portal evidence before migration; they block new releases at both destinations.
+- `.project/setup/config.yaml` selects the permission module, app module, Java 25 daemon, artifact verification contract, Astro build, and release-source validation command.
+- `.project/setup/repositories.yml` registers Maven Central and JitPack with their existing matching GitHub environments. Regenerate its properties and workflow choices with `android-repo-setup publishing_config generate`.
+- `android-repo-setup workflows --overwrite` regenerates managed workflows. `--check` detects drift without writing. `.project/setup/workflow-generation.json` records ownership. Review changes before committing.
+- `docs/templates/MODULE_IMPORT.md.template` owns installation prose. `android-repo-setup module_release generate` and `verify` back Gradle's `generateImportDocs` and `verifyImportDocs` tasks.
 
-## Owner setup
+The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The Astro site remains the bilingual consumer site. Its history exporter delegates to the shared CLI through a small compatibility shim.
 
-Existing Central credentials stay in the **maven-central** GitHub environment:
+## Identity and publication
 
-- `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`: Central Portal user token credentials.
-- `SIGNING_IN_MEMORY_KEY`: complete armored private signing key, including newlines.
-- `SIGNING_IN_MEMORY_KEY_PASSWORD`: passphrase when the key is encrypted.
+The published Central group remains **`com.apexfission.androi`**, with artifact **`permission`**; the spelling is intentional. JitPack uses **`com.github.lambdawalker:android.apexfission.permissions:permission~vX.Y.Z-jitpack`** for destination-scoped releases. Older unscoped consumer versions remain as recorded. The root project name intentionally matches the GitHub repository because the plugin uses it for the JitPack artifact ID. Public Kotlin namespaces are independent of these coordinates.
 
-The existing Central endpoint is the default; no new endpoint or credential is needed. Keep the namespace verified in Central Portal.
+Use **Publish** on `main`, selecting the destination and optionally a stable version. The shared CLI allocates or reuses the destination's release identity, reserves immutable source and pending journals, verifies publication artifacts, and advances installation records only after public confirmation. Canonical destination tags are `permission/vX.Y.Z-maven-central` and `permission/vX.Y.Z-jitpack`. Preserve older source tags and confirmation records. New build, configuration, documentation, or release-protocol inputs can require a new patch version; this migration does not publish one.
 
-Create the empty **jitpack** environment for public builds; optional protection rules are a maintainer choice. Public JitPack requires no token, password, signing key, or custom endpoint. Credentials are absent from its build job.
+The Gradle plugin configures AAR, sources/documentation jars, reproducible archives, unsigned local verification publications, and reservation-guarded Central uploads. Only `:permission` is published. JitPack bootstraps Java 25 with SDKMAN and invokes `:permission:publishJitPack`; that task validates JitPack's canonical scoped tag and reported source before publishing to Maven Local.
 
-Create **delayed-docs** with a **15-minute wait timer**, no secrets, and no required reviewers if automatic continuation is desired. Merely referencing this environment in YAML does not configure its timer. GitHub plan and repository visibility determine timer availability; verify the repository's current support in Settings. Permit `main` under deployment restrictions. The wait job holds no release lock or active runner during the environment gate.
+Before either upload path, `scripts/validate-release-source.sh` creates a disposable worktree at the chosen source. It builds the site and renders/compares reviewed screenshots there. The original release checkout remains clean for the CLI's artifact provenance checks. Validation failures stop publication and clean up the worktree.
 
-Allow the Actions bot the necessary contents/tag writes and normal protected-branch publication process. No bypass token is introduced. The [0.2.3 confirmation record](releases/history/permission/0.2.3.json) records a successful public JitPack publication. It does not verify current environment settings, timers, credentials, or Central access; check those separately before publishing.
+## Recovery and environment setup
 
-## GitHub Actions runtimes
+Use **SUB - Finalize Permissions release** for an interrupted publication: select the same destination and reserved version. It verifies public artifacts and completes bookkeeping without allocating another identity or uploading Maven artifacts again. Unknown, queued, or partial provider outcomes must retain their journals. For a pre-migration reservation whose source lacks the shared plugin/configuration, use its original workflow revision for recovery; this migration does not rewrite older source identities. A successful package publication followed by a site failure is recovered by rerunning **Documentation**.
 
-Workflows use action releases whose JavaScript manifests declare Node.js 24, including the nested upload action in the Pages artifact helper. `actions/deploy-pages@v5` and `reactivecircus/android-emulator-runner@v2` already use Node.js 24. The separate `setup-node` input `node-version: '24'` selects Node for site commands; it does not change the runtime of checkout, Python, Java, or other actions. GitHub-hosted Ubuntu runners provide the required action runtime.
+Use **Reconcile failed JitPack attempts** in preview mode first. Applying it archives only a proven terminal failure for the exact source with no public artifacts; canonical source tags remain immutable. Do not remove pending journals based only on an Actions failure. For the full protocol, signing environments, vaults, propagation checks, and reconciliation guarantees, see the [shared CLI guide](https://github.com/lambdawalker/gradle.android-repo-setup#standalone-setup-cli).
 
-Gradle setup uses `cache-provider: basic` to retain GitHub Actions-backed caching with v6. Publication jobs still disable Gradle caching and explicitly disable setup-node's automatic package-manager cache. Java, Python, Android SDK, and Gradle toolchain versions are independent of this action-runtime migration.
+The Maven environments keep their existing credentials. Generated signed APK builds use the `demo-apk-release` environment and remain manual. Environment timers, credentials, branch policies, and signing keys are not configured by this source migration; use the setup wizard when those operations are needed.
 
-Start a new workflow run from updated `main` after merging workflow changes. Re-running an old run retains its original workflow revision and can retain the Node.js 20 warning. A fresh publication run still follows the normal release identity and confirmation rules below; do not publish solely to test this migration. Use **Verify release tooling (no publication)** for validation.
+Legacy Central 0.2.1 has installation evidence in `publishing/legacy-installation.json` but no invented source snapshot. Historical failed JitPack 0.2.2 remains a failed attempt, not a publication. Confirmed history and old consumer versions are preserved.
 
-## Ordinary release
-
-1. Run **Publish permission library** on `main`.
-2. Select `maven-central` or `jitpack`; leave `version` empty for reuse/next patch.
-3. Review job output for the semantic version, exact source SHA, destination and eventual confirmation.
-
-The jobs share `maven-central-permission` concurrency with both finalization paths, without nested locks. An already-confirmed destination/version is a no-op. Preparation validates source history and public metadata before upload. Local validation tests the library, demo, documentation and screenshot fixtures, and validates an unsigned complete publication in `build/verification-repository`.
-
-Central reserves the canonical source tag plus an annotated `release-pending/permission/X.Y.Z` journal atomically before remote upload. The journal records source, coordinates, all expected artifact SHA-256 hashes and workflow run. The Gradle upload guard creates `release-uploading/permission/X.Y.Z` before allowing `publishAndReleaseToMavenCentral`; a second invocation is rejected. The deployment log is retained for Portal investigation. Successful upload runs the external environment delay, then public verification polls up to 40 minutes in a separate finalizer with a 50-minute timeout.
-
-JitPack reserves `release-pending/jitpack/permission/X.Y.Z` and the JitPack source tag, then requests the public artifact to initiate a provider build. `jitpack.yml` calls `scripts/jitpack_build.py`, which accepts only a canonical stable tag resolving to HEAD and checks the provider commit. It installs only `:permission:publishToMavenLocal`, unsigned. Gradle rejects app/sibling and remote-upload task selection. The Java 25 daemon and Java 17 library bytecode policy are preserved. JitPack bootstraps with Java 17, then explicitly installs and selects Temurin `25.0.2-tem` through SDKMAN before running Gradle. The `jdk` list is not a toolchain installation matrix; listing both versions did not install Java 25. Keep the SDKMAN selection aligned with `gradle/gradle-daemon-jvm.properties`. This avoids relying on its remote Foojay download URL in the JitPack build image.
-
-JitPack consumers use `com.github.lambdawalker:android.apexfission.permissions:permission~vX.Y.Z-jitpack`, not Central's artifact or raw semantic version. The historical unsuffixed coordinate is confirmed for 0.2.3 in the [publication record](releases/history/permission/0.2.3.json). Continue to verify each release before advertising it; [IMPORT.md](../IMPORT.md) selects the latest confirmed installation.
-
-## Confirmation and documentation
-
-Central requires matching POM, AAR, sources, documentation and Gradle metadata, expected hashes and detached signatures. JitPack requires successful provider status at the exact full reserved commit, correct public coordinates, valid AAR/JVM target and public dependency, required sources/documentation, and any available Gradle metadata. Source and documentation archive-entry hashes must match the reservation; independently rebuilt ZIP hashes are recorded only after remote verification, not assumed equal to local ZIPs. Queued/building states, missing artifacts, rate limits and transient failures retry within the budget; contradictory provenance and failed builds stop.
-
-Provider-reported provenance is trusted within that service's limits; public availability alone does not prove who performed a Central upload. Keep Portal deployment logs and association with the reserved source. Source tags remain immutable in this repository, but that is not a claim of immediate external JitPack artifact immutability or retention. Inspect current provider policy and the build log before recovery; never force a rebuild or delete a provider build automatically.
-
-Only confirmation advances `docs/releases/permission.json` or `docs/releases/jitpack/permission.json`. Finalization preserves each confirmation in `docs/releases/history/permission/X.Y.Z.json` before regenerating IMPORT. Same-version destination catch-up adds only matching source identities. Archive entries retain their immutable documentation revision independently of later translations or destination availability. Legacy unknown-source 0.2.1 has no fabricated archive.
-
-Edit `docs/templates/IMPORT.md.template`; run `./gradlew generateImportDocs verifyImportDocs` or `python3 scripts/module_release.py generate` and `verify`. There is no version override that can announce an unconfirmed release. IMPORT selects the highest confirmed version and only destinations confirming that exact source/version. History generation excludes archive files from latest-pointer and allocation discovery.
-
-Finalization fetches current `main`, preserves unrelated concurrent changes and newer build inputs, and stops if its executing release protocol/renderer changed. One atomic push commits intended metadata/IMPORT/archive changes and removes matching attempt markers. The canonical tag identifies the original artifact source, not the later docs commit. It never force-pushes or moves tags.
-
-The Pages workflow watches the successful trusted top-level publication and recovery workflows, checks out latest release-branch metadata, rebuilds all cataloged versions and deploys under its existing Pages policy. `GITHUB_TOKEN` bot commits alone cannot be assumed to start ordinary push workflows. Manual documentation-only retry remains available and cannot publish a package.
-
-## Recovery
-
-Run **Finalize permission release** on `main`, choosing the original destination, `permission`, and reserved semantic version. This action allocates no identity and performs no Maven upload. It rechecks state under the same lock, verifies original public artifacts and retries bookkeeping. Manual recovery can complete during the environment wait; the delayed automatic finalizer then safely becomes a no-op. Requests for older completed releases do not replace newer documentation.
-
-For JitPack, reading an uncached artifact may request the same tagged provider build. Recovery does not invoke force-rebuild/delete APIs or move the source tag. Inspect `https://jitpack.io/#lambdawalker/android.apexfission.permissions` and the selected tag's build log.
-
-- Validation failure before reservation: fix inputs and rerun; no remote attempt was made.
-- Unknown upload outcome, timeouts or runner loss: retain pending/uploading tags, inspect Portal/build logs, then finalize the same version. Never blindly re-upload immutable coordinates.
-- Still processing or partial artifact visibility: retain reservations, allow propagation, and retry finalization. A subset never counts as complete; there is no automatic public-artifact rollback.
-- Definitive rejection: first prove the deployment/build cannot become public and reconcile every intended artifact. Only then may a maintainer remove exactly the failed attempt references. Canonical source tags remain immutable and remain version-allocation inputs.
-- Render, tag, push or branch-protection failure: resolve the specific blocker, then finalize without upload. The atomic push prevents partially committed bookkeeping.
-- Source/tag conflicts or changed release protocol: reconcile the recorded immutable identity and executing tooling; do not delete history to bypass validation.
-
-### Java 25 provisioning failure in JitPack 0.2.2
-
-The first JitPack attempt for `permission/v0.2.2` at `7dd797f342365e90dc5adac5e52d73352901fc62` failed before Gradle could build or publish: JitPack selected Java 17 and the Java 25 Foojay download returned HTTP 400. The publication workflow later timed out on the missing POM. The corrected verifier checks provider status even when that initial POM is absent and reports a failed build with its log URL.
-
-The SDKMAN fix changed release inputs and the subsequent **0.2.3** publication is now confirmed in [the archive](releases/history/permission/0.2.3.json). Rerunning the old Actions run or finalizing `0.2.2` cannot apply the fix because those operations use the immutable old source. The recovery procedure below documents that transition; it is not a pending instruction to publish 0.2.3 again:
-
-1. Retain the failed Actions run and JitPack build log. Confirm JitPack still reports failure and no `0.2.2` artifacts were published; a pending or unknown outcome must stay reserved.
-2. A maintainer may then remove only `release-pending/jitpack/permission/0.2.2`, following the definitive-rejection policy above. Preserve `permission/v0.2.2` and its source identity. This change does not automatically remove any release references.
-3. Run **Publish permission library** on updated `main`, selecting `jitpack` and leaving `version` blank. With the existing history, changed build inputs select `0.2.3`; review the selected version before proceeding if other releases have since occurred.
-4. Let the new build confirm public artifacts before advertising JitPack installation coordinates. Do not mark the failed `0.2.2` attempt as published.
-
-## Offline verification
+## Credential-free verification
 
 ```bash
-python3 -m pip install -r scripts/requirements-publishing.txt
+android-repo-setup workflows --check
+android-repo-setup publishing_config check
+android-repo-setup module_release verify
+android-repo-setup documentation_history verify
 python3 -m unittest discover -s scripts/tests -v
-python3 scripts/publishing_config.py check
-python3 scripts/module_release.py verify
-python3 scripts/documentation_history.py verify
-bash -n scripts/finalize-release.sh
-./gradlew :permission:testDebugUnitTest :permission:publishAllPublicationsToVerificationRepository -PreleaseModule=permission -PreleaseVersion=9.8.7
-RELEASE_REPOSITORY=jitpack ./gradlew :permission:publishAllPublicationsToVerificationRepository -PjitpackBuild=true -PreleaseModule=permission -PreleaseVersion=9.8.7
+./gradlew verifyImportDocs :permission:testDebugUnitTest :permission:lintRelease :app:assembleDebug
+./gradlew :permission:publishAllPublicationsToVerificationRepository -PreleaseModule=permission -PreleaseVersion=9.8.7
+# From a clean committed checkout:
+android-repo-setup module_release check-local --module permission --version 9.8.7 --source "$(git rev-parse HEAD)"
 ```
 
-The verification workflow checks both selected-module destination layouts without signing or remote upload. Local fixture and temporary-Git tests cover ordering, source reuse, changed inputs, pending conflicts, archive catch-up, provider provenance, partial artifacts, timeout, durable upload guards, concurrent finalization and repeated recovery. Full Android/Gradle checks require the pinned toolchain, network dependencies and Android SDK. Local validation is not evidence of a live publication or Pages deployment.
-
-## Destination-scoped publishing and recovery
-
-Enter plain `X.Y.Z` in the workflow. Maven Central reserves `permission/vX.Y.Z-maven-central` and keeps `X.Y.Z` in its dependency coordinates. JitPack reserves `permission/vX.Y.Z-jitpack` and publishes consumer version `permission~vX.Y.Z-jitpack`. The same semantic version can identify different commits on different destinations. Existing tags, journals, and published coordinates remain valid.
-
-Leave **allow_pending_jitpack** off for normal releases. Enable it only to publish an explicit newer JitPack version while an older pending attempt remains unresolved. The workflow preserves the older tags and journals, checks their source provenance, and keeps upload-started markers and artifact verification enforced. Maven publishing does not use this checkbox.
-
-Use the dedicated **Finalize** workflow from the current release branch for an already reserved version. It verifies the original artifact source and only then updates installation metadata. New archive entries are scoped to the destination, so two providers with the same semantic version can retain separate source and documentation revisions.
+For JitPack verification, set `RELEASE_REPOSITORY=jitpack`, add `-PjitpackBuild=true -PjitpackScopedTag=true` to the publication command, and run the verifier under the same destination. These checks create no release tags or external publication. The configured contract requires the permission package, Java 17 class files, and its exported Accompanist dependency. Screenshot and device checks still require the pinned Android toolchain.

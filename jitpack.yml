@@ -7,4 +7,4 @@ before_install:
   - sdk use java 25.0.2-tem
   - java -version
 install:
-  - python3 scripts/jitpack_build.py
+  - ./gradlew --no-daemon :permission:publishJitPack
