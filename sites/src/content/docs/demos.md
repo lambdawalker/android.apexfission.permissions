@@ -5,6 +5,8 @@ description: Explore the Compose carousel, platform recipes, and two code-only r
 
 The `:app` module is a sample with five feature destinations and a separate complete quickstart Activity. Run it from Android Studio or `./gradlew :app:installDebug`, then choose a card on the home screen. It declares camera, microphone, coarse and fine location, background location, and notifications in its manifest. Each Android permission prompt belongs to the device and appears only after a user action.
 
+The catalog uses the confirmed Maven Central artifact `com.apexfission.android:demo-common:0.1.2`: `DemoScreen` owns the lazy scrolling layout and system insets, and `DemoCard` supplies each themed catalog entry. The App settings button opens this app's details page. The demo app requires API 28 for that dependency; the published permission library remains compatible with API 24 and does not depend on Demo Common. The host app supplies its Material 3 theme. Catalog previews cover light and dark mode.
+
 | Screen | What to try | Library concepts | Full code |
 | --- | --- | --- | --- |
 | Permission carousel | Swipe between the overview, camera, and optional microphone; pause or resume auto-advance; deny to inspect recovery. | `HandlePermissions`, required/optional grants, custom page, icon strip, timing, Settings callback. | [Carousel demo](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/app/src/main/java/com/apexfission/android/permissions/demo/PermissionCarouselDemo.kt) |

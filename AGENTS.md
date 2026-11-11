@@ -41,7 +41,7 @@ Edit `docs/templates/MODULE_IMPORT.md.template`, then run `./gradlew generateImp
 
 ## Toolchain and change policy
 
-The checked-in build uses compileSdk 37, minSdk 24, Gradle 9.6.0, AGP 9.4.1 and Kotlin Compose plugin 2.2.10. Library Java source/target compatibility is 17 (the demo uses 11); `gradle/gradle-daemon-jvm.properties` separately requests a Java 25 daemon. CI installs Java 17 and relies on Gradle daemon toolchain resolution. Install the Android SDK and configure `ANDROID_HOME` or an untracked `local.properties`. Do not silently downgrade versions to fit a local environment.
+The checked-in build uses compileSdk 37, minSdk 24, Gradle 9.6.0, AGP 9.4.1 and Kotlin/Compose plugin 2.4.20. Library Java source/target compatibility is 17 (the demo uses 11); `gradle/gradle-daemon-jvm.properties` separately requests a Java 25 daemon. CI installs Java 17 and relies on Gradle daemon toolchain resolution. Install the Android SDK and configure `ANDROID_HOME` or an untracked `local.properties`. Do not silently downgrade versions to fit a local environment.
 
 Run `./gradlew :permission:lintDebug :app:lintDebug` for Android lint. No dedicated formatter or API binary-compatibility gate is configured; do not claim those checks ran. For documentation-only work run `cd sites && npm ci && npm run check`. For UI changes run `npm run screenshots:render` and `npm run screenshots:check` from `sites/`; accept reviewed image changes only with `npm run screenshots:update`. Android behavior changes also require the unit, build, screenshot and relevant device checks above. Report environmental blockers explicitly.
 
@@ -68,3 +68,7 @@ Render historical guides from retained Git references as data, using current ren
 The root and library Gradle plugins come from `gradle.android-repo-setup`, mapped to its published JitPack artifact in settings. Match the reference integration in `android.apexfission.demo-common`. Preserve Central `com.apexfission.androi:permission` and JitPack `com.github.lambdawalker:android.apexfission.permissions`; `rootProject.name` supplies the JitPack artifact ID.
 
 CLI workflow outputs are listed in `.project/setup/workflow-generation.json`. Change inputs or shared templates and regenerate; do not hand-edit managed files. The curated `render-permission-screens.yml` and device test workflows remain repository-owned. `scripts/documentation_history.py` is only a compatibility shim for the Astro exporter. `scripts/validate-release-source.sh` validates immutable release documentation in a disposable worktree. Do not remove this isolation or bypass its failures.
+
+## Demo catalog dependency
+
+`:app` consumes the confirmed Maven Central Demo Common artifact through `libs.apexfission.demo.common`. Use its `DemoScreen` and `DemoCard` for the home catalog instead of recreating them. Its minimum API 28 applies to the demo app only; keep `:permission` at API 24 and free of this dependency. `DemoScreen` owns home-screen insets; the outer scaffold uses zero insets there. Device tests scroll the shared lazy list to items before querying their buttons.

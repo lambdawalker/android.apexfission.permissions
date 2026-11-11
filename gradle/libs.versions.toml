@@ -1,4 +1,5 @@
 [versions]
+demoCommon = "0.1.2"
 androidRepoSetup = "v0.1.5"
 agp = "9.4.1"
 coreKtx = "1.19.0"
@@ -8,7 +9,7 @@ espressoCore = "3.7.0"
 uiautomator = "2.3.0"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
-kotlin = "2.2.10"
+kotlin = "2.4.20"
 composeBom = "2026.02.01"
 appcompat = "1.8.0"
 material = "1.14.0"
@@ -21,6 +22,8 @@ junitPlatformEngine = "1.13.4"
 journeysJunitEngine = "0.3.0"
 
 [libraries]
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+apexfission-demo-common = { module = "com.apexfission.android:demo-common", version.ref = "demoCommon" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

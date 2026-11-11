@@ -12,7 +12,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 | `permission/src/main/java/com/apexfission/android/permission/ui` | Page definitions, carousel, icon strip, visual defaults, timing helper. |
 | `permission/src/main/java/com/apexfission/android/permission/requester` | Compose gate, grant snapshot, code-only request and check helpers, recovery message. |
 | `permission/src/main/java/com/apexfission/android/permission/recipe` | Permission statuses, location and notification steps, photo picker. |
-| `app/src/main/java/.../demo` | Five feature screens plus the complete quickstart Activity, launched from `MainActivity`. |
+| `app/src/main/java/.../demo` | Demo Common catalog and five feature screens plus the complete quickstart Activity, launched from `MainActivity`. |
 | `permission/src/test` and `permission/src/screenshotTest` | JVM decision tests and Compose visual fixtures. |
 | `app/src/androidTest` | Device-level navigation, grant, denial, and Settings recovery tests. |
 | `docs/screenshots` | Committed previews used by the README and gallery. |
@@ -20,7 +20,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 
 ## Local checks
 
-Use Android SDK 37. Library Java source/target compatibility is 17 (the demo uses 11), but the checked-in Gradle daemon criteria request Java 25; generated CI installs Java 17 and 25. See the canonical [maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md). From the repository root:
+Use Android SDK 37. The demo app requires API 28 to consume the published Demo Common components; the permission library still supports API 24. Library Java source/target compatibility is 17 (the demo uses 11), but the checked-in Gradle daemon criteria request Java 25; generated CI installs Java 17 and 25. See the canonical [maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md). From the repository root:
 
 ```bash
 ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug

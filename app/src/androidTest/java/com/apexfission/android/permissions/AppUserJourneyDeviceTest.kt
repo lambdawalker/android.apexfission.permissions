@@ -36,7 +36,7 @@ class AppUserJourneyDeviceTest {
 
         // 2. Navigate to Carousel demo
         // The carousel loops its timer; keep the test clock paused for a stable first page.
-        compose.onNodeWithText("Open carousel").performScrollTo()
+        compose.scrollToDemo("Open carousel")
         compose.mainClock.autoAdvance = false
         compose.onNodeWithText("Open carousel").performClick()
         compose.mainClock.advanceTimeByFrame()
@@ -63,7 +63,7 @@ class AppUserJourneyDeviceTest {
         compose.onNodeWithText("Permission demos").assertExists()
 
         // 2. Navigate to Platform recipes demo
-        compose.onNodeWithText("Open recipes").performScrollTo().performClick()
+        compose.scrollToDemo("Open recipes").performClick()
         compose.waitUntil(10_000) {
             compose.onAllNodesWithText("Back to demos").fetchSemanticsNodes().isNotEmpty()
         }
@@ -87,7 +87,7 @@ class AppUserJourneyDeviceTest {
     @Test
     fun fullAppRoundTripJourneyTest() {
         // Visit Carousel
-        compose.onNodeWithText("Open carousel").performScrollTo()
+        compose.scrollToDemo("Open carousel")
         compose.mainClock.autoAdvance = false
         compose.onNodeWithText("Open carousel").performClick()
         compose.mainClock.advanceTimeByFrame()
@@ -97,7 +97,7 @@ class AppUserJourneyDeviceTest {
         compose.onNodeWithText("Permission demos").assertExists()
 
         // Visit Recipes
-        compose.onNodeWithText("Open recipes").performScrollTo().performClick()
+        compose.scrollToDemo("Open recipes").performClick()
         compose.waitUntil(10_000) {
             compose.onAllNodesWithText("Back to demos").fetchSemanticsNodes().isNotEmpty()
         }

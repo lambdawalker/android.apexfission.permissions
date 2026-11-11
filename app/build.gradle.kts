@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.apexfission.android.permissions"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -57,6 +57,7 @@ android {
 
 dependencies {
     implementation(project(":permission"))
+    implementation(libs.apexfission.demo.common)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
