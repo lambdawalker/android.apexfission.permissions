@@ -1,4 +1,5 @@
 [versions]
+androidRepoSetup = "v0.1.5"
 agp = "9.4.1"
 coreKtx = "1.19.0"
 junit = "4.13.2"
@@ -51,3 +52,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
+
+android-repo-setup-root = { id = "com.apexfission.android-repo-setup.root", version.ref = "androidRepoSetup" }

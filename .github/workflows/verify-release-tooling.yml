@@ -1,65 +1,43 @@
-name: Verify release tooling (no publication)
-
+name: Verify release tooling
 on:
-  workflow_dispatch:
   pull_request:
   push:
     branches: [main]
-
+  workflow_dispatch:
 permissions:
   contents: read
-
-concurrency:
-  group: verify-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   verify:
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        module: [permission]
+        destination: [maven-central, jitpack]
     env:
-      RELEASE_MODULE: ${{ matrix.module }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+      RELEASE_REPOSITORY: ${{ matrix.destination }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          lfs: true
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.12'
-      - run: python3 -m pip install -r scripts/requirements-publishing.txt
-      - run: python3 scripts/publishing_config.py check
-      - name: Test release policy and deterministic documentation
+      - name: Install pinned Rust tooling
+        env:
+          TOOLING_REF: '327d531c3b79466e867b3f1761fbd97f515b7724'
         run: |
-          python3 -m unittest discover -s scripts/tests -v
-          python3 scripts/module_release.py verify
-          bash -n scripts/finalize-release.sh
-      - uses: actions/setup-java@v6
+          if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
+      - run: android-repo-setup publishing_config check
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: |
             17
             25
-      - uses: gradle/actions/setup-gradle@v6
-        with:
-          cache-provider: basic
-      - name: Verify Gradle build and local publication without credentials
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Verify the local release artifact
+        shell: bash
         run: |
-          ./gradlew generateImportDocs verifyImportDocs :permission:testDebugUnitTest :permission:lintRelease :permission:assembleRelease :app:assembleDebug :app:lintDebug ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
-          git diff --exit-code -- IMPORT.md docs/releases/
-          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
-      - name: Verify JitPack coordinates and unsigned artifacts without publishing
-        env:
-          RELEASE_REPOSITORY: jitpack
-        run: |
-          ./gradlew ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true -PjitpackScopedTag=true "-PreleaseModule=$RELEASE_MODULE" -PreleaseVersion=9.8.7 --no-daemon
-          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version 9.8.7 --source "$(git rev-parse HEAD)"
-      - name: Upload demo APK
-        uses: actions/upload-artifact@v7
-        with:
-          name: permission-demo-${{ matrix.module }}
-          path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+          flags=()
+          if [[ "$RELEASE_REPOSITORY" == jitpack ]]; then
+            flags+=(-PjitpackBuild=true -PjitpackScopedTag=true)
+          fi
+          ./gradlew verifyImportDocs :permission:lintRelease :permission:publishAllPublicationsToVerificationRepository \
+            -PreleaseModule=permission -PreleaseVersion=9.8.7 "${flags[@]}" --no-daemon
+          android-repo-setup module_release check-local --module permission --version 9.8.7 --source "$(git rev-parse HEAD)"

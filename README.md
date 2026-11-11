@@ -54,7 +54,7 @@ Use an Activity-owned `PermissionRequester` when your app supplies its own UI. R
 
 ## Publishing and documentation
 
-Use **Publish permission library** in GitHub Actions to select Maven Central or JitPack. Both destinations share the library’s version history: unchanged release inputs reuse the original version and source, while changed inputs advance the patch version. Installation documentation lists only confirmed publications. See the [release and recovery guide](docs/releases.md) before publishing or retrying an interrupted run.
+Use **Publish** in GitHub Actions to select Maven Central or JitPack. Both destinations share the library’s version history: unchanged release inputs reuse the original version and source, while changed inputs advance the patch version. Installation documentation lists only confirmed publications. See the [release and recovery guide](docs/releases.md) before publishing or retrying an interrupted run.
 
 English consumer guides live in `docs/agents/`; Spanish translations live in `docs/es/`. Release documentation is reconstructed from recorded source references. Missing or stale translations fall back visibly to English for that same version. The site rebuilds after successful publication, and its manual workflow can retry documentation independently.
 
@@ -69,3 +69,7 @@ npm run check
 This validates and builds the documentation; it does not render Android. For Android builds, device tests and explicit screenshot render/check/update commands, see [development](https://lambdawalker.github.io/android.apexfission.permissions/development/) and [AGENTS.md](AGENTS.md).
 
 The website also contains [concepts and ownership](https://lambdawalker.github.io/android.apexfission.permissions/concepts/), [limitations](https://lambdawalker.github.io/android.apexfission.permissions/limitations/), [troubleshooting](https://lambdawalker.github.io/android.apexfission.permissions/troubleshooting/), and [migration](https://lambdawalker.github.io/android.apexfission.permissions/migration/). See [LICENSE](LICENSE) for Apache-2.0 terms.
+
+## Repository setup
+
+Build and release conventions come from the shared [Android repository setup plugin and CLI](https://github.com/lambdawalker/gradle.android-repo-setup), following [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Run `./setup.sh --help` or `./setup.ps1 --help` to install the pinned Rust CLI with Cargo. Configuration and generated workflow ownership live under `.project/setup/`; see [publishing and maintenance](docs/releases.md) before updating them.

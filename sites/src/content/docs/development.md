@@ -12,7 +12,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 | `permission/src/main/java/com/apexfission/android/permission/ui` | Page definitions, carousel, icon strip, visual defaults, timing helper. |
 | `permission/src/main/java/com/apexfission/android/permission/requester` | Compose gate, grant snapshot, code-only request and check helpers, recovery message. |
 | `permission/src/main/java/com/apexfission/android/permission/recipe` | Permission statuses, location and notification steps, photo picker. |
-| `app/src/main/java/.../demo` | Four feature screens plus the complete quickstart Activity, launched from `MainActivity`. |
+| `app/src/main/java/.../demo` | Five feature screens plus the complete quickstart Activity, launched from `MainActivity`. |
 | `permission/src/test` and `permission/src/screenshotTest` | JVM decision tests and Compose visual fixtures. |
 | `app/src/androidTest` | Device-level navigation, grant, denial, and Settings recovery tests. |
 | `docs/screenshots` | Committed previews used by the README and gallery. |
@@ -20,7 +20,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 
 ## Local checks
 
-Use Android SDK 37. Library Java source/target compatibility is 17 (the demo uses 11), but the checked-in Gradle daemon criteria request Java 25; CI installs Java 17 and relies on daemon toolchain resolution. See the canonical [maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md). From the repository root:
+Use Android SDK 37. Library Java source/target compatibility is 17 (the demo uses 11), but the checked-in Gradle daemon criteria request Java 25; generated CI installs Java 17 and 25. See the canonical [maintainer instructions](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/AGENTS.md). From the repository root:
 
 ```bash
 ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug
@@ -37,13 +37,13 @@ The [Device permission tests workflow](https://github.com/lambdawalker/android.a
 
 ## Releases and recovery
 
-The manual **Publish permission library** workflow selects Maven Central or JitPack and uses a shared module/version/source identity. A later publication to the other destination adds its confirmed coordinates to the same release; it does not create a second API version. Installation documentation and the persistent documentation catalog advance only after the destination confirms availability.
+The manual **Publish** workflow selects Maven Central or JitPack and uses destination-scoped source tags and confirmation records. Installation instructions list the destinations that confirmed the selected version. Installation documentation and the persistent documentation catalog advance only after the destination confirms availability.
 
-Use **Finalize permission release** for interrupted confirmation and bookkeeping recovery without uploading artifacts again. See the [release and recovery guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/docs/releases.md) for workflow inputs, environment secrets, immutable tags, bootstrap evidence and recovery. [IMPORT.md](../installation/) remains authoritative for confirmed consumer coordinates.
+Use **SUB - Finalize Permissions release** for interrupted confirmation and bookkeeping recovery without uploading artifacts again. See the [release and recovery guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/docs/releases.md) for workflow inputs, environment secrets, immutable tags, bootstrap evidence and recovery. [IMPORT.md](../installation/) remains authoritative for confirmed consumer coordinates.
 
 ## Documentation site deployment
 
-The [Library site workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/deploy-library-site.yml) builds on site or screenshot changes in pull requests. A relevant push to `main` builds and deploys; `workflow_dispatch` is available for a documentation-only retry. Successful trusted publication or finalization completion also rebuilds the latest `main` catalog, including JitPack confirmation, without relying on a bot commit triggering a push workflow. GitHub Pages must be configured with **GitHub Actions** as its build source. The site is served under `/android.apexfission.permissions/`; the `github-pages` environment is separate from `maven-central`. Build locally with `cd sites && npm ci && npm run check`. The [site maintenance guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/sites/README.md) identifies editable sources. The API reference, concepts, limitations, troubleshooting, migration, task recipes, and first request are generated from canonical Markdown. Edit those sources, not generated site pages. Keep them aligned with public KDocs.
+The [Documentation workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/documentation.yml) builds on site or screenshot changes in pull requests. A relevant push to `main` builds and deploys; `workflow_dispatch` is available for a documentation-only retry. Successful trusted publication or finalization completion also rebuilds the latest `main` catalog, including JitPack confirmation, without relying on a bot commit triggering a push workflow. GitHub Pages must be configured with **GitHub Actions** as its build source. The site is served under `/android.apexfission.permissions/`; the `github-pages` environment is separate from `maven-central`. Build locally with `cd sites && npm ci && npm run check`. The [site maintenance guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/sites/README.md) identifies editable sources. The API reference, concepts, limitations, troubleshooting, migration, task recipes, and first request are generated from canonical Markdown. Edit those sources, not generated site pages. Keep them aligned with public KDocs.
 
 ## Documentation and release checks
 

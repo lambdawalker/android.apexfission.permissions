@@ -9,10 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class ReleaseDocumentationTests(unittest.TestCase):
     def run_validation(self, workflow, fail=False):
-        text = (ROOT / '.github/workflows' / workflow).read_text()
-        step = text.split('      - name: Validate documentation at immutable release source\n', 1)[1].split('      - name:', 1)[0]
-        command = step.split('        run: |\n', 1)[1]
-        command = '\n'.join(line[10:] for line in command.splitlines())
+        workflow_text = (ROOT / '.github/workflows' / workflow).read_text()
+        self.assertIn('run: \"bash scripts/validate-release-source.sh\"', workflow_text)
+        command = (ROOT / 'scripts/validate-release-source.sh').read_text()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             repo = root / 'repo'
@@ -35,7 +34,7 @@ class ReleaseDocumentationTests(unittest.TestCase):
             npm.write_text('#!/bin/sh\nset -eu\nprintf "%s\\n" "$*" >> "$CALL_LOG"\nif [ "$*" = "run screenshots:render" ]; then printf rendered >> ../reference.png; fi\nif [ "$*" = "run screenshots:check" ] && [ "$FAIL_CHECK" = "1" ]; then exit 42; fi\n')
             npm.chmod(0o755)
             env = dict(os.environ, PATH=str(tools) + os.pathsep + os.environ['PATH'], SOURCE_SHA=source, RUNNER_TEMP=str(root), CALL_LOG=str(root / 'calls'), FAIL_CHECK=str(int(fail)))
-            cwd = repo / 'sites' if 'working-directory: sites' in step else repo
+            cwd = repo
             result = subprocess.run(['bash', '-e', '-c', command], cwd=cwd, env=env, capture_output=True, text=True)
             self.assertEqual(result.returncode, 42 if fail else 0, result.stderr)
             self.assertEqual((root / 'calls').read_text().splitlines(), ['ci', 'run check', 'run screenshots:render', 'run screenshots:check'])

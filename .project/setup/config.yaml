@@ -1,0 +1,19 @@
+repository: lambdawalker/android.apexfission.permissions
+title: Apexfission Permissions
+modules:
+  permission: Apexfission Permissions
+key_alias: permission
+tooling_ref: '327d531c3b79466e867b3f1761fbd97f515b7724'
+verification:
+  class_prefix: com/apexfission/android/permission/
+  required_api_artifacts: [accompanist-permissions]
+  bytecode_major: 61
+workflows:
+  module: permission
+  app_module: app
+  title: Permissions
+  java_version: '25'
+  screenshot_count: 14
+  documentation_command: 'npm --prefix sites ci && npm --prefix sites run check'
+  screenshot_check_command: 'node sites/scripts/screenshots.mjs manifest'
+  release_validation_command: 'bash scripts/validate-release-source.sh'

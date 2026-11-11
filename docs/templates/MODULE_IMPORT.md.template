@@ -1,4 +1,4 @@
-<!-- GENERATED FILE. Source: docs/templates/IMPORT.md.template. Run ./gradlew generateImportDocs. -->
+<!-- GENERATED FILE. Source: docs/templates/MODULE_IMPORT.md.template. Run ./gradlew generateImportDocs. -->
 # Install Apexfission Permissions
 
 This is the authoritative latest confirmed installation reference. Choose one destination and one dependency syntax. Pending uploads and tags are not proof of availability.

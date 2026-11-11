@@ -55,6 +55,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: basic
+      - name: Verify localization and isolated release validation
+        run: python3 -m unittest discover -s scripts/tests -v
       - name: Compile demos, run unit tests and Android lint
         run: ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug :permission:lintDebug :app:lintDebug --stacktrace
       - name: Render candidates and record provenance
