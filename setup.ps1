@@ -7,5 +7,5 @@ $reference = $match.Groups[1].Value
 $option = if ($reference.StartsWith('v')) { '--tag' } else { '--rev' }
 & cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git $option $reference android-repo-setup
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-& android-repo-setup @args
+& android-repo-setup --project $PSScriptRoot @args
 exit $LASTEXITCODE

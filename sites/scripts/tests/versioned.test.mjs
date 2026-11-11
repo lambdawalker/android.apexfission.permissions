@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
+import {cpSync,mkdtempSync,mkdirSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -80,25 +80,32 @@ test('catalog navigation preserves language and offers module release scopes',()
 
 test('complete archived guide rendering retains dotted versions and exact installation after edits',async()=>{
  const {buildVersioned}=await import('../build-versioned.mjs');
- const root=mkdtempSync(join(tmpdir(),'permission-archive-'));
+ const root=mkdtempSync(join(tmpdir(),'permission archive-'));
  const previous=process.cwd(),previousRef=process.env.DOCS_REF;
  const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
  try {
-  for(const p of ['docs/agents','docs/es','scripts','sites'])mkdirSync(join(root,p),{recursive:true});
+  for(const p of ['docs/agents','docs/es','sites'])mkdirSync(join(root,p),{recursive:true});
   git('init','-q');git('config','user.name','Test');git('config','user.email','test@example.invalid');
   writeFileSync(join(root,'docs/agents/index.md'),'# Old permission guide\n\n[API](api.md#contract) [Install](../../IMPORT.md)\n');
   writeFileSync(join(root,'docs/agents/api.md'),'# Old API\n\n## Contract\n\nOld contract.\n');
   git('add','.');git('commit','-qm','confirmed test source');const ref=git('rev-parse','HEAD');
-  const record={module:'permission',version:'1.2.3',source:ref,documentation_ref:ref,destinations:{central:{}},installation:{en:'# Installation\n\n`example:permission:1.2.3`\n',es:'# Instalación\n\n`example:permission:1.2.3`\n'}};
-  writeFileSync(join(root,'scripts/documentation_history.py'),'print('+JSON.stringify(JSON.stringify([record, {...record, route_version:'1.2.3-jitpack', destinations:{jitpack:{}}}]))+')\n');
+  const repositoryRoot=new URL('../../../',import.meta.url);
+  cpSync(new URL('.project',repositoryRoot),join(root,'.project'),{recursive:true});
+  cpSync(new URL('docs/templates',repositoryRoot),join(root,'docs/templates'),{recursive:true});
+  cpSync(new URL('gradle.properties',repositoryRoot),join(root,'gradle.properties'));
+  mkdirSync(join(root,'docs/releases/jitpack'),{recursive:true});
+  const record={module:'permission',version:'1.2.3',source:ref,phase:'confirmed-public',group:'example.library',artifact:'permission'};
+  writeFileSync(join(root,'docs/releases/permission.json'),JSON.stringify({...record,repository:'maven-central',source_tag:'permission/v1.2.3-maven-central'}));
+  writeFileSync(join(root,'docs/releases/jitpack/permission.json'),JSON.stringify({...record,repository:'jitpack',repository_url:'https://jitpack.io',source_tag:'permission/v1.2.3-jitpack',consumer_version:'permission~v1.2.3-jitpack'}));
+  execFileSync('android-repo-setup',['--project',root,'documentation_history','seed'],{cwd:tmpdir()});
   writeFileSync(join(root,'docs/agents/api.md'),'# New API\n\n## Contract\n\nNew development contract.\n');
   process.chdir(join(root,'sites'));process.env.DOCS_REF=ref;
   await buildVersioned(root);
-  const old=readFileSync('public/es/permission/1.2.3/raw/api.md','utf8');
+  const old=readFileSync('public/es/permission/1.2.3-maven-central/raw/api.md','utf8');
   assert.match(old,/Old contract/);assert.doesNotMatch(old,/New development/);assert.match(old,/Traducción pendiente/);
-  assert.match(readFileSync('src/content/docs/en/permission/1.2.3/api.md','utf8'),/slug: "en\/permission\/1\.2\.3\/api"/);
-  assert.match(readFileSync('public/en/permission/1.2.3/raw/index.md','utf8'),/en\/permission\/1\.2\.3\/raw\/api\.md#contract/);
-  assert.match(readFileSync('public/en/permission/1.2.3/raw/installation.md','utf8'),/example:permission:1\.2\.3/);
+  assert.match(readFileSync('src/content/docs/en/permission/1.2.3-maven-central/api.md','utf8'),/slug: "en\/permission\/1\.2\.3-maven-central\/api"/);
+  assert.match(readFileSync('public/en/permission/1.2.3-maven-central/raw/index.md','utf8'),/en\/permission\/1\.2\.3-maven-central\/raw\/api\.md#contract/);
+  assert.match(readFileSync('public/en/permission/1.2.3-maven-central/raw/installation.md','utf8'),/example.library:permission:1\.2\.3/);
   assert.match(readFileSync('public/en/permission/development/raw/api.md','utf8'),/New development contract/);
   const scopes=JSON.parse(readFileSync('public/versions.json','utf8'));
   assert.ok(scopes.some(s=>s.root.endsWith('/permission/1.2.3-jitpack/')));

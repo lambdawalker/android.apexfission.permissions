@@ -10,7 +10,7 @@ import {buildVersioned} from '../build-versioned.mjs';
 const repository = fileURLToPath(new URL('../../../', import.meta.url));
 const moduleName = 'permission';
 
-test('the release exporter renders both providers at the same version', async () => {
+test('the Rust release exporter renders both providers without a Python bridge', async () => {
     const root = mkdtempSync(join(tmpdir(), 'release-docs-'));
     const previous = process.cwd();
     const previousRef = process.env.DOCS_REF;
@@ -23,10 +23,6 @@ test('the release exporter renders both providers at the same version', async ()
         rmSync(join(root, 'docs/releases'), {recursive: true, force: true});
         mkdirSync(join(root, 'docs/releases/jitpack'), {recursive: true});
         mkdirSync(join(root, 'sites'));
-        mkdirSync(join(root, 'scripts'));
-        for (const file of ['documentation_history.py']) {
-            cpSync(join(repository, 'scripts', file), join(root, 'scripts', file));
-        }
         cpSync(join(repository, '.project'), join(root, '.project'), {recursive: true});
         cpSync(join(repository, 'gradle.properties'), join(root, 'gradle.properties'));
         git('init', '-q');
@@ -52,7 +48,7 @@ test('the release exporter renders both providers at the same version', async ()
         for (const [file, release] of [[`${moduleName}.json`, central], [`jitpack/${moduleName}.json`, jitpack]]) {
             writeFileSync(join(root, 'docs/releases', file), JSON.stringify(release));
         }
-        execFileSync('python3', ['scripts/documentation_history.py', 'seed'], {cwd: root});
+        execFileSync('android-repo-setup', ['--project', root, 'documentation_history', 'seed'], {cwd: tmpdir()});
         process.chdir(join(root, 'sites'));
         process.env.DOCS_REF = jitpack.source;
         await buildVersioned(root);

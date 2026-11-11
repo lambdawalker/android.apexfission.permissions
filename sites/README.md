@@ -10,6 +10,8 @@ npm run dev
 npm run check
 ```
 
+This documentation build and its tests require the pinned Rust CLI on `PATH`, Node.js 24, and Git with full repository history. Python is not required. The CLI exports release metadata; Astro owns the website, localized routes, search, and validation. Keep the custom `workflows.documentation_command` in `.project/setup/config.yaml` when regenerating workflows; the CLI’s built-in `build_docs` is a separate renderer.
+
 `check` runs publisher/link/image regression tests, verifies the quickstart against its compiled Activity source, checks image manifest hashes, builds the site and search index, and checks output links, anchors, images, base paths, and required raw Markdown endpoints. It does not check external network availability or render Android UI. Run it from `sites/`.
 
 ## Editable sources
@@ -40,7 +42,7 @@ Canonical English remains in `docs/agents/`. Translate its prose into `docs/es/`
 
 `npm run check` builds all cataloged releases and the working development guides under `/en/permission/<version>/` and `/es/permission/<version>/`, with matching `raw/*.md` endpoints. `versions.json` and the localized catalogs provide discovery without scraping selectors. Version/language controls retain the guide when available and explain an index fallback. The single library has no module selector. Existing human routes, screenshots and raw agent routes remain available.
 
-`scripts/documentation_history.py export` delegates to the pinned `android-repo-setup documentation_history export` command and supplies exact-version installation and confirmed immutable source/documentation identities. The build reads historical Markdown with Git and runs only current renderer code; fetch full history. Missing objects fail the build. It cleans generated localized routes and production output before assembly. Do not edit ignored generated pages, `src/versions.json`, `src/build.json`, or localized public files.
+The renderer calls `android-repo-setup --project <repository-root> documentation_history export` directly and supplies exact-version installation and confirmed immutable source/documentation identities. The build reads historical Markdown with Git and runs only current renderer code; fetch full history. Missing objects fail the build. It cleans generated localized routes and production output before assembly. Do not edit ignored generated pages, `src/versions.json`, `src/build.json`, or localized public files.
 
 The archive contains confirmed JitPack releases with source and documentation pinned in `docs/releases/history/permission/`. Consult those records for historical versions and `IMPORT.md` for the latest confirmed version. Legacy Central 0.2.1 installation still lacks a verified source identity and is not labeled a historical manual. Only confirmed releases with retained identities enter the archive. A reviewed documentation correction keeps the code identity unchanged and records documentation/translation identity separately; see the release guide for catalog operations. Translation trees must be retained by merged Git content, not dangling PR commits.
 

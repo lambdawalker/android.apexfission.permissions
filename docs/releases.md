@@ -6,7 +6,7 @@
 
 This repository uses the same Gradle plugins and Rust CLI as [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Their source is [gradle.android-repo-setup](https://github.com/lambdawalker/gradle.android-repo-setup). The plugin version is pinned in `gradle/libs.versions.toml`; the CLI source revision is pinned by `tooling_ref` in `.project/setup/config.yaml`. The two pins are independent: the CLI needs the configurable verification/workflow support used here, while the published plugin supplies the existing Gradle publication conventions.
 
-Install the configured CLI with `./setup.sh --help` on Linux/macOS or `./setup.ps1 --help` in PowerShell. Both require Cargo and install the exact configured tag or source commit. Run `android-repo-setup` for the interactive signing/environment wizard. Credentials and signing material belong in the appropriate GitHub environment; never commit them. The CLI uses `keytool` for APK keys and GnuPG for Maven signing.
+Install the configured CLI with `./setup.sh --help` on Linux/macOS or `setup.bat --help` / `./setup.ps1 --help` on Windows. These launchers require Cargo and install the exact configured tag or source commit. Run `android-repo-setup` for the interactive signing/environment wizard. Credentials and signing material belong in the appropriate GitHub environment; never commit them. The CLI uses `keytool` for APK keys and GnuPG for Maven signing.
 
 ## Configuration and generated files
 
@@ -15,7 +15,7 @@ Install the configured CLI with `./setup.sh --help` on Linux/macOS or `./setup.p
 - `android-repo-setup workflows --overwrite` regenerates managed workflows. `--check` detects drift without writing. `.project/setup/workflow-generation.json` records ownership. Review changes before committing.
 - `docs/templates/MODULE_IMPORT.md.template` owns installation prose. `android-repo-setup module_release generate` and `verify` back Gradle's `generateImportDocs` and `verifyImportDocs` tasks.
 
-The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The Astro site remains the bilingual consumer site. Its history exporter delegates to the shared CLI through a small compatibility shim.
+The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The Astro site remains the bilingual consumer site. Its history exporter calls `android-repo-setup --project <repository-root> documentation_history export` directly; documentation builds require Rust tooling, Node.js and Git, with no Python runtime.
 
 ## Identity and publication
 
