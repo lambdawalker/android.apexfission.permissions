@@ -20,3 +20,5 @@ for(const language of ['en','es']) {
 }
 assert.ok(!scopes.some(s=>s.version==='0.2.1'),'legacy Central source must remain unknown');
 JS
+
+node --test sites/tests/docs-navigation.test.mjs

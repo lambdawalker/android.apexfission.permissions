@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
-const script = readFileSync(new URL('../../static/docs.js', import.meta.url), 'utf8');
+const script = readFileSync(new URL('../dist/docs.js', import.meta.url), 'utf8');
 for (const path of ['', '/', '/repository', '/repository/', '/nested/repository']) {
   test(`catalog, language navigation and search retain base ${path || '(origin)'}`, async () => {
     const root = `https://example.com${path.replace(/\/$/, '')}/`;
