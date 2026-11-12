@@ -1,6 +1,6 @@
 # Documentation website
 
-The shared `android-repo-setup` CLI v0.1.11 prepares bilingual, versioned content and Zola 0.23.6 renders the same documentation theme as Demo Common. Install the pinned CLI with `./setup.sh --help`, and put checksum-verified Zola 0.23.6 on PATH. From the repository root:
+The shared `android-repo-setup` CLI v0.1.13 prepares bilingual, versioned content and Zola 0.23.6 renders the same documentation theme as Demo Common. Install the pinned CLI with `./setup.sh --help`, and put checksum-verified Zola 0.23.6 on PATH. From the repository root:
 
 ```sh
 ./setup.sh build_docs --check
