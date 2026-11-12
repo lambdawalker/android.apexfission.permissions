@@ -11,4 +11,4 @@ else
   exit 1
 fi
 cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-exec android-repo-setup "$@"
+exec android-repo-setup --project "$PWD" "$@"
