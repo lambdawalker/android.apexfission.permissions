@@ -3,7 +3,7 @@ title: Apexfission Permissions
 modules:
   permission: Apexfission Permissions
 key_alias: permission
-tooling_ref: 'v0.1.13'
+tooling_ref: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
 verification:
   class_prefix: com/apexfission/android/permission/
   required_api_artifacts: [accompanist-permissions]
@@ -16,4 +16,7 @@ workflows:
   screenshot_count: 14
   documentation_command: 'node sites/scripts/sync-examples.mjs && node sites/scripts/screenshots.mjs manifest && sh sites/tests/landing.sh'
   screenshot_check_command: 'node sites/scripts/screenshots.mjs manifest'
-  release_validation_command: 'bash scripts/validate-release-source.sh'
+  release_validation_command: 'android-repo-setup release-validate --source "$SOURCE_SHA"'
+
+bootstrap:
+  jitpack: true

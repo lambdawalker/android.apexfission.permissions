@@ -1,0 +1,38 @@
+{
+  "release_validation": [
+    [
+      "node",
+      "sites/scripts/sync-examples.mjs"
+    ],
+    [
+      "node",
+      "sites/scripts/screenshots.mjs",
+      "manifest"
+    ],
+    [
+      "android-repo-setup",
+      "build_docs",
+      "--check"
+    ],
+    [
+      "npm",
+      "--prefix",
+      "sites",
+      "ci"
+    ],
+    [
+      "npm",
+      "--prefix",
+      "sites",
+      "run",
+      "screenshots:render"
+    ],
+    [
+      "npm",
+      "--prefix",
+      "sites",
+      "run",
+      "screenshots:check"
+    ]
+  ]
+}

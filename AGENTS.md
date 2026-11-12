@@ -67,7 +67,7 @@ Render historical guides from retained Git references as data, using current ren
 
 The root and library Gradle plugins come from `gradle.android-repo-setup`, mapped to its published JitPack artifact in settings. Match the reference integration in `android.apexfission.demo-common`. Preserve Central `com.apexfission.androi:permission` and JitPack `com.github.lambdawalker:android.apexfission.permissions`; `rootProject.name` supplies the JitPack artifact ID.
 
-CLI workflow outputs are listed in `.project/setup/workflow-generation.json`. Change inputs or shared templates and regenerate; do not hand-edit managed files. The curated `render-permission-screens.yml` and device test workflows remain repository-owned. The shared CLI builds the site with Zola 0.23.6 and reads historical Markdown as data. `scripts/validate-release-source.sh` validates immutable release documentation in a disposable worktree. Do not remove this isolation or bypass its failures.
+CLI workflow outputs are listed in `.project/setup/workflow-generation.json`. Change inputs or shared templates and regenerate; do not hand-edit managed files. The curated `render-permission-screens.yml` and device test workflows remain repository-owned. The shared CLI builds the site with Zola 0.23.6 and reads historical Markdown as data. `android-repo-setup release-validate` validates immutable release documentation in a disposable worktree. Do not remove this isolation or bypass its failures.
 
 ## Demo catalog dependency
 

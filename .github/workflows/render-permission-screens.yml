@@ -11,7 +11,7 @@ on:
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
       - 'docs/screenshots/**'
-      - 'scripts/validate-release-source.sh'
+      - '.project/verification/checks.json'
       - 'sites/scripts/**'
       - 'sites/package*.json'
   push:
@@ -25,7 +25,7 @@ on:
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
       - 'docs/screenshots/**'
-      - 'scripts/validate-release-source.sh'
+      - '.project/verification/checks.json'
       - 'sites/scripts/**'
       - 'sites/package*.json'
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
           cache-dependency-path: sites/package-lock.json
       - run: npm ci
         working-directory: sites
-      - name: Verify screenshot and isolated release validation regressions
+      - name: Verify screenshot regressions
         run: npm --prefix sites test
       - uses: actions/setup-java@v6
         with:
