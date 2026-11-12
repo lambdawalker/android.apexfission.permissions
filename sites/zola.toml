@@ -1,0 +1,22 @@
+# Content and the shared theme are staged by android-repo-setup build_docs.
+base_url = "https://lambdawalker.github.io/android.apexfission.permissions"
+title = "Apexfission Permissions"
+description = "Android runtime permissions, explained with Compose."
+default_language = "en"
+build_search_index = true
+generate_sitemap = true
+
+[languages.es]
+title = "Apexfission Permissions"
+description = "Permisos de Android con Jetpack Compose."
+build_search_index = true
+
+[search]
+index_format = "fuse_json"
+
+[extra]
+repository = "lambdawalker/android.apexfission.permissions"
+
+[markdown.highlighting]
+light_theme = "github-light"
+dark_theme = "github-dark"
