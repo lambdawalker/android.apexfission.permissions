@@ -30,3 +30,5 @@ Canonical scopes use `/en/permission/<version>/` and `/es/permission/<version>/`
 Legacy human routes redirect to their development guides. Root `IMPORT.md`, `llms.txt`, `agents/*.md`, screenshots and older version aliases remain available. `sites/static/screenshots/` retains the old screenshot URLs; `screenshots:update` refreshes those copies and manifest validation rejects drift. Do not edit generated output. `build_docs --check` validates local links, anchors, images and raw endpoints, not external availability or Android behavior.
 
 Release preflight runs `scripts/validate-release-source.sh` in a disposable worktree so rendering cannot dirty immutable publication sources. Its cleanup and failure propagation are tested by `sites/scripts/tests/release-isolation.test.mjs`. Screenshot pixel and input-hash regressions remain in the same test suite. Full site checks and landing tests run with `sh sites/tests/landing.sh` and the CLI.
+
+The `static/docs.js` override carries the shared theme base-path fix for CLI v0.1.10. Remove it when upgrading to a released CLI containing the fix; keep the navigation regression test pointed at the staged shared script.
