@@ -1,6 +1,6 @@
 # Documentation website
 
-The shared `android-repo-setup` CLI v0.1.10 prepares bilingual, versioned content and Zola 0.23.6 renders the same documentation theme as Demo Common. Install the pinned CLI with `./setup.sh --help`, and put checksum-verified Zola 0.23.6 on PATH. From the repository root:
+The shared `android-repo-setup` CLI v0.1.11 prepares bilingual, versioned content and Zola 0.23.6 renders the same documentation theme as Demo Common. Install the pinned CLI with `./setup.sh --help`, and put checksum-verified Zola 0.23.6 on PATH. From the repository root:
 
 ```sh
 ./setup.sh build_docs --check
@@ -31,4 +31,4 @@ Legacy human routes redirect to their development guides. Root `IMPORT.md`, `llm
 
 Release preflight runs `scripts/validate-release-source.sh` in a disposable worktree so rendering cannot dirty immutable publication sources. Its cleanup and failure propagation are tested by `sites/scripts/tests/release-isolation.test.mjs`. Screenshot pixel and input-hash regressions remain in the same test suite. Full site checks and landing tests run with `sh sites/tests/landing.sh` and the CLI.
 
-The `static/docs.js` override carries the shared theme base-path fix for CLI v0.1.10. Remove it when upgrading to a released CLI containing the fix; keep the navigation regression test pointed at the staged shared script.
+Navigation regression tests run against the CLI-generated `sites/dist/docs.js` as part of `sh sites/tests/landing.sh`, covering project base paths for version/language selectors and search.
