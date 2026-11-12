@@ -72,3 +72,5 @@ CLI workflow outputs are listed in `.project/setup/workflow-generation.json`. Ch
 ## Demo catalog dependency
 
 `:app` consumes the confirmed Maven Central Demo Common artifact through `libs.apexfission.demo.common`. Use its `DemoScreen` and `DemoCard` for the home catalog instead of recreating them. Its minimum API 28 applies to the demo app only; keep `:permission` at API 24 and free of this dependency. `DemoScreen` owns home-screen insets; the outer scaffold uses zero insets there. Device tests scroll the shared lazy list to items before querying their buttons.
+
+Validate Android string translations with `android-repo-setup check_localization`. The generated verify-localization workflow runs this check across app and library source sets.
