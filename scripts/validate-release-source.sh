@@ -10,8 +10,10 @@ cleanup() {
 trap cleanup EXIT
 # Rendering regenerates tracked reference files; isolate it from artifact provenance checks.
 git worktree add --detach "$validation_checkout" "$SOURCE_SHA"
-cd "$validation_checkout/sites"
-npm ci
-npm run check
-npm run screenshots:render
-npm run screenshots:check
+cd "$validation_checkout"
+node sites/scripts/sync-examples.mjs
+node sites/scripts/screenshots.mjs manifest
+android-repo-setup build_docs --check
+npm --prefix sites ci
+npm --prefix sites run screenshots:render
+npm --prefix sites run screenshots:check

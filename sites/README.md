@@ -1,47 +1,32 @@
-# Library website
+# Documentation website
 
-Astro Starlight builds the human documentation. `docs/agents/` owns consumer contracts and `IMPORT.md` owns confirmed installation facts. Legacy routes show development documentation for `main`; versioned routes identify confirmed release snapshots separately. The banner identifies the selected scope.
+The shared `android-repo-setup` CLI v0.1.10 prepares bilingual, versioned content and Zola 0.23.6 renders the same documentation theme as Demo Common. Install the pinned CLI with `./setup.sh --help`, and put checksum-verified Zola 0.23.6 on PATH. From the repository root:
 
-```bash
-cd sites
-# Install the pinned CLI first; see docs/releases.md.
-npm ci
-npm run dev
-npm run check
+```sh
+./setup.sh build_docs --check
+node sites/scripts/sync-examples.mjs
+node sites/scripts/screenshots.mjs manifest
 ```
 
-`check` runs publisher/link/image regression tests, verifies the quickstart against its compiled Activity source, checks image manifest hashes, builds the site and search index, and checks output links, anchors, images, base paths, and required raw Markdown endpoints. It does not check external network availability or render Android UI. Run it from `sites/`.
+The site build requires Rust tooling, Zola and Git with full history. No Python, Astro or npm installation is required to render the site. Node.js 24 runs the quickstart and screenshot-manifest checks. Pixel comparison and screenshot rendering additionally use `npm --prefix sites ci` to install Sharp, then `npm --prefix sites test`, `npm --prefix sites run screenshots:render` and `npm --prefix sites run screenshots:check`. Only accept reviewed images with `screenshots:update`.
 
-## Editable sources
+Output is `sites/dist/`, served at `/android.apexfission.permissions/`. For a local static server, build with `--base` matching its exposed directory. The generated Documentation workflow validates PRs and deploys main to GitHub Pages; trusted successful publication also triggers it. Retry Documentation for a site failure without publishing another Android artifact.
 
-| Content | Edit here |
+| Content | Source |
 | --- | --- |
-| API reference, concepts, limitations, troubleshooting, migration, task recipes | Corresponding `docs/agents/*.md` file; matching human pages are generated |
-| Complete quickstart code | `app/src/main/java/com/apexfission/android/permissions/demo/CameraQuickstartActivity.kt`, then `node sites/scripts/sync-examples.mjs --write` from the repository root |
-| Quickstart explanation | `docs/agents/quickstart.md`, outside extraction markers |
-| Installation | `docs/templates/MODULE_IMPORT.md.template`; use the existing Gradle generation/verification tasks |
-| Legacy human feature guides, overview, demos, gallery, development | `sites/src/content/docs/` non-generated pages |
-| Versioned consumer guides / Spanish prose | `docs/agents/` / `docs/es/`; localized site routes are generated |
-| Appearance/version banner/navigation | `src/styles/brand.css`, `src/components/VersionBanner.astro`, `astro.config.mjs` |
-| Screenshot mapping and accepted assets | `docs/screenshots/manifest.json`; follow its README |
+| English consumer guidance | `docs/agents/`, including the preserved website overview, demos and gallery |
+| Spanish guidance and reviewed source hashes | `docs/es/` and `docs/es/translations.json` |
+| Current installation | Generated `IMPORT.md`, sourced from `docs/templates/MODULE_IMPORT.md.template` |
+| Historical identities | `docs/releases/history/permission/` |
+| Quickstart sample | `CameraQuickstartActivity.kt`; check with `sync-examples.mjs`, accept intentional changes with `--write` |
+| Reviewed screenshots | `docs/screenshots/manifest.json` and its README |
+| Zola settings and layout | `sites/zola.toml`, `sites/templates/`, `sites/static/` |
+| Shared rendering and theme | `gradle.android-repo-setup/cli/` |
 
-The build publishes canonical Markdown recursively under `/agents/*.md`, preserving Markdown-to-Markdown navigation and linking source files to GitHub. It also publishes `/IMPORT.md` and `/llms.txt`. Markdown parsing preserves code examples and reference links. Generated raw asset directories are cleared before synchronization; the generated-page registry removes obsolete human outputs. Never edit generated copies.
+Home and `/es/` open the numerically newest confirmed exact release. Development is a separate unreleased scope. The version selector retains exact releases. No equivalence between provider releases is inferred from version numbers: `release-equivalence.json` is deliberately empty here. Legacy Central 0.2.1 retains installation evidence without an invented historical source manual.
 
-## Deployment
+Canonical scopes use `/en/permission/<version>/` and `/es/permission/<version>/`, with scoped raw Markdown and `versions.json`. Missing or stale Spanish translations fall back visibly to English from the selected revision. Source and documentation identities remain separate. Historical Markdown is data; builds execute only current rendering code. Missing historical objects fail the build.
 
-Output is `sites/dist/`, served at `/android.apexfission.permissions/`. The generated Documentation workflow validates relevant PRs and deploys relevant `main` pushes or a manual run. A successful library publishing workflow also triggers it to pick up confirmed installation changes. Set repository Settings → Pages → Build and deployment to GitHub Actions. The `github-pages` environment is separate from Maven Central.
+Legacy human routes redirect to their development guides. Root `IMPORT.md`, `llms.txt`, `agents/*.md`, screenshots and older version aliases remain available. `sites/static/screenshots/` retains the old screenshot URLs; `screenshots:update` refreshes those copies and manifest validation rejects drift. Do not edit generated output. `build_docs --check` validates local links, anchors, images and raw endpoints, not external availability or Android behavior.
 
-Documentation-only changes do not require an emulator. Changes to screenshot inputs run the separate Render permission screens workflow. Ordinary package release preflight validates the exact release source before upload; recovery skips new screenshot generation and never reuploads the package. A site failure is retried through Documentation, not by publishing another package.
-
-
-## Versioned English and Spanish documentation
-
-Canonical English remains in `docs/agents/`. Translate its prose into `docs/es/`, preserve code fences and heading structure, and review before recording the English file SHA-256 in `docs/es/translations.json`. Missing or stale translations visibly fall back to English from the selected documentation revision; they never borrow current translations for an old release. English heading anchors remain available in Spanish HTML and raw Markdown.
-
-`npm run check` builds all cataloged releases and the working development guides under `/en/permission/<version>/` and `/es/permission/<version>/`, with matching `raw/*.md` endpoints. `versions.json` and the localized catalogs provide discovery without scraping selectors. Version/language controls retain the guide when available and explain an index fallback. The single library has no module selector. Existing human routes, screenshots and raw agent routes remain available.
-
-`scripts/documentation_history.py export` delegates to the pinned `android-repo-setup documentation_history export` command and supplies exact-version installation and confirmed immutable source/documentation identities. The build reads historical Markdown with Git and runs only current renderer code; fetch full history. Missing objects fail the build. It cleans generated localized routes and production output before assembly. Do not edit ignored generated pages, `src/versions.json`, `src/build.json`, or localized public files.
-
-The archive contains confirmed JitPack releases with source and documentation pinned in `docs/releases/history/permission/`. Consult those records for historical versions and `IMPORT.md` for the latest confirmed version. Legacy Central 0.2.1 installation still lacks a verified source identity and is not labeled a historical manual. Only confirmed releases with retained identities enter the archive. A reviewed documentation correction keeps the code identity unchanged and records documentation/translation identity separately; see the release guide for catalog operations. Translation trees must be retained by merged Git content, not dangling PR commits.
-
-The generated Documentation workflow fetches full history and uses latest `main` after trusted successful publication/finalization completion, including JitPack. Its manual dispatch retries documentation only. No package publication is required for translation updates. Link validation covers select options, localized alternates, scoped raw Markdown and anchors, and dotted version slugs. Automated HTML validation does not replace keyboard, desktop or narrow-screen visual review.
+Release preflight runs `scripts/validate-release-source.sh` in a disposable worktree so rendering cannot dirty immutable publication sources. Its cleanup and failure propagation are tested by `sites/scripts/tests/release-isolation.test.mjs`. Screenshot pixel and input-hash regressions remain in the same test suite. Full site checks and landing tests run with `sh sites/tests/landing.sh` and the CLI.
