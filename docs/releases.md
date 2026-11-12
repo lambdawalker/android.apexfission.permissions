@@ -10,12 +10,12 @@ Install the configured CLI with `./setup.sh --help` on Linux/macOS or `./setup.p
 
 ## Configuration and generated files
 
-- `.project/setup/config.yaml` selects the permission module, app module, Java 25 daemon, artifact verification contract, Astro build, and release-source validation command.
+- `.project/setup/config.yaml` selects the permission module, app module, Java 25 daemon, artifact verification contract, Zola build, and release-source validation command.
 - `.project/setup/repositories.yml` registers Maven Central and JitPack with their existing matching GitHub environments. Regenerate its properties and workflow choices with `android-repo-setup publishing_config generate`.
 - `android-repo-setup workflows --overwrite` regenerates managed workflows. `--check` detects drift without writing. `.project/setup/workflow-generation.json` records ownership. Review changes before committing.
 - `docs/templates/MODULE_IMPORT.md.template` owns installation prose. `android-repo-setup module_release generate` and `verify` back Gradle's `generateImportDocs` and `verifyImportDocs` tasks.
 
-The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The Astro site remains the bilingual consumer site. Its history exporter delegates to the shared CLI through a small compatibility shim.
+The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The shared Rust CLI and Zola render the bilingual consumer site directly. Builds require Zola and full Git history, without a Python or Astro pipeline.
 
 ## Identity and publication
 
@@ -44,7 +44,8 @@ android-repo-setup workflows --check
 android-repo-setup publishing_config check
 android-repo-setup module_release verify
 android-repo-setup documentation_history verify
-python3 -m unittest discover -s scripts/tests -v
+npm --prefix sites ci
+node --test sites/scripts/tests/*.test.mjs
 ./gradlew verifyImportDocs :permission:testDebugUnitTest :permission:lintRelease :app:assembleDebug
 ./gradlew :permission:publishAllPublicationsToVerificationRepository -PreleaseModule=permission -PreleaseVersion=9.8.7
 # From a clean committed checkout:

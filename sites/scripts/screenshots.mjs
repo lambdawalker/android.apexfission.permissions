@@ -3,7 +3,9 @@ import { resolve, relative, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import sharp from 'sharp';
+const sharp = (...args) => sharpImplementation(...args);
+let sharpImplementation;
+async function loadSharp() { sharpImplementation ??= (await import('sharp')).default; }
 const root = fileURLToPath(new URL('../../',import.meta.url));
 const manifestPath = resolve(root,'docs/screenshots/manifest.json');
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -23,6 +25,7 @@ export function findCapture(method, files) {
  return matches[0];
 }
 export async function samePixels(a,b) {
+ await loadSharp();
  const [x,y]=await Promise.all([a,b].map(buffer=>sharp(buffer).ensureAlpha().raw().toBuffer({resolveWithObject:true})));
  return x.info.width===y.info.width && x.info.height===y.info.height && x.data.equals(y.data);
 }
@@ -35,6 +38,11 @@ export async function inputHash(directory = root) {
  }
  return hash.digest('hex');
 }
+export async function legacyScreenshot(bytes, file, directory = root, update = false) {
+ const target=resolve(directory,'sites/static/screenshots',file);
+ if(update) { await mkdir(dirname(target),{recursive:true}); await writeFile(target,bytes); }
+ else if(!bytes.equals(await readFile(target))) throw new Error(`Legacy screenshot differs: ${file}. Refresh with screenshots:update.`);
+}
 async function main() {
  const mode=process.argv[2]??'manifest';
  if(!['manifest','render','check','update'].includes(mode)) throw new Error('Use manifest, render, check, or update [render-directory]');
@@ -44,9 +52,10 @@ async function main() {
   if(!/^[a-z0-9-]+\.png$/.test(scenario.file)||names.has(scenario.file)) throw new Error('Invalid/duplicate screenshot filename');
   names.add(scenario.file);
   const bytes=await readFile(resolve(root,'docs/screenshots',scenario.file));
+  if(mode!=='update') await legacyScreenshot(bytes,scenario.file);
   if(digest(bytes)!==scenario.sha256) throw new Error(`Unrecorded image change: ${scenario.file}. Use the intentional update command.`);
-  const metadata=await sharp(bytes).metadata();
-  if(metadata.format!=='png'||!scenario.alt||!scenario.preview||!scenario.capture_kind) throw new Error(`Incomplete scenario: ${scenario.file}`);
+  const png = bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+  if(!png||!scenario.alt||!scenario.preview||!scenario.capture_kind) throw new Error(`Incomplete scenario: ${scenario.file}`);
  }
  if(mode==='manifest') { console.log(`Validated ${names.size} reviewed screenshot assets (not a fresh render).`); return; }
  const renderDir=resolve(root,process.argv[3]??'permission/src/screenshotTestDebug/reference');
@@ -75,6 +84,7 @@ async function main() {
    if(!await samePixels(await readFile(target),bytes)) errors.push(scenario.file);
   } else {
    await cp(captures[i],target);
+   await legacyScreenshot(bytes,scenario.file,root,true);
    scenario.sha256=digest(bytes);
    scenario.source_commit=capture.source_commit;
    scenario.capture_environment=capture;

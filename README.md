@@ -61,9 +61,9 @@ English consumer guides live in `docs/agents/`; Spanish translations live in `do
 ## Screenshots and checks
 
 ```bash
-cd sites
-npm ci
-npm run check
+./setup.sh build_docs --check
+node sites/scripts/sync-examples.mjs
+node sites/scripts/screenshots.mjs manifest
 ```
 
 This validates and builds the documentation; it does not render Android. For Android builds, device tests and explicit screenshot render/check/update commands, see [development](https://lambdawalker.github.io/android.apexfission.permissions/development/) and [AGENTS.md](AGENTS.md).

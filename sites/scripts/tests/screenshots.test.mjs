@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { samePixels, findCapture, inputHash } from '../screenshots.mjs';
+import { samePixels, findCapture, inputHash, legacyScreenshot } from '../screenshots.mjs';
 
 test('pixel comparison ignores PNG encoding but detects changed pixels', async () => {
  const image = {create:{width:2,height:2,channels:4,background:'#123456'}};
@@ -35,5 +35,17 @@ test('capture input hash includes new untracked source files', async () => {
   assert.notEqual(added,before);
   await writeFile(file,'changed source');
   assert.notEqual(await inputHash(root),added);
+ } finally { await rm(root,{recursive:true,force:true}); }
+});
+
+test('accepted screenshot updates synchronize legacy URLs and manifest rejects drift', async () => {
+ const root=await mkdtemp(join(tmpdir(),'legacy-screenshots-'));
+ try {
+  const accepted=Buffer.from('accepted image');
+  await legacyScreenshot(accepted,'example.png',root,true);
+  await legacyScreenshot(accepted,'example.png',root);
+  await assert.rejects(()=>legacyScreenshot(Buffer.from('changed image'),'example.png',root),/Legacy screenshot differs/);
+  await legacyScreenshot(Buffer.from('changed image'),'example.png',root,true);
+  await legacyScreenshot(Buffer.from('changed image'),'example.png',root);
  } finally { await rm(root,{recursive:true,force:true}); }
 });
