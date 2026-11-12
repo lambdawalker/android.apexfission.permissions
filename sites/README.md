@@ -23,7 +23,7 @@ Output is `sites/dist/`, served at `/android.apexfission.permissions/`. For a lo
 | Zola settings and layout | `sites/zola.toml`, `sites/templates/`, `sites/static/` |
 | Shared rendering and theme | `gradle.android-repo-setup/cli/` |
 
-Home and `/es/` open the numerically newest confirmed exact release. Development is a separate unreleased scope. The version selector retains exact releases. No equivalence between provider releases is inferred from version numbers: `release-equivalence.json` is deliberately empty here. Legacy Central 0.2.1 retains installation evidence without an invented historical source manual.
+Home and `/es/` open the numerically newest confirmed exact release. Development is a separate unreleased scope. The version selector retains exact releases. Each release lists only its confirmed publication destinations; version numbers alone do not establish provider equivalence. Legacy Central 0.2.1 retains installation evidence without an invented historical source manual.
 
 Canonical scopes use `/en/permission/<version>/` and `/es/permission/<version>/`, with scoped raw Markdown and `versions.json`. Missing or stale Spanish translations fall back visibly to English from the selected revision. Source and documentation identities remain separate. Historical Markdown is data; builds execute only current rendering code. Missing historical objects fail the build.
 
