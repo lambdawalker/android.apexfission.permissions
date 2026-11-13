@@ -3,14 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node scripts/sync-examples.mjs && node scripts/screenshots.mjs manifest && android-repo-setup --project .. build_docs --check",
-    "screenshots:manifest": "node scripts/screenshots.mjs manifest",
-    "test": "node --test scripts/tests/*.test.mjs",
-    "screenshots:render": "node scripts/screenshots.mjs render",
-    "screenshots:check": "node scripts/screenshots.mjs check",
-    "screenshots:update": "node scripts/screenshots.mjs update"
-  },
-  "dependencies": {
-    "sharp": "0.35.5"
+    "check": "android-repo-docs --project .. check && android-repo-docs --project .. build --check",
+    "test": "android-repo-docs --project .. build --check && node --test tests/*.test.mjs",
+    "screenshots:manifest": "android-repo-docs --project .. screenshots manifest",
+    "screenshots:render": "android-repo-docs --project .. screenshots render",
+    "screenshots:check": "android-repo-docs --project .. screenshots check",
+    "screenshots:update": "android-repo-docs --project .. screenshots update"
   }
 }

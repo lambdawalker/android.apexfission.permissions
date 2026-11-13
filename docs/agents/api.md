@@ -1,5 +1,7 @@
 # Public API declarations
 
+[Complete source declaration reference](source-reference.md) · Checked against the current library sources.
+
 Use this as a quick map of callable library APIs. Names are in `com.apexfission.android.permission`; import from the subpackage shown in each heading. Default arguments and lifecycle behavior are explained in [Compose integration](compose.md), [code-only integration](code-only.md), and [platform recipes](platform-recipes.md). Declarations below omit KDoc and annotations where they do not affect calling syntax. `defaultPermissionOverview()` is **internal**: callers omit `overview` to get it; they cannot import the factory.
 
 ## `requester`: Compose gate

@@ -1,0 +1,23 @@
+{
+  "release_validation": [
+    [
+      "android-repo-docs",
+      "check"
+    ],
+    [
+      "android-repo-docs",
+      "build",
+      "--check"
+    ],
+    [
+      "android-repo-docs",
+      "screenshots",
+      "render"
+    ],
+    [
+      "android-repo-docs",
+      "screenshots",
+      "check"
+    ]
+  ]
+}

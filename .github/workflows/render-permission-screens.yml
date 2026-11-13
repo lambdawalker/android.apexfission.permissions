@@ -11,7 +11,10 @@ on:
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
       - 'docs/screenshots/**'
-      - 'scripts/validate-release-source.sh'
+      - '.project/verification/checks.json'
+      - '.project/docs/**'
+      - 'docs.sh'
+      - 'docs.bat'
       - 'sites/scripts/**'
       - 'sites/package*.json'
   push:
@@ -25,7 +28,10 @@ on:
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
       - 'docs/screenshots/**'
-      - 'scripts/validate-release-source.sh'
+      - '.project/verification/checks.json'
+      - '.project/docs/**'
+      - 'docs.sh'
+      - 'docs.bat'
       - 'sites/scripts/**'
       - 'sites/package*.json'
   workflow_dispatch:
@@ -43,15 +49,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: sites/package-lock.json
-      - run: npm ci
-        working-directory: sites
-      - name: Verify screenshot and isolated release validation regressions
-        run: npm --prefix sites test
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Verify accepted screenshot manifests
+        run: sh ./docs.sh screenshots manifest
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -62,12 +62,10 @@ jobs:
       - name: Compile demos, run unit tests and Android lint
         run: ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug :permission:lintDebug :app:lintDebug --stacktrace
       - name: Render candidates and record provenance
-        run: npm run screenshots:render
-        working-directory: sites
+        run: sh ./docs.sh screenshots render
       - name: Compare candidates with accepted documentation images
         if: inputs.candidates_only != true
-        run: npm run screenshots:check
-        working-directory: sites
+        run: sh ./docs.sh screenshots check
       - name: Upload candidates and comparison evidence
         if: always()
         uses: actions/upload-artifact@v7

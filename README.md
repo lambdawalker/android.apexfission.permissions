@@ -61,9 +61,9 @@ English consumer guides live in `docs/agents/`; Spanish translations live in `do
 ## Screenshots and checks
 
 ```bash
-./setup.sh build_docs --check
-node sites/scripts/sync-examples.mjs
-node sites/scripts/screenshots.mjs manifest
+./docs.sh build --check
+sh ./docs.sh sources check
+sh ./docs.sh screenshots manifest
 ```
 
 This validates and builds the documentation; it does not render Android. For Android builds, device tests and explicit screenshot render/check/update commands, see [development](https://lambdawalker.github.io/android.apexfission.permissions/development/) and [AGENTS.md](AGENTS.md).
@@ -72,4 +72,21 @@ The website also contains [concepts and ownership](https://lambdawalker.github.i
 
 ## Repository setup
 
-Build and release conventions come from the shared [Android repository setup plugin and CLI](https://github.com/lambdawalker/gradle.android-repo-setup), following [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Run `./setup.sh --help` or `setup.bat --help` to install the pinned Rust CLI with Cargo. Configuration and generated workflow ownership live under `.project/setup/`; see [publishing and maintenance](docs/releases.md) before updating them.
+Build and release conventions come from the shared [Android repository setup plugin and CLI](https://github.com/lambdawalker/gradle.android-repo-setup), following [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Run `./setup.sh --help` or `setup.bat --help` to install and verify the pinned CLI. Configuration and generated workflow ownership live under `.project/setup/`; see [publishing and maintenance](docs/releases.md) before updating them.
+
+
+## Documentation tooling
+
+Documentation is maintained by the independently pinned `android-repo-docs` executable.
+Use `sh ./docs.sh check` on Linux/macOS or `docs.bat check` on Windows.
+The launcher installs the configured release or immutable source revision on first use;
+source pins require Rust and Git. No setup credentials are needed.
+
+- `sh ./docs.sh sources check` verifies reviewed Kotlin inputs and examples.
+- `sh ./docs.sh sources update` intentionally refreshes generated references and examples; review the diff.
+- `sh ./docs.sh build --check` builds the existing documentation site locally.
+- `sh ./docs.sh bootstrap check` verifies the launcher files against their independent pin.
+
+Configuration and project-specific introductory Markdown live in `.project/docs/`.
+Confirmed release records and archived source identities remain authoritative.
+Documentation checks do not accept images, publish artifacts, or deploy the site.

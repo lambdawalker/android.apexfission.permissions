@@ -6,7 +6,7 @@
 
 This repository uses the same Gradle plugins and Rust CLI as [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Their source is [gradle.android-repo-setup](https://github.com/lambdawalker/gradle.android-repo-setup). The plugin version is pinned in `gradle/libs.versions.toml`; the CLI source revision is pinned by `tooling_ref` in `.project/setup/config.yaml`. The two pins are independent: the CLI needs the configurable verification/workflow support used here, while the published plugin supplies the existing Gradle publication conventions.
 
-Install the configured CLI with `./setup.sh --help` on Linux/macOS or `setup.bat --help` on Windows. Both require Cargo and install the exact configured tag or source commit. Run `android-repo-setup` for the interactive signing/environment wizard. Credentials and signing material belong in the appropriate GitHub environment; never commit them. The CLI uses `keytool` for APK keys and GnuPG for Maven signing.
+Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. These shared CLI-generated launchers install and verify the configured CLI, cache it under `.project/setup/cache/`, and forward arguments. Release pins use verified binaries; full commit pins require Cargo and build the exact source. Run `setup check` to validate generated files and evaluated module configuration.
 
 ## Configuration and generated files
 
@@ -25,7 +25,7 @@ Use **Publish** on `main`, selecting the destination and optionally a stable ver
 
 The Gradle plugin configures AAR, sources/documentation jars, reproducible archives, unsigned local verification publications, and reservation-guarded Central uploads. Only `:permission` is published. JitPack bootstraps Java 25 with SDKMAN and invokes `:permission:publishJitPack`; that task validates JitPack's canonical scoped tag and reported source before publishing to Maven Local.
 
-Before either upload path, `scripts/validate-release-source.sh` creates a disposable worktree at the chosen source. It builds the site and renders/compares reviewed screenshots there. The original release checkout remains clean for the CLI's artifact provenance checks. Validation failures stop publication and clean up the worktree.
+Before either upload path, `android-repo-setup release-validate --source "$SOURCE_SHA"` creates a disposable worktree at the chosen source and runs the steps in `.project/verification/checks.json`. It builds the site and renders/compares reviewed screenshots there. The original release checkout remains clean for the CLI's artifact provenance checks. Validation failures stop publication and clean up the worktree.
 
 ## Recovery and environment setup
 
@@ -43,7 +43,7 @@ Legacy Central 0.2.1 has installation evidence in `publishing/legacy-installatio
 android-repo-setup workflows --check
 android-repo-setup publishing_config check
 android-repo-setup module_release verify
-android-repo-setup documentation_history verify
+android-repo-docs history verify
 npm --prefix sites ci
 node --test sites/scripts/tests/*.test.mjs
 ./gradlew verifyImportDocs :permission:testDebugUnitTest :permission:lintRelease :app:assembleDebug
