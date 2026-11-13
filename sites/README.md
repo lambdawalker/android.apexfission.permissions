@@ -8,7 +8,7 @@ sh ./docs.sh sources check
 sh ./docs.sh screenshots manifest
 ```
 
-The site build requires Rust tooling, Zola and Git with full history. No Python, Astro or npm installation is required to render the site. The docs executable checks source examples and screenshot manifests and compares decoded PNG pixels. Render Android candidates with `sh ./docs.sh screenshots render`, compare with `sh ./docs.sh screenshots check`, and explicitly accept reviewed changes with `sh ./docs.sh screenshots update`. Node.js 24 is used only for site navigation tests.
+The site build requires the pinned docs executable, Zola and Git with full history. The launcher downloads a verified release binary on supported platforms. No Python, Astro or npm installation is required to render the site. The docs executable checks source examples and screenshot manifests and compares decoded PNG pixels. Render Android candidates with `sh ./docs.sh screenshots render`, compare with `sh ./docs.sh screenshots check`, and explicitly accept reviewed changes with `sh ./docs.sh screenshots update`. Node.js 24 is used only for site navigation tests.
 
 Output is `sites/dist/`, served at `/android.apexfission.permissions/`. For a local static server, build with `--base` matching its exposed directory. The generated Documentation workflow validates PRs and deploys main to GitHub Pages; trusted successful publication also triggers it. Retry Documentation for a site failure without publishing another Android artifact.
 

@@ -72,7 +72,7 @@ The website also contains [concepts and ownership](https://lambdawalker.github.i
 
 ## Repository setup
 
-Build and release conventions come from the shared [Android repository setup plugin and CLI](https://github.com/lambdawalker/gradle.android-repo-setup), following [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Run `./setup.sh --help` or `setup.bat --help` to install the pinned Rust CLI with Cargo. Configuration and generated workflow ownership live under `.project/setup/`; see [publishing and maintenance](docs/releases.md) before updating them.
+Build and release conventions come from the shared [Android repository setup plugin and CLI](https://github.com/lambdawalker/gradle.android-repo-setup), following [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Run `./setup.sh --help` or `setup.bat --help` to download and verify the pinned CLI release binary. Configuration and generated workflow ownership live under `.project/setup/`; see [publishing and maintenance](docs/releases.md) before updating them.
 
 
 ## Documentation tooling
