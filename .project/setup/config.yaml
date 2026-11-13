@@ -3,7 +3,7 @@ title: Apexfission Permissions
 modules:
   permission: Apexfission Permissions
 key_alias: permission
-tooling_ref: 'v0.1.16'
+tooling_ref: '263b1ddfbe0596b6e1655293fac6ff26a547b890'
 verification:
   class_prefix: com/apexfission/android/permission/
   required_api_artifacts:
