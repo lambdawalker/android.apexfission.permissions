@@ -4,7 +4,7 @@
 
 ## Shared tooling
 
-This repository uses the same Gradle plugins and Rust CLI as [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Their source is [gradle.android-repo-setup](https://github.com/lambdawalker/gradle.android-repo-setup). The plugin version is pinned in `gradle/libs.versions.toml`; the CLI source revision is pinned by `tooling_ref` in `.project/setup/config.yaml`. The two pins are independent: the CLI needs the configurable verification/workflow support used here, while the published plugin supplies the existing Gradle publication conventions.
+This repository uses the same Gradle plugins and Rust CLI as [Demo Common](https://github.com/lambdawalker/android.apexfission.demo-common). Their source is [gradle.android-repo-setup](https://github.com/lambdawalker/gradle.android-repo-setup). The plugin version is pinned in `gradle/libs.versions.toml`; the CLI release is pinned by `tooling_ref` in `.project/setup/config.yaml`. The two pins are independent: the CLI needs the configurable verification/workflow support used here, while the published plugin supplies the existing Gradle publication conventions.
 
 Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. These shared CLI-generated launchers install and verify the configured CLI, cache it under `.project/setup/cache/`, and forward arguments. Release pins use verified binaries; full commit pins require Cargo and build the exact source. Run `setup check` to validate generated files and evaluated module configuration.
 
