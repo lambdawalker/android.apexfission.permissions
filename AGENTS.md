@@ -43,7 +43,7 @@ Edit `docs/templates/MODULE_IMPORT.md.template`, then run `./gradlew generateImp
 
 The checked-in build uses compileSdk 37, minSdk 24, Gradle 9.6.0, AGP 9.4.1 and Kotlin/Compose plugin 2.4.20. Library Java source/target compatibility is 17 (the demo uses 11); `gradle/gradle-daemon-jvm.properties` separately requests a Java 25 daemon. CI installs Java 17 and relies on Gradle daemon toolchain resolution. Install the Android SDK and configure `ANDROID_HOME` or an untracked `local.properties`. Do not silently downgrade versions to fit a local environment.
 
-Run `./gradlew :permission:lintDebug :app:lintDebug` for Android lint. No dedicated formatter or API binary-compatibility gate is configured; do not claim those checks ran. For documentation-only work run `./setup.sh build_docs --check`, `node sites/scripts/sync-examples.mjs`, and `node sites/scripts/screenshots.mjs manifest`. For UI changes run `npm run screenshots:render` and `npm run screenshots:check` from `sites/`; accept reviewed image changes only with `npm run screenshots:update`. Android behavior changes also require the unit, build, screenshot and relevant device checks above. Report environmental blockers explicitly.
+Run `./gradlew :permission:lintDebug :app:lintDebug` for Android lint. No dedicated formatter or API binary-compatibility gate is configured; do not claim those checks ran. For documentation-only work run `./docs.sh build --check`, `sh ./docs.sh sources check`, and `sh ./docs.sh screenshots manifest`. For UI changes run `npm run screenshots:render` and `npm run screenshots:check` from `sites/`; accept reviewed image changes only with `npm run screenshots:update`. Android behavior changes also require the unit, build, screenshot and relevant device checks above. Report environmental blockers explicitly.
 
 Public APIs are in the `requester`, `ui`, and `recipe` packages listed above. Kotlin `internal` helpers, private composables and app demo functions are implementation details. Preserve package names, signatures, defaults, enum values and observable callback timing unless an intentional breaking change is requested. Update KDoc, the canonical [API reference](docs/agents/api.md), relevant recipes, migration guidance, demo and tests together. Keep Android permissions in the host manifest; never equate a local history heuristic with platform certainty.
 
@@ -53,7 +53,7 @@ Do not edit `build/`, `sites/dist/`, generated site assets, or screenshot refere
 
 ## Documentation source ownership
 
-The human API reference, concepts, limitations, troubleshooting, migration, task recipes and first request are generated from `docs/agents/`. Do not edit generated site output. Quickstart code comes from `CameraQuickstartActivity.kt`; run `node sites/scripts/sync-examples.mjs --write` after intentional edits. `sites/README.md` maps all source ownership and validation commands. `docs/screenshots/manifest.json` records curated captures; normal CI validates rather than accepts images.
+The human API reference, concepts, limitations, troubleshooting, migration, task recipes and first request are generated from `docs/agents/`. Do not edit generated site output. Quickstart code comes from `CameraQuickstartActivity.kt`; run `sh ./docs.sh sources update` after intentional edits. `sites/README.md` maps all source ownership and validation commands. `docs/screenshots/manifest.json` records curated captures; normal CI validates rather than accepts images.
 
 ## Versioned and translated documentation
 

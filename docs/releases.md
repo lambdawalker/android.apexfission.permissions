@@ -43,7 +43,7 @@ Legacy Central 0.2.1 has installation evidence in `publishing/legacy-installatio
 android-repo-setup workflows --check
 android-repo-setup publishing_config check
 android-repo-setup module_release verify
-android-repo-setup documentation_history verify
+android-repo-docs history verify
 npm --prefix sites ci
 node --test sites/scripts/tests/*.test.mjs
 ./gradlew verifyImportDocs :permission:testDebugUnitTest :permission:lintRelease :app:assembleDebug

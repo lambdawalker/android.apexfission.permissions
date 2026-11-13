@@ -23,7 +23,7 @@ Use Android SDK 37. The demo app requires API 28 to consume the published Demo C
 ./gradlew :permission:testDebugUnitTest :permission:generatePomFileForMavenPublication :app:assembleDebug
 cd sites && npm run screenshots:render && npm run screenshots:check && cd ..
 ./gradlew :app:connectedDebugAndroidTest # requires an attached emulator/device
-./setup.sh build_docs --check
+./docs.sh build --check
 ```
 
 Install site dependencies with `cd sites && npm ci` before the screenshot commands. Rendering creates candidates; the check compares them with accepted images. After visual review, intentionally export them with `npm run screenshots:update` from `sites/`. CI never accepts changed images automatically. The [screen gallery](../gallery/) is generated from Compose screenshot tests, not Android system dialogs. The [Render permission screens workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/render-permission-screens.yml) runs the library checks and uploads screenshots.
@@ -40,7 +40,7 @@ Use **SUB - Finalize Permissions release** for interrupted confirmation and book
 
 ## Documentation site deployment
 
-The [Documentation workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/documentation.yml) builds on site or screenshot changes in pull requests. A relevant push to `main` builds and deploys; `workflow_dispatch` is available for a documentation-only retry. Successful trusted publication or finalization completion also rebuilds the latest `main` catalog, including JitPack confirmation, without relying on a bot commit triggering a push workflow. GitHub Pages must be configured with **GitHub Actions** as its build source. The site is served under `/android.apexfission.permissions/`; the `github-pages` environment is separate from `maven-central`. Build locally with `./setup.sh build_docs --check`. The [site maintenance guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/sites/README.md) identifies editable sources. The API reference, concepts, limitations, troubleshooting, migration, task recipes, and first request are generated from canonical Markdown. Edit those sources, not generated site pages. Keep them aligned with public KDocs.
+The [Documentation workflow](https://github.com/lambdawalker/android.apexfission.permissions/actions/workflows/documentation.yml) builds on site or screenshot changes in pull requests. A relevant push to `main` builds and deploys; `workflow_dispatch` is available for a documentation-only retry. Successful trusted publication or finalization completion also rebuilds the latest `main` catalog, including JitPack confirmation, without relying on a bot commit triggering a push workflow. GitHub Pages must be configured with **GitHub Actions** as its build source. The site is served under `/android.apexfission.permissions/`; the `github-pages` environment is separate from `maven-central`. Build locally with `./docs.sh build --check`. The [site maintenance guide](https://github.com/lambdawalker/android.apexfission.permissions/blob/main/sites/README.md) identifies editable sources. The API reference, concepts, limitations, troubleshooting, migration, task recipes, and first request are generated from canonical Markdown. Edit those sources, not generated site pages. Keep them aligned with public KDocs.
 
 ## Documentation and release checks
 

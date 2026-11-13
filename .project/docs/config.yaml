@@ -1,0 +1,40 @@
+schema: 1
+repository: lambdawalker/android.apexfission.permissions
+title: Apexfission Permissions
+modules:
+  permission: Apexfission Permissions
+tooling_ref: 8e7d731e798ff9defcd71b2b146958e0ab3e146a
+sources:
+  roots:
+  - permission/src/main/java
+  manifest: docs/api-inputs.json
+  groups:
+  - include:
+    - '**/*.kt'
+    intro: .project/docs/introductions/api.md
+    output: docs/agents/source-reference.md
+  examples:
+  - source: app/src/main/java/com/apexfission/android/permissions/demo/CameraQuickstartActivity.kt
+    target: docs/agents/quickstart.md
+    start: <!-- quickstart:start -->
+    end: <!-- quickstart:end -->
+screenshots:
+  manifest: docs/screenshots/manifest.json
+  base: docs/screenshots
+  candidates: permission/src/screenshotTestDebug/reference
+  input_paths:
+  - permission/src/main
+  - permission/src/screenshotTest
+  - permission/build.gradle.kts
+  - gradle
+  - gradle.properties
+  - build.gradle.kts
+  - settings.gradle.kts
+  command:
+  - ./gradlew
+  - :permission:updateDebugScreenshotTest
+  - --stacktrace
+  legacy_base: sites/static/screenshots
+  provenance: Locally rendered candidates accepted with screenshots update; review
+    images before committing.
+  evidence: build/documentation-screenshots/evidence.json

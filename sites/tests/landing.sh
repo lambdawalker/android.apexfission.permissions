@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-android-repo-setup build_docs --check
+android-repo-docs build --check
 node --input-type=module <<'JS'
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';

@@ -18,3 +18,4 @@ local.properties
 .project/setup/workflow-generation.lock
 /bin/
 /.project/setup/cache/
+/.project/docs/cache/

@@ -3,10 +3,11 @@ title: Apexfission Permissions
 modules:
   permission: Apexfission Permissions
 key_alias: permission
-tooling_ref: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
+tooling_ref: '8e7d731e798ff9defcd71b2b146958e0ab3e146a'
 verification:
   class_prefix: com/apexfission/android/permission/
-  required_api_artifacts: [accompanist-permissions]
+  required_api_artifacts:
+  - accompanist-permissions
   bytecode_major: 61
 workflows:
   module: permission
@@ -14,9 +15,8 @@ workflows:
   title: Permissions
   java_version: '25'
   screenshot_count: 14
-  documentation_command: 'node sites/scripts/sync-examples.mjs && node sites/scripts/screenshots.mjs manifest && sh sites/tests/landing.sh'
-  screenshot_check_command: 'node sites/scripts/screenshots.mjs manifest'
-  release_validation_command: 'android-repo-setup release-validate --source "$SOURCE_SHA"'
-
+  documentation_command: sh sites/tests/landing.sh
+  screenshot_check_command: android-repo-docs screenshots manifest
+  release_validation_command: android-repo-setup release-validate --source "$SOURCE_SHA"
 bootstrap:
   jitpack: true

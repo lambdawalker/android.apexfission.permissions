@@ -1,38 +1,23 @@
 {
   "release_validation": [
     [
-      "node",
-      "sites/scripts/sync-examples.mjs"
+      "android-repo-docs",
+      "check"
     ],
     [
-      "node",
-      "sites/scripts/screenshots.mjs",
-      "manifest"
-    ],
-    [
-      "android-repo-setup",
-      "build_docs",
+      "android-repo-docs",
+      "build",
       "--check"
     ],
     [
-      "npm",
-      "--prefix",
-      "sites",
-      "ci"
+      "android-repo-docs",
+      "screenshots",
+      "render"
     ],
     [
-      "npm",
-      "--prefix",
-      "sites",
-      "run",
-      "screenshots:render"
-    ],
-    [
-      "npm",
-      "--prefix",
-      "sites",
-      "run",
-      "screenshots:check"
+      "android-repo-docs",
+      "screenshots",
+      "check"
     ]
   ]
 }
