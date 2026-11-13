@@ -17,7 +17,7 @@ This file instructs agents working **on** this repository. It does not declare a
 - `VisualMediaPicker.kt`: AndroidX photo picker wrapper for user-selected images and videos, with no storage permission.
 - `app/src/main/java/com/apexfission/android/permissions/MainActivity.kt`: single sample launcher Activity; carousel, platform recipes, code-only callback, and hero artwork demo composables live in its `demo/` package.
 - `.project/setup/`: shared CLI configuration, destination registry, and generated workflow ownership.
-- `sites/`: Zola documentation site; [its README](sites/README.md) covers local builds and GitHub Pages deployment. It copies screenshot PNGs from `docs/screenshots/` during the build.
+- `sites/`: shared Astro documentation site; [its README](sites/README.md) covers local builds and GitHub Pages deployment. It copies screenshot PNGs from `docs/screenshots/` during the build.
 
 Library files above live in `permission/src/main/java/com/apexfission/android/permission/`. Keep KDocs, [Compose guide](docs/agents/compose.md), [code-only guide](docs/agents/code-only.md), and [README](README.md) aligned with public behavior. Never launch a request during composition. Only required permissions gate content; the full list remains available for batch requests and grant snapshots even when `MissingOnly` filters the carousel. The default overview is a generic lock-icon `DefaultPermissionPage`; a caller-created `PermissionOverview` must provide a page. `Automatic` shows the overview only when more than one permission is visible, `Show` always displays it, and `Hide` omits it.
 
@@ -67,7 +67,7 @@ Render historical guides from retained Git references as data, using current ren
 
 The root and library Gradle plugins come from `gradle.android-repo-setup`, mapped to its published JitPack artifact in settings. Match the reference integration in `android.apexfission.demo-common`. Preserve Central `com.apexfission.androi:permission` and JitPack `com.github.lambdawalker:android.apexfission.permissions`; `rootProject.name` supplies the JitPack artifact ID.
 
-CLI workflow outputs are listed in `.project/setup/workflow-generation.json`. Change inputs or shared templates and regenerate; do not hand-edit managed files. The curated `render-permission-screens.yml` and device test workflows remain repository-owned. The shared CLI builds the site with Zola 0.23.6 and reads historical Markdown as data. `android-repo-setup release-validate` validates immutable release documentation in a disposable worktree. Do not remove this isolation or bypass its failures.
+CLI workflow outputs are listed in `.project/setup/workflow-generation.json`. Change inputs or shared templates and regenerate; do not hand-edit managed files. The curated `render-permission-screens.yml` and device test workflows remain repository-owned. The shared CLI builds the site with its pinned Astro runtime on Node.js 24 and reads historical Markdown as data. `android-repo-setup release-validate` validates immutable release documentation in a disposable worktree. Do not remove this isolation or bypass its failures.
 
 ## Demo catalog dependency
 

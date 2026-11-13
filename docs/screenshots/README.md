@@ -27,7 +27,7 @@ npm run screenshots:manifest # validate committed PNGs and recorded hashes only
 npm run screenshots:render   # Gradle renders candidates; writes capture.json provenance
 npm run screenshots:check    # compare decoded pixels with accepted documentation images
 npm run screenshots:update   # intentional acceptance AFTER visually reviewing candidates
-npm run check               # verify examples, assets and Zola output
+npm run check               # verify examples, assets and shared Astro output
 ```
 
 The Gradle update task is used only to render into its working reference directory. That directory is not the accepted documentation baseline. Ordinary CI compares candidates against committed `docs/screenshots/*.png`; it never commits or accepts changed images. Comparison ignores PNG compression differences but requires identical dimensions and pixels. Missing or ambiguous preview outputs fail rather than copying an arbitrary file.

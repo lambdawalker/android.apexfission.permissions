@@ -3,7 +3,7 @@ repository: lambdawalker/android.apexfission.permissions
 title: Apexfission Permissions
 modules:
   permission: Apexfission Permissions
-tooling_ref: v0.1.20
+tooling_ref: 1da53392b262c7c3129d2bd645dfd7b34ead81e1
 sources:
   roots:
   - permission/src/main/java
@@ -38,3 +38,6 @@ screenshots:
   provenance: Locally rendered candidates accepted with screenshots update; review
     images before committing.
   evidence: build/documentation-screenshots/evidence.json
+site:
+  backend: astro
+  base_url: https://lambdawalker.github.io/android.apexfission.permissions/
