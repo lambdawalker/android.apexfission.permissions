@@ -1,14 +1,11 @@
 # Documentation website
 
-The standalone `android-repo-docs` executable prepares bilingual, versioned content and Zola 0.23.6 renders the same documentation theme as Demo Common. Install the pinned CLI with `./docs.sh --help`, and put checksum-verified Zola 0.23.6 on PATH. From the repository root:
+The documentation CLI pinned in `.project/docs/config.yaml` owns the Astro/Starlight renderer, Markdown preparation, route generation and search. Install it through `./docs.sh --help`; builds require Node.js 24, npm and Git with full history. The current `sites/static/` assets and legacy aliases are copied by the shared build. No consumer npm renderer is maintained. Run from the repository root:
 
 ```sh
 ./docs.sh build --check
-sh ./docs.sh sources check
-sh ./docs.sh screenshots manifest
+sh sites/tests/landing.sh
 ```
-
-The site build requires the pinned docs executable, Zola and Git with full history. The launcher downloads a verified release binary on supported platforms. No Python, Astro or npm installation is required to render the site. The docs executable checks source examples and screenshot manifests and compares decoded PNG pixels. Render Android candidates with `sh ./docs.sh screenshots render`, compare with `sh ./docs.sh screenshots check`, and explicitly accept reviewed changes with `sh ./docs.sh screenshots update`. Node.js 24 is used only for site navigation tests.
 
 Output is `sites/dist/`, served at `/android.apexfission.permissions/`. For a local static server, build with `--base` matching its exposed directory. The generated Documentation workflow validates PRs and deploys main to GitHub Pages; trusted successful publication also triggers it. Retry Documentation for a site failure without publishing another Android artifact.
 
@@ -20,7 +17,7 @@ Output is `sites/dist/`, served at `/android.apexfission.permissions/`. For a lo
 | Historical identities | `docs/releases/history/permission/` |
 | Quickstart sample | `CameraQuickstartActivity.kt`; check with `sources check`, accept intentional changes with `sources update` |
 | Reviewed screenshots | `docs/screenshots/manifest.json` and its README |
-| Zola settings and layout | `sites/zola.toml`, `sites/templates/`, `sites/static/` |
+| Astro settings and presentation | `.project/docs/config.yaml`, `sites/astro/components/`, `sites/astro/public/` |
 | Shared rendering and theme | `gradle.android-repo-setup/cli/docs/` |
 
 Home and `/es/` open the numerically newest confirmed exact release. Development is a separate unreleased scope. The version selector retains exact releases. Each release lists only its confirmed publication destinations; version numbers alone do not establish provider equivalence. Legacy Central 0.2.1 retains installation evidence without an invented historical source manual.
@@ -29,6 +26,10 @@ Canonical scopes use `/en/permission/<version>/` and `/es/permission/<version>/`
 
 Legacy human routes redirect to their development guides. Root `IMPORT.md`, `llms.txt`, `agents/*.md`, screenshots and older version aliases remain available. `sites/static/screenshots/` retains the old screenshot URLs; `screenshots:update` refreshes those copies and manifest validation rejects drift. Do not edit generated output. `build --check` validates local links, anchors, images and raw endpoints, not external availability or Android behavior.
 
-Release preflight runs `android-repo-setup release-validate` with the steps in `.project/verification/checks.json` in a disposable worktree so rendering cannot dirty immutable publication sources. Cleanup, interruption handling and failure propagation are tested in the shared CLI repository. Screenshot pixel and input-hash regressions are tested in the shared docs crate. Full site checks and landing tests run with `sh sites/tests/landing.sh` and the CLI.
+Release preflight runs `android-repo-setup release-validate` with the steps in `.project/verification/checks.json` in a disposable worktree so rendering cannot dirty immutable publication sources. Cleanup, interruption handling and failure propagation are tested in the shared CLI repository. Screenshot pixel and input-hash regressions are tested in the shared docs crate. Full site checks and output tests run with `sh sites/tests/landing.sh` and the CLI.
 
-Navigation regression tests run against the CLI-generated `sites/dist/docs.js` as part of `sh sites/tests/landing.sh`, covering project base paths for version/language selectors and search.
+Navigation regressions inspect the generated Astro HTML, guide-preserving selector destinations, scoped search metadata, raw endpoints and legacy aliases. Screenshot candidate rendering and acceptance remain separate from website rendering.
+
+Legacy screenshots remain owned by `sites/static/screenshots/`; the shared Astro build copies current static assets and leaves the existing screenshot lifecycle authoritative.
+
+The CLI pins use corrective source revision `1da53392b262c7c3129d2bd645dfd7b34ead81e1`, built from the shared CLI after v0.1.21. This revision preserves current static assets and aliases and supports Astro builds across filesystems; the official v0.1.21 release alone does not include these fixes. Full source pins require Rust/Cargo.

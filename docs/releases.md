@@ -10,12 +10,12 @@ Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. These shared CLI-g
 
 ## Configuration and generated files
 
-- `.project/setup/config.yaml` selects the permission module, app module, Java 25 daemon, artifact verification contract, Zola build, and release-source validation command.
+- `.project/setup/config.yaml` selects the permission module, app module, Java 25 daemon, artifact verification contract, shared Astro build, and release-source validation command.
 - `.project/setup/repositories.yml` registers Maven Central and JitPack with their existing matching GitHub environments. Regenerate its properties and workflow choices with `android-repo-setup publishing_config generate`.
 - `android-repo-setup workflows --overwrite` regenerates managed workflows. `--check` detects drift without writing. `.project/setup/workflow-generation.json` records ownership. Review changes before committing.
 - `docs/templates/MODULE_IMPORT.md.template` owns installation prose. `android-repo-setup module_release generate` and `verify` back Gradle's `generateImportDocs` and `verifyImportDocs` tasks.
 
-The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The shared Rust CLI and Zola render the bilingual consumer site directly. Builds require Zola and full Git history, without a Python or Astro pipeline.
+The repository-owned device and curated screenshot workflows complement the generated build, release, signing, reconciliation, and documentation workflows. The shared Rust CLI renders the bilingual consumer site with its bundled Astro runtime. Builds require Node.js 24, npm and full Git history.
 
 ## Identity and publication
 

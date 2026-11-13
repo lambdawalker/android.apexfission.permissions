@@ -13,7 +13,7 @@ This page is for maintainers and contributors. Consumers can start with [install
 | `permission/src/test` and `permission/src/screenshotTest` | JVM decision tests and Compose visual fixtures. |
 | `app/src/androidTest` | Device-level navigation, grant, denial, and Settings recovery tests. |
 | `docs/screenshots` | Committed previews used by the README and gallery. |
-| `sites` | Zola documentation site deployed with GitHub Pages. |
+| `sites` | Shared Astro documentation site deployed with GitHub Pages. |
 
 ## Local checks
 
