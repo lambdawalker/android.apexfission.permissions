@@ -34,6 +34,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") {
+            content { includeModule("com.github.lambdawalker", "android.ui.common") }
+        }
     }
 }
 

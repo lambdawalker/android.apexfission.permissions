@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">android.permissions</string>
+    <string name="demo_catalog_title">Demostraciones de permisos</string>
+    <string name="demo_catalog_welcome">Explora la pantalla de Compose, las recetas de permisos de Android y los callbacks sin interfaz.</string>
+    <string name="demo_quickstart_title">Inicio rápido completo</string>
+    <string name="demo_quickstart_description">Ejecuta el ejemplo de primera solicitud de la documentación.</string>
+    <string name="demo_quickstart_action">Abrir inicio rápido</string>
+    <string name="demo_carousel_title">Carrusel de permisos</string>
+    <string name="demo_carousel_description">Acceso a la cámara con narración opcional por micrófono.</string>
+    <string name="demo_carousel_action">Abrir carrusel</string>
+    <string name="demo_single_title">Permiso individual (sin introducción)</string>
+    <string name="demo_single_description">Solicitud de un solo permiso con la fila de iconos oculta.</string>
+    <string name="demo_single_action">Abrir demostración individual</string>
+    <string name="demo_recipes_title">Recetas de la plataforma</string>
+    <string name="demo_recipes_description">Ubicación, acceso en segundo plano, notificaciones y selección de fotos.</string>
+    <string name="demo_recipes_action">Abrir recetas</string>
+    <string name="demo_callbacks_title">Callbacks sin interfaz</string>
+    <string name="demo_callbacks_description">Compara un lanzador de Activity con el solicitante de la biblioteca.</string>
+    <string name="demo_callbacks_action">Abrir callbacks</string>
+    <string name="demo_artwork_title">Ilustraciones principales</string>
+    <string name="demo_artwork_description">Explora ilustraciones vectoriales, mapas de bits, recursos drawable y objetos Drawable.</string>
+    <string name="demo_artwork_action">Abrir galería</string>
+    <string name="catalog_app_settings">Ajustes de la aplicación</string>
+</resources>

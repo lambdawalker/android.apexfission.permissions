@@ -49,7 +49,7 @@ class DemoNavigationDeviceTest {
 
     @Test fun catalogSettingsActionOpensAppDetails() {
         val label = compose.activity.getString(
-            com.apexfission.android.democommon.R.string.demo_common_app_settings
+            com.apexfission.android.permissions.R.string.catalog_app_settings
         )
         compose.scrollToDemo(label).performClick()
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())

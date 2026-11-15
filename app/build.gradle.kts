@@ -57,7 +57,7 @@ android {
 
 dependencies {
     implementation(project(":permission"))
-    implementation(libs.apexfission.demo.common)
+    implementation(libs.apexfission.ui.common)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
