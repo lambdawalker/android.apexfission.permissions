@@ -79,3 +79,9 @@ dependencies {
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }
+
+// The shared publication plugin captures Project in its verification action.
+// Keep configuration caching for normal builds, but discard it for publication.
+tasks.withType<org.gradle.api.publish.maven.tasks.AbstractPublishToMaven>().configureEach {
+    notCompatibleWithConfigurationCache("Shared publication verification captures Project")
+}
