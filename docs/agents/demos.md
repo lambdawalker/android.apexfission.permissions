@@ -2,7 +2,7 @@
 
 The `:app` module is a sample with five feature destinations and a separate complete quickstart Activity. Run it from Android Studio or `./gradlew :app:installDebug`, then choose a card on the home screen. It declares camera, microphone, coarse and fine location, background location, and notifications in its manifest. Each Android permission prompt belongs to the device and appears only after a user action.
 
-The catalog uses the confirmed Maven Central artifact `com.apexfission.android:demo-common:0.1.2`: `DemoScreen` owns the lazy scrolling layout and system insets, and `DemoCard` supplies each themed catalog entry. The App settings button opens this app's details page. The demo app requires API 28 for that dependency; the published permission library remains compatible with API 24 and does not depend on Demo Common. The host app supplies its Material 3 theme. Catalog previews cover light and dark mode.
+The catalog uses UI Common through explicit source substitution while its first release is pending: `CatalogScreen` owns lazy scrolling and system insets, and `ActionCard` supplies each themed entry. The host-owned App settings action opens this app’s details page. The demo app requires API 28; the published permission library remains compatible with API 24 and does not depend on UI Common. The host supplies its Material 3 theme. Catalog previews cover light and dark mode. See [source migration](../ui-common-migration.md).
 
 | Screen | What to try | Library concepts | Full code |
 | --- | --- | --- | --- |

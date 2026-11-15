@@ -40,3 +40,12 @@ dependencyResolutionManagement {
 rootProject.name = "android.apexfission.permissions"
 include(":app")
 include(":permission")
+
+// Temporary source integration until UI Common has a confirmed published release.
+providers.gradleProperty("uiCommonCheckout").orNull?.let { checkout ->
+    includeBuild(checkout) {
+        dependencySubstitution {
+            substitute(module("com.apexfission.android:ui-common")).using(project(":ui-common"))
+        }
+    }
+}

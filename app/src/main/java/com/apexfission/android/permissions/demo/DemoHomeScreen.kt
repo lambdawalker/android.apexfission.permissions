@@ -1,5 +1,6 @@
 package com.apexfission.android.permissions.demo
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.material.icons.Icons
@@ -12,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.apexfission.android.democommon.DemoCard
-import com.apexfission.android.democommon.DemoScreen
+import com.apexfission.android.ui.common.ActionCard
+import com.apexfission.android.ui.common.CatalogScreen
 import com.apexfission.android.permission.recipe.openPermissionRecipeSettings
 import com.apexfission.android.permissions.R
 import com.apexfission.android.permissions.ui.theme.AndroidpermissionsTheme
@@ -28,14 +29,20 @@ fun DemoHomeScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    DemoScreen(
+    CatalogScreen(
         title = stringResource(R.string.demo_catalog_title),
-        welcomeNote = stringResource(R.string.demo_catalog_welcome),
+        description = stringResource(R.string.demo_catalog_welcome),
         modifier = modifier,
-        onOpenSettings = { context.openPermissionRecipeSettings() },
+        headerActions = {
+            androidx.compose.material3.OutlinedButton(
+                onClick = { context.openPermissionRecipeSettings() },
+                modifier = Modifier.fillMaxWidth(),
+                shape = androidx.compose.material3.MaterialTheme.shapes.small,
+            ) { androidx.compose.material3.Text(stringResource(R.string.catalog_app_settings)) }
+        },
     ) {
         item(key = "quickstart") {
-            DemoCard(
+            ActionCard(
                 title = stringResource(R.string.demo_quickstart_title),
                 description = stringResource(R.string.demo_quickstart_description),
                 actionLabel = stringResource(R.string.demo_quickstart_action),
@@ -44,7 +51,7 @@ fun DemoHomeScreen(
             )
         }
         item(key = "carousel") {
-            DemoCard(
+            ActionCard(
                 title = stringResource(R.string.demo_carousel_title),
                 description = stringResource(R.string.demo_carousel_description),
                 actionLabel = stringResource(R.string.demo_carousel_action),
@@ -53,7 +60,7 @@ fun DemoHomeScreen(
             )
         }
         item(key = "single") {
-            DemoCard(
+            ActionCard(
                 title = stringResource(R.string.demo_single_title),
                 description = stringResource(R.string.demo_single_description),
                 actionLabel = stringResource(R.string.demo_single_action),
@@ -62,7 +69,7 @@ fun DemoHomeScreen(
             )
         }
         item(key = "recipes") {
-            DemoCard(
+            ActionCard(
                 title = stringResource(R.string.demo_recipes_title),
                 description = stringResource(R.string.demo_recipes_description),
                 actionLabel = stringResource(R.string.demo_recipes_action),
@@ -71,7 +78,7 @@ fun DemoHomeScreen(
             )
         }
         item(key = "callbacks") {
-            DemoCard(
+            ActionCard(
                 title = stringResource(R.string.demo_callbacks_title),
                 description = stringResource(R.string.demo_callbacks_description),
                 actionLabel = stringResource(R.string.demo_callbacks_action),
@@ -80,7 +87,7 @@ fun DemoHomeScreen(
             )
         }
         item(key = "artwork") {
-            DemoCard(
+            ActionCard(
                 title = stringResource(R.string.demo_artwork_title),
                 description = stringResource(R.string.demo_artwork_description),
                 actionLabel = stringResource(R.string.demo_artwork_action),

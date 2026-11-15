@@ -20,4 +20,5 @@
     <string name="demo_artwork_title">Hero artwork</string>
     <string name="demo_artwork_description">Inspect vector, bitmap, drawable resource, and Drawable heroes.</string>
     <string name="demo_artwork_action">Open artwork gallery</string>
+    <string name="catalog_app_settings">App settings</string>
 </resources>

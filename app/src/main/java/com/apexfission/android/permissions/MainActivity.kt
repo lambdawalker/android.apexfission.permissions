@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
             AndroidpermissionsTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    // DemoScreen owns catalog insets; other demo destinations use this scaffold.
+                    // CatalogScreen owns catalog insets; other demo destinations use this scaffold.
                     contentWindowInsets = if (destination == DemoDestination.Home) WindowInsets(0, 0, 0, 0)
                         else ScaffoldDefaults.contentWindowInsets,
                 ) { innerPadding ->
